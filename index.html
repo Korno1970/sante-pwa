@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Santé">
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="./manifest.json">
 <title>Suivi Santé</title>
 <style>
   :root {
@@ -192,7 +192,6 @@
 </div>
 
 <script type="module">
-// ─── FIREBASE ────────────────────────────────────────────
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
 import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
@@ -209,60 +208,227 @@ const firebaseConfig = {
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 const auth = getAuth(fbApp);
-const USER_ID = 'sylvain'; // identifiant fixe
+const USER_ID = 'sylvain';
 
-// ─── DATA ───────────────────────────────────────────────
-const DEPART = 94, OBJECTIF = 84;
+const DEPART = 94;
+const OBJECTIF = 84;
+const KCAL_OBJECTIF = 1900;
+const PROT_OBJECTIF = 140;
+
+let firebaseReady = false;
 let entries = [];
 let dbReady = false;
+let currentView = 'home';
+let currentDay = 0;
+let formState = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
+let savedAnim = false;
+let journal = {};
+let journalDate = new Date().toISOString().slice(0, 10);
+let journalSearch = '';
+let journalMoment = 'Matin';
+let pendingAliment = null;
+let pendingQty = '100';
+let deferredPrompt = null;
+window._showInstall = false;
 
-// Indicateur de chargement
+const DAYS = [
+  {
+    nom: 'Lundi à jeudi',
+    meals: [
+      { time: 'Matin', name: 'Skyr + flocons + fruits rouges', kcal: 320, desc: 'Petit-déjeuner protéiné et rassasiant.', badges: ['prot', 'fibres'] },
+      { time: 'Midi', name: 'Poulet, quinoa, légumes', kcal: 520, desc: 'Repas simple, dense en protéines.', badges: ['prot', 'mealprep'] },
+      { time: 'Soir', name: 'Saumon, haricots verts, patate douce', kcal: 560, desc: 'Dîner méditerranéen équilibré.', badges: ['omega', 'satiété'] }
+    ]
+  },
+  {
+    nom: 'Vendredi festin contrôlé',
+    meals: [
+      { time: 'Matin', name: 'Omelette + fruit', kcal: 300, desc: 'Garde de la marge pour le soir.', badges: ['léger'] },
+      { time: 'Midi', name: 'Salade complète protéinée', kcal: 450, desc: 'Volumineux sans excès.', badges: ['volume'] },
+      { time: 'Soir', name: 'Repas plaisir maîtrisé', kcal: 900, desc: 'Festin assumé, sans culpabilité.', badges: ['plaisir'] }
+    ]
+  },
+  {
+    nom: 'Week-end',
+    meals: [
+      { time: 'Matin', name: 'Yaourt grec + noix + pomme', kcal: 340, desc: 'Simple et stable.', badges: ['stable'] },
+      { time: 'Midi', name: 'Poisson + riz + crudités', kcal: 530, desc: 'Assiette complète.', badges: ['équilibre'] },
+      { time: 'Soir', name: 'Soupe + œufs + tartine', kcal: 430, desc: 'Repas plus léger.', badges: ['léger'] }
+    ]
+  }
+];
+
+const BADGE_DEF = {
+  prot: ['green', 'riche en protéines'],
+  fibres: ['deep', 'fibres'],
+  mealprep: ['sand', 'meal prep'],
+  omega: ['deep', 'oméga-3'],
+  satiété: ['green', 'satiété'],
+  léger: ['sand', 'léger'],
+  volume: ['green', 'volumineux'],
+  plaisir: ['terra', 'plaisir'],
+  stable: ['deep', 'stable'],
+  équilibre: ['green', 'équilibré']
+};
+
+const ALIMENTS = [
+  { nom:'Saumon (100g)', kcal:208, prot:20, gluc:0, lip:13, cat:'Poisson' },
+  { nom:'Cabillaud (100g)', kcal:82, prot:18, gluc:0, lip:1, cat:'Poisson' },
+  { nom:'Maquereau (100g)', kcal:205, prot:19, gluc:0, lip:14, cat:'Poisson' },
+  { nom:'Sardines boîte (100g)', kcal:185, prot:22, gluc:0, lip:11, cat:'Poisson' },
+  { nom:'Thon naturel boîte (100g)', kcal:116, prot:26, gluc:0, lip:1, cat:'Poisson' },
+  { nom:'Poulet escalope (100g)', kcal:110, prot:23, gluc:0, lip:2, cat:'Volaille' },
+  { nom:'Dinde escalope (100g)', kcal:104, prot:22, gluc:0, lip:1, cat:'Volaille' },
+  { nom:'Steak haché 5% (100g)', kcal:135, prot:21, gluc:0, lip:5, cat:'Viande' },
+  { nom:'Jambon blanc (1 tranche 30g)', kcal:33, prot:6, gluc:0, lip:1, cat:'Viande' },
+  { nom:'Œuf entier (1 œuf)', kcal:78, prot:6, gluc:0, lip:5, cat:'Œufs' },
+  { nom:'Œufs brouillés 2 œufs', kcal:156, prot:12, gluc:1, lip:11, cat:'Œufs' },
+  { nom:'Omelette 2 œufs', kcal:160, prot:12, gluc:1, lip:12, cat:'Œufs' },
+  { nom:'Skyr nature (125g)', kcal:75, prot:11, gluc:5, lip:0, cat:'Laitage' },
+  { nom:'Cottage cheese (100g)', kcal:98, prot:11, gluc:4, lip:4, cat:'Laitage' },
+  { nom:'Fromage blanc 0% (100g)', kcal:44, prot:8, gluc:4, lip:0, cat:'Laitage' },
+  { nom:'Feta (30g)', kcal:80, prot:4, gluc:1, lip:7, cat:'Laitage' },
+  { nom:'Pois chiches cuits (100g)', kcal:164, prot:9, gluc:27, lip:3, cat:'Légumineuses' },
+  { nom:'Lentilles corail cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
+  { nom:'Lentilles vertes cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
+  { nom:'Quinoa cuit (100g)', kcal:120, prot:4, gluc:22, lip:2, cat:'Féculents' },
+  { nom:'Riz complet cuit (100g)', kcal:124, prot:2.7, gluc:25, lip:1, cat:'Féculents' },
+  { nom:'Patate douce (100g)', kcal:86, prot:1.6, gluc:20, lip:0, cat:'Féculents' },
+  { nom:'Pommes de terre vapeur (100g)', kcal:80, prot:2, gluc:17, lip:0, cat:'Féculents' },
+  { nom:'Flocons d’avoine (40g)', kcal:148, prot:5, gluc:24, lip:3, cat:'Féculents' },
+  { nom:'Brocoli (100g)', kcal:34, prot:3, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Courgette (100g)', kcal:17, prot:1, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Haricots verts (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Carottes (100g)', kcal:41, prot:1, gluc:10, lip:0, cat:'Légumes' },
+  { nom:'Tomates (100g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Légumes' },
+  { nom:'Concombre (100g)', kcal:15, prot:1, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Avocat (100g)', kcal:160, prot:2, gluc:9, lip:15, cat:'Légumes' },
+  { nom:'Banane (120g)', kcal:105, prot:1, gluc:27, lip:0, cat:'Fruits' },
+  { nom:'Pomme (150g)', kcal:78, prot:0, gluc:21, lip:0, cat:'Fruits' },
+  { nom:'Fruits rouges (100g)', kcal:50, prot:1, gluc:12, lip:0, cat:'Fruits' },
+  { nom:'Amandes (30g)', kcal:174, prot:6, gluc:5, lip:15, cat:'Oléagineux' },
+  { nom:'Noix (30g)', kcal:196, prot:4, gluc:2, lip:20, cat:'Oléagineux' },
+  { nom:'Huile d’olive (1 càs)', kcal:90, prot:0, gluc:0, lip:10, cat:'Matières grasses' }
+];
+
+const app = document.getElementById('app');
+const pageTitle = document.getElementById('page-title');
+const pageSub = document.getElementById('page-sub');
+const main = document.getElementById('main');
+
+function safeLocalGet(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch (_) {
+    return fallback;
+  }
+}
+
+function safeLocalSet(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
+}
+
 function showLoader(msg) {
-  document.getElementById('main').innerHTML = `<div class="empty" style="padding-top:60px">
-    <div style="font-size:32px;margin-bottom:12px">⏳</div>
-    <div style="font-family:sans-serif;color:var(--muted)">${msg}</div>
-  </div>`;
+  main.innerHTML = `<div class="empty" style="padding-top:60px"><div style="font-size:32px;margin-bottom:12px">⏳</div><div style="font-family:sans-serif;color:var(--muted)">${msg}</div></div>`;
+}
+
+function getWeekKey(date = new Date()) {
+  const d = new Date(date);
+  d.setHours(12, 0, 0, 0);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().slice(0, 10);
+}
+
+function getWeekLabel(key) {
+  const d = new Date(`${key}T12:00:00`);
+  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function daysLeft() {
+  const target = new Date('2026-07-27T12:00:00');
+  const now = new Date();
+  return Math.max(0, Math.ceil((target - now) / 86400000));
+}
+
+function dots(val, total = 5, cls = 'on') {
+  return `<div class="dots">${Array.from({ length: total }, (_, i) => `<span class="dot ${i < val ? cls : ''}"></span>`).join('')}</div>`;
+}
+
+function pasLabel(v) {
+  return v === 'low' ? '< 5 000 pas' : v === 'mid' ? '5–10k pas' : '> 10 000 pas';
+}
+
+function pasColor(v) {
+  return v === 'low' ? '#C4622D' : v === 'mid' ? '#D4A72C' : '#2A7F6F';
 }
 
 async function loadEntries() {
+  if (!firebaseReady) {
+    entries = safeLocalGet('sante_backup', []);
+    dbReady = false;
+    return;
+  }
   try {
     const ref = collection(db, 'users', USER_ID, 'pesees');
     const q = query(ref, orderBy('key', 'desc'));
     const snap = await getDocs(q);
     entries = snap.docs.map(d => d.data());
+    safeLocalSet('sante_backup', entries);
     dbReady = true;
-  } catch(e) {
+  } catch (e) {
     console.error('Firestore load error', e);
-    // fallback localStorage
-    try { entries = JSON.parse(localStorage.getItem('sante_backup') || '[]'); } catch(_) {}
-    dbReady = true;
+    entries = safeLocalGet('sante_backup', []);
+    dbReady = false;
   }
 }
 
 async function saveEntries() {
-  // Sauvegarde chaque pesée comme document séparé (key = ID du doc)
   const entry = entries[0];
   if (!entry) return;
+  safeLocalSet('sante_backup', entries);
+  if (!firebaseReady) return;
   try {
     await setDoc(doc(db, 'users', USER_ID, 'pesees', entry.key), entry);
-    // Backup local aussi
-    localStorage.setItem('sante_backup', JSON.stringify(entries));
-  } catch(e) {
+  } catch (e) {
     console.error('Firestore save error', e);
-    localStorage.setItem('sante_backup', JSON.stringify(entries));
   }
 }
 
-// ─── ROUTING ────────────────────────────────────────────
-let currentView = 'home';
-let currentDay = 0;
-let formState = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
-let savedAnim = false;
+async function loadJournal(dateKey) {
+  if (!firebaseReady) {
+    journal[dateKey] = safeLocalGet('journal_' + dateKey, []);
+    return;
+  }
+  try {
+    const ref = doc(db, 'users', USER_ID, 'journal', dateKey);
+    const snap = await getDoc(ref);
+    journal[dateKey] = snap.exists() ? (snap.data().items || []) : [];
+    safeLocalSet('journal_' + dateKey, journal[dateKey]);
+  } catch (e) {
+    console.error('Journal load error', e);
+    journal[dateKey] = safeLocalGet('journal_' + dateKey, []);
+  }
+}
+
+async function saveJournalDay(dateKey) {
+  const items = journal[dateKey] || [];
+  safeLocalSet('journal_' + dateKey, items);
+  if (!firebaseReady) return;
+  try {
+    await setDoc(doc(db, 'users', USER_ID, 'journal', dateKey), { items, updatedAt: Date.now() });
+  } catch (e) {
+    console.error('Journal save error', e);
+  }
+}
 
 async function goTo(view) {
   currentView = view;
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-' + view).classList.add('active');
+  const btn = document.getElementById('nav-' + view);
+  if (btn) btn.classList.add('active');
   if (view === 'journal' && !journal[journalDate]) {
     showLoader('Chargement du journal…');
     await loadJournal(journalDate);
@@ -270,225 +436,151 @@ async function goTo(view) {
   render();
 }
 
-// ─── UTILS ──────────────────────────────────────────────
-function getWeekKey(date) {
-  const d = date ? new Date(date) : new Date();
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
-  return d.toISOString().slice(0, 10);
+function currentWeight() {
+  return entries.length ? entries[0].poids.toFixed(1) : '—';
 }
 
-function getWeekLabel(key) {
-  const s = new Date(key), e = new Date(key);
-  e.setDate(s.getDate() + 6);
-  const f = d => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-  return f(s) + ' – ' + f(e);
+function deltaWeight() {
+  if (entries.length < 2) return null;
+  return +(entries[0].poids - entries[1].poids).toFixed(1);
 }
 
-function daysLeft() {
-  const target = new Date(2026, 6, 27);
-  return Math.max(0, Math.ceil((target - new Date()) / 86400000));
+function avgPerWeek() {
+  if (entries.length < 2) return 0;
+  const oldest = entries[entries.length - 1];
+  const newest = entries[0];
+  const days = (new Date(newest.key) - new Date(oldest.key)) / 86400000;
+  if (days <= 0) return 0;
+  return +(((oldest.poids - newest.poids) / days) * 7).toFixed(2);
 }
 
-function dots(val, max, cls) {
-  return Array.from({length: max}, (_, i) =>
-    `<span class="dot ${i < val ? cls || 'on' : ''}"></span>`
-  ).join('');
+function progressPct() {
+  if (!entries.length) return 0;
+  const done = DEPART - entries[0].poids;
+  const total = DEPART - OBJECTIF;
+  return Math.max(0, Math.min(100, Math.round((done / total) * 100)));
 }
 
-function pasColor(v) { return {low:'#C4622D', mid:'#D4A72C', high:'#2A7F6F'}[v]; }
-function pasLabel(v) { return {low:'< 5 000', mid:'5–10k', high:'> 10 000'}[v]; }
-
-// ─── RING SVG ───────────────────────────────────────────
-function ring(pct) {
-  const r = 52, c = 64, circ = 2 * Math.PI * r;
-  const dash = circ * Math.min(1, pct / 100);
-  return `<svg width="128" height="128" viewBox="0 0 128 128">
-    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="#E8E0D0" stroke-width="10"/>
-    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="#2A7F6F" stroke-width="10"
-      stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
-      transform="rotate(-90 64 64)" style="transition:stroke-dasharray .6s"/>
-    <text x="${c}" y="${c - 7}" text-anchor="middle" fill="#1A3A4A" font-size="22" font-weight="700" font-family="Georgia,serif">${Math.round(pct)}%</text>
-    <text x="${c}" y="${c + 13}" text-anchor="middle" fill="#6B7A82" font-size="11" font-family="sans-serif">objectif</text>
+function ringSvg() {
+  const pct = progressPct();
+  const r = 52;
+  const c = 2 * Math.PI * r;
+  const dash = c * pct / 100;
+  return `<svg width="130" height="130" viewBox="0 0 130 130" aria-hidden="true">
+    <circle cx="65" cy="65" r="${r}" fill="none" stroke="#E8E0D0" stroke-width="10"/>
+    <circle cx="65" cy="65" r="${r}" fill="none" stroke="#2A7F6F" stroke-width="10" stroke-linecap="round" stroke-dasharray="${dash} ${c-dash}" transform="rotate(-90 65 65)"/>
+    <text x="65" y="62" text-anchor="middle" font-size="30" font-family="Georgia" font-weight="700" fill="#1A3A4A">${pct}</text>
+    <text x="65" y="82" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#6B7A82">%</text>
   </svg>`;
 }
 
-// ─── PLAN REPAS DATA ─────────────────────────────────────
-const DAYS = [
-  { label:'Lun', full:'Lundi', meals:[
-    { time:'Matin', name:'Tartine seigle + œuf mollet', detail:'1 tranche pain de seigle · 1 œuf mollet · tomates cerises · filet d\'huile d\'olive', b:['p','l','g'] },
-    { time:'Déjeuner', name:'Bowl quinoa-pois chiches-feta', detail:'80g quinoa cuit · 100g pois chiches · dés de feta · concombre · tomates · herbes · citron · huile d\'olive', b:['g','s','p'] },
-    { time:'Dîner', name:'Saumon poêlé + épinards sautés', detail:'150g saumon · 200g épinards ail-citron · filet d\'huile d\'olive. 10 minutes chrono.', b:['p','l'] }
-  ], kcal:1480, prot:'88g', fibres:'26g', tip:'Le quinoa se prépare le dimanche pour toute la semaine (5 portions).' },
+function renderDots(id, val, cls) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = dots(val, 5, cls);
+}
 
-  { label:'Mar', full:'Mardi', meals:[
-    { time:'Matin', name:'Skyr + fruits rouges + chia', detail:'150g Skyr · poignée fruits rouges (surgelés ok) · 1 c.s. graines de chia', b:['p'] },
-    { time:'Déjeuner', name:'Soupe lentilles-carottes + pain seigle', detail:'Soupe épaisse lentilles corail · carottes · cumin · 1 tranche pain de seigle. Plat complet rassasiant.', b:['s','l','g'] },
-    { time:'Dîner', name:'Omelette légumes du soleil', detail:'2 œufs · courgette · poivron · oignon poêlés · herbes de Provence · filet d\'huile d\'olive', b:['p','l'] }
-  ], kcal:1420, prot:'80g', fibres:'30g', tip:'La soupe lentilles tient 4-5h. Idéal si l\'après-midi est chargé.' },
+function setPas(val) {
+  formState.pas = val;
+  render();
+}
 
-  { label:'Mer', full:'Mercredi', meals:[
-    { time:'Matin', name:'Cottage cheese + concombre + noix', detail:'200g cottage cheese · ½ concombre en rondelles · 8 noix de Grenoble. Pas d\'œufs ce matin.', b:['p'] },
-    { time:'Déjeuner', name:'Poulet citron-herbes + taboulé léger', detail:'1 escalope marinée ail-citron-herbes · taboulé : 60g semoule fine · tomates · menthe · persil · citron · huile d\'olive', b:['p','l','g'] },
-    { time:'Dîner', name:'Maquereau + salade verte', detail:'1 boîte maquereau au naturel · grande salade · tomates · vinaigrette légère. Zéro préparation.', b:['p','l'] }
-  ], kcal:1440, prot:'95g', fibres:'22g', tip:'Le maquereau en boîte : le poisson le plus riche en oméga-3 et le moins cher.' },
+function setDay(i) {
+  currentDay = i;
+  render();
+}
 
-  { label:'Jeu', full:'Jeudi', meals:[
-    { time:'Matin', name:'Œufs brouillés tomates + pain seigle', detail:'2 œufs brouillés · 2 tomates · 1 tranche pain de seigle', b:['p','l','g'] },
-    { time:'Déjeuner', name:'Cabillaud vapeur + riz complet + courgettes', detail:'150g cabillaud vapeur · 60g riz complet · courgettes vapeur · huile d\'olive · herbes', b:['p','l','g'] },
-    { time:'Dîner', name:'Velouté butternut + fromage blanc', detail:'Soupe courge butternut · oignon · bouillon · cumin · 100g fromage blanc 0% en dessert. Léger avant le festin.', b:['l'] }
-  ], kcal:1380, prot:'85g', fibres:'24g', tip:'Jeudi intentionnellement léger — le festin arrive demain.' },
+function normalizePoids(value) {
+  const n = parseFloat(String(value).replace(',', '.').trim());
+  return Number.isFinite(n) ? n : null;
+}
 
-  { label:'Ven ★', full:'Vendredi — Festin', meals:[
-    { time:'Matin', name:'Skyr + quelques noix', detail:'150g Skyr nature · 8 noix. Matin léger.', b:['p'] },
-    { time:'Déjeuner', name:'Salade niçoise légère', detail:'Thon au naturel · œuf dur · haricots verts · tomates · olives · vinaigrette citron-olive', b:['p','l'] },
-    { time:'Dîner', name:'Repas familial — festin libre', detail:'Tu manges ce que ta famille mange. Sans calcul, sans culpabilité. C\'est le contrat, pas l\'exception.', b:['f'] }
-  ], kcal:null, prot:'—', fibres:'—', tip:'Règle du festin : reprend si tu veux, évite la 3e assiette. Un verre de vin, pas de problème. Reprendre le plan samedi matin suffit.' },
+function submitForm() {
+  const poids = normalizePoids(formState.poids);
+  if (poids === null || poids < 40 || poids > 250) {
+    alert('Entre un poids valide (ex : 92.5)');
+    return;
+  }
+  const key = getWeekKey();
+  entries = [
+    { key, poids, moral: formState.moral, plan: formState.plan, pas: formState.pas, note: formState.note.trim() },
+    ...entries.filter(e => e.key !== key)
+  ].sort((a, b) => b.key.localeCompare(a.key));
+  saveEntries();
+  formState = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
+  savedAnim = true;
+  render();
+  setTimeout(() => {
+    savedAnim = false;
+    goTo('home');
+  }, 1200);
+}
 
-  { label:'Sam', full:'Samedi', meals:[
-    { time:'Matin', name:'Tartine avocat + œuf poché', detail:'½ avocat écrasé · 1 tranche pain de seigle · 1 œuf poché · pincée de piment · citron', b:['p','l','g'] },
-    { time:'Déjeuner', name:'Dinde rôtie + ratatouille', detail:'150g escalope de dinde · ratatouille courgettes-aubergines-tomates-poivrons. Plat familial compatible.', b:['p','l'] },
-    { time:'Dîner', name:'Sardines + salade composée', detail:'1 boîte sardines · laitue · tomates · concombre · radis · vinaigrette légère', b:['p','l'] }
-  ], kcal:1460, prot:'90g', fibres:'28g', tip:'La ratatouille se conserve 4 jours. En préparer une grande cocotte pour la semaine.' },
-
-  { label:'Dim', full:'Dimanche', meals:[
-    { time:'Matin', name:'Œufs à la coque + crudités', detail:'2 œufs à la coque · radis · concombre · tomates cerises', b:['p','l'] },
-    { time:'Déjeuner', name:'Poulet rôti + légumes rôtis', detail:'Blanc ou cuisse sans peau · courgettes-carottes-oignons rôtis à l\'huile d\'olive · 2-3 pommes de terre rôties ok', b:['p','l','g'] },
-    { time:'Dîner', name:'Soupe maison + jambon', detail:'Soupe de légumes (fond du frigo) · 1 tranche jambon blanc. Ce soir : préparer le quinoa de la semaine.', b:['l','p'] }
-  ], kcal:1500, prot:'92g', fibres:'25g', tip:'Dimanche soir : cuisiner le quinoa (5 portions) + une soupe. 30 min = semaine facilitée.' }
-];
-
-const BADGE_DEF = {
-  p: ['badge-p', 'Protéines'],
-  l: ['badge-l', 'Légumes'],
-  f: ['badge-f', 'Festin ★'],
-  g: ['badge-g', 'Féculents'],
-  s: ['badge-s', 'Légumineuses']
-};
-
-// ─── VIEWS ──────────────────────────────────────────────
 function viewHome() {
-  const latest = entries[0];
-  const perdu = latest ? Math.max(0, DEPART - latest.poids) : 0;
-  const pct = Math.min(100, (perdu / (DEPART - OBJECTIF)) * 100);
-  const rythme = entries.length > 1 ? ((DEPART - latest.poids) / (entries.length - 1)).toFixed(2) : null;
+  const delta = deltaWeight();
+  const deltaHtml = delta === null
+    ? `<div class="delta neutral">Première mesure</div>`
+    : delta < 0
+      ? `<div class="delta good">${Math.abs(delta).toFixed(1)} kg depuis la dernière pesée</div>`
+      : delta > 0
+        ? `<div class="delta bad">+${delta.toFixed(1)} kg depuis la dernière pesée</div>`
+        : `<div class="delta neutral">Stable depuis la dernière pesée</div>`;
 
-  let deltaHtml = `<div class="delta neutral">Départ : ${DEPART} kg</div>`;
-  if (latest && entries.length > 1) {
-    const diff = (entries[1].poids - latest.poids).toFixed(1);
-    const good = diff > 0;
-    deltaHtml = `<div class="delta ${good ? 'good' : 'bad'}">${good ? '−' : '+'}${Math.abs(diff)} kg cette semaine</div>`;
-  }
-
-  let installBanner = '';
-  if (window._showInstall) {
-    installBanner = `<div class="install-banner">
-      <p>Installer l'app sur ton écran d'accueil pour un accès rapide</p>
-      <button onclick="installPWA()">Installer</button>
-      <button class="close" onclick="this.closest('.install-banner').remove()">×</button>
-    </div>`;
-  }
-
-  return `
-    ${installBanner}
-    <div class="card">
-      <div class="ring-wrap">
-        ${ring(pct)}
-        <div>
-          <div class="card-title">Dernier poids</div>
-          <div class="big-num">${latest ? latest.poids.toFixed(1) : '—'}<span class="unit"> kg</span></div>
-          ${deltaHtml}
-        </div>
+  return `<div class="card">
+    <div class="card-title">Poids actuel</div>
+    <div class="ring-wrap">
+      <div>${ringSvg()}</div>
+      <div>
+        <div class="big-num">${currentWeight()} <span class="unit">kg</span></div>
+        ${deltaHtml}
       </div>
     </div>
-
-    <div class="grid2">
-      <div class="mini-card">
-        <div class="mini-val" style="color:var(--teal)">${perdu > 0 ? '−' + perdu.toFixed(1) : '0'} <span style="font-size:14px;color:var(--muted)">kg</span></div>
-        <div class="mini-label">Perdu au total</div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-val">${entries.length} <span style="font-size:14px;color:var(--muted)">sem</span></div>
-        <div class="mini-label">Semaines de suivi</div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-val" style="font-size:20px">${rythme || '—'} <span style="font-size:13px;color:var(--muted)">kg/sem</span></div>
-        <div class="mini-label">Rythme moyen</div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-val" style="color:var(--terra)">${daysLeft()} <span style="font-size:14px;color:var(--muted)">j</span></div>
-        <div class="mini-label">Avant l'objectif</div>
-      </div>
+  </div>
+  <div class="grid2">
+    <div class="mini-card"><div class="mini-val">${entries.length}</div><div class="mini-label">Pesées enregistrées</div></div>
+    <div class="mini-card"><div class="mini-val">${avgPerWeek()}</div><div class="mini-label">kg / semaine</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Statut</div>
+    <div style="font-size:13px;font-family:sans-serif;color:var(--muted);line-height:1.5">
+      ${firebaseReady ? 'Synchronisé avec Firebase.' : 'Mode local actif.'}
     </div>
-
-    ${latest ? `
-    <div class="card" style="margin-top:12px">
-      <div class="card-title">Dernière semaine · ${getWeekLabel(latest.key)}</div>
-      <div style="display:flex;flex-direction:column;gap:10px;font-family:sans-serif">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;color:var(--muted)">Moral</span>
-          <div class="dots">${dots(latest.moral, 5, 'on')}</div>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;color:var(--muted)">Respect du plan</span>
-          <div class="dots">${dots(latest.plan, 5, 'on-deep')}</div>
-        </div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;color:var(--muted)">Pas quotidiens</span>
-          <span style="font-size:13px;font-weight:700;color:${pasColor(latest.pas)}">${pasLabel(latest.pas)}</span>
-        </div>
-        ${latest.note ? `<div style="font-size:13px;color:var(--muted);font-style:italic;border-top:1px solid var(--border);padding-top:8px">"${latest.note}"</div>` : ''}
-      </div>
-    </div>` : ''}
-
-    <div style="margin:16px 16px 0">
-      <button class="btn-primary terra" onclick="goTo('saisie')">+ Saisir la pesée du lundi</button>
-    </div>
-  `;
+    ${window._showInstall ? `<button class="btn-secondary" style="margin-top:12px" onclick="installPWA()">Installer l’app</button>` : ''}
+  </div>`;
 }
 
 function viewSaisie() {
-  const wk = getWeekLabel(getWeekKey());
   const s = formState;
-  return `
-    <div class="card">
+  const wk = getWeekLabel(getWeekKey());
+  return `<div class="card">
       <div class="card-title">Pesée · ${wk}</div>
       <label class="field-label">Poids ce matin (kg)</label>
-      <input type="number" step="0.1" min="70" max="130" placeholder="ex : 92.5"
-        value="${s.poids}" oninput="formState.poids=this.value" inputmode="decimal">
+      <input type="number" step="0.1" min="40" max="250" placeholder="ex : 92.5" value="${s.poids}" oninput="formState.poids=this.value" inputmode="decimal">
 
       <label class="field-label">Moral cette semaine</label>
       <div class="slider-row">
-        <input type="range" min="1" max="5" step="1" value="${s.moral}"
-          oninput="formState.moral=+this.value;renderDots('m-dots',formState.moral,'on')">
-        <div class="dots" id="m-dots">${dots(s.moral, 5, 'on')}</div>
+        <input type="range" min="1" max="5" step="1" value="${s.moral}" oninput="formState.moral=+this.value;renderDots('m-dots',formState.moral,'on')">
+        <div id="m-dots">${dots(s.moral, 5, 'on')}</div>
       </div>
 
-      <label class="field-label">Respect du plan alimentaire</label>
+      <label class="field-label">Tenue du plan</label>
       <div class="slider-row">
-        <input type="range" min="1" max="5" step="1" value="${s.plan}"
-          oninput="formState.plan=+this.value;renderDots('p-dots',formState.plan,'on-deep')">
-        <div class="dots" id="p-dots">${dots(s.plan, 5, 'on-deep')}</div>
+        <input type="range" min="1" max="5" step="1" value="${s.plan}" oninput="formState.plan=+this.value;renderDots('p-dots',formState.plan,'on-deep')">
+        <div id="p-dots">${dots(s.plan, 5, 'on-deep')}</div>
       </div>
 
-      <label class="field-label">Pas quotidiens (moyenne semaine)</label>
+      <label class="field-label">Activité</label>
       <div class="pas-row">
-        <button class="pas-btn ${s.pas==='low'?'active-low':''}" onclick="setPas('low')">< 5 000</button>
+        <button class="pas-btn ${s.pas==='low'?'active-low':''}" onclick="setPas('low')">&lt; 5 000</button>
         <button class="pas-btn ${s.pas==='mid'?'active-mid':''}" onclick="setPas('mid')">5–10k</button>
-        <button class="pas-btn ${s.pas==='high'?'active-high':''}" onclick="setPas('high')">> 10 000</button>
+        <button class="pas-btn ${s.pas==='high'?'active-high':''}" onclick="setPas('high')">&gt; 10 000</button>
       </div>
 
       <label class="field-label">Note libre (optionnel)</label>
-      <textarea placeholder="ex : bonne semaine, faim ok…" rows="2"
-        oninput="formState.note=this.value">${s.note}</textarea>
+      <textarea placeholder="ex : bonne semaine, faim ok…" rows="2" oninput="formState.note=this.value">${s.note}</textarea>
 
-      <button class="btn-primary ${savedAnim ? 'saved' : ''}" id="btn-save" onclick="submitForm()">
-        ${savedAnim ? '✓ Enregistré !' : 'Enregistrer la pesée'}
-      </button>
+      <button class="btn-primary ${savedAnim ? 'saved' : ''}" id="btn-save" onclick="submitForm()">${savedAnim ? '✓ Enregistré !' : 'Enregistrer la pesée'}</button>
       <button class="btn-secondary" onclick="goTo('home')">Annuler</button>
-    </div>
-  `;
+    </div>`;
 }
 
 function viewHistorique() {
@@ -525,254 +617,24 @@ function viewHistorique() {
 function viewRepas() {
   const d = DAYS[currentDay];
   const badgeHtml = b => `<span class="badge ${BADGE_DEF[b][0]}">${BADGE_DEF[b][1]}</span>`;
-  const mealsHtml = d.meals.map(m => `
-    <div class="meal-card">
-      <div class="meal-header">
-        <div class="meal-time">${m.time}</div>
-        <div class="meal-name">${m.name}</div>
-        <div class="meal-badges">${m.b.map(badgeHtml).join('')}</div>
-      </div>
-      <div class="meal-detail">${m.detail}</div>
-    </div>`).join('');
-
-  const macrosHtml = d.kcal ? `
-    <div class="meal-card" style="margin-top:10px">
-      <div class="macros-bar">
-        <div class="macro-cell"><div class="macro-val">~${d.kcal}</div><div class="macro-label">kcal</div></div>
-        <div class="macro-cell"><div class="macro-val">${d.prot}</div><div class="macro-label">protéines</div></div>
-        <div class="macro-cell"><div class="macro-val">${d.fibres}</div><div class="macro-label">fibres</div></div>
-      </div>
-    </div>` : '';
-
-  return `
-    <div class="principes">
-      <div class="principe"><strong>Poisson 3×/sem</strong>saumon, maquereau, cabillaud, sardines</div>
-      <div class="principe"><strong>Féculents complets</strong>le midi uniquement</div>
-      <div class="principe"><strong>Légumes</strong>à volonté à chaque repas</div>
-      <div class="principe"><strong>Festin vendredi</strong>sans culpabilité</div>
-    </div>
+  return `<div class="card">
+    <div class="card-title">Jours types</div>
     <div class="day-tabs">
-      ${DAYS.map((day, i) => `<button class="day-tab ${i === currentDay ? 'active' : ''}" onclick="setDay(${i})">${day.label}</button>`).join('')}
+      ${DAYS.map((day, i) => `<button class="day-tab ${i===currentDay?'active':''}" onclick="setDay(${i})">${day.nom}</button>`).join('')}
     </div>
-    ${mealsHtml}
-    ${macrosHtml}
-    <div class="tip-box">${d.tip}</div>
-    <div style="height:8px"></div>
-  `;
+    <div class="meal-grid">
+      ${d.meals.map(m => `<div class="meal-card">
+        <div class="meal-header">
+          <div class="meal-time">${m.time}</div>
+          <div class="meal-kcal">${m.kcal} kcal</div>
+        </div>
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-desc">${m.desc}</div>
+        <div class="badge-row">${m.badges.map(badgeHtml).join('')}</div>
+      </div>`).join('')}
+    </div>
+  </div>`;
 }
-
-// ─── ACTIONS ────────────────────────────────────────────
-function renderDots(id, val, cls) {
-  const el = document.getElementById(id);
-  if (el) el.innerHTML = dots(val, 5, cls);
-}
-
-function setPas(val) {
-  formState.pas = val;
-  document.querySelectorAll('.pas-btn').forEach(b => {
-    b.className = 'pas-btn';
-    if (b.textContent.includes('5 000') && val === 'low') b.classList.add('active-low');
-    if (b.textContent.includes('10k') && val === 'mid') b.classList.add('active-mid');
-    if (b.textContent.includes('10 000') && val === 'high') b.classList.add('active-high');
-  });
-}
-
-function setDay(i) {
-  currentDay = i;
-  document.getElementById('main').innerHTML = viewRepas();
-}
-
-function submitForm() {
-  const poids = parseFloat(formState.poids);
-  if (isNaN(poids) || poids < 60 || poids > 130) {
-    alert('Entre un poids valide (ex : 92.5)');
-    return;
-  }
-  const key = getWeekKey();
-  entries = [
-    { key, poids, moral: formState.moral, plan: formState.plan, pas: formState.pas, note: formState.note.trim() },
-    ...entries.filter(e => e.key !== key)
-  ];
-  saveEntries();
-  formState = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
-  savedAnim = true;
-  render();
-  setTimeout(() => { savedAnim = false; goTo('home'); }, 1200);
-}
-
-// ─── JOURNAL DATA ────────────────────────────────────────
-const ALIMENTS = [
-  // Protéines animales
-  { nom:'Saumon (100g)', kcal:208, prot:20, gluc:0, lip:13, cat:'Poisson' },
-  { nom:'Cabillaud (100g)', kcal:82, prot:18, gluc:0, lip:1, cat:'Poisson' },
-  { nom:'Maquereau (100g)', kcal:205, prot:19, gluc:0, lip:14, cat:'Poisson' },
-  { nom:'Sardines boîte (100g)', kcal:185, prot:22, gluc:0, lip:11, cat:'Poisson' },
-  { nom:'Thon naturel boîte (100g)', kcal:116, prot:26, gluc:0, lip:1, cat:'Poisson' },
-  { nom:'Poulet escalope (100g)', kcal:110, prot:23, gluc:0, lip:2, cat:'Volaille' },
-  { nom:'Dinde escalope (100g)', kcal:104, prot:22, gluc:0, lip:1, cat:'Volaille' },
-  { nom:'Steak haché 5% (100g)', kcal:135, prot:21, gluc:0, lip:5, cat:'Viande' },
-  { nom:'Jambon blanc (1 tranche 30g)', kcal:33, prot:6, gluc:0, lip:1, cat:'Viande' },
-  { nom:'Œuf entier (1 œuf)', kcal:78, prot:6, gluc:0, lip:5, cat:'Œufs' },
-  { nom:'Œufs brouillés 2 œufs', kcal:156, prot:12, gluc:1, lip:11, cat:'Œufs' },
-  { nom:'Omelette 2 œufs', kcal:160, prot:12, gluc:1, lip:12, cat:'Œufs' },
-  // Laitages
-  { nom:'Skyr nature (125g)', kcal:75, prot:11, gluc:5, lip:0, cat:'Laitage' },
-  { nom:'Cottage cheese (100g)', kcal:98, prot:11, gluc:4, lip:4, cat:'Laitage' },
-  { nom:'Fromage blanc 0% (100g)', kcal:44, prot:8, gluc:4, lip:0, cat:'Laitage' },
-  { nom:'Feta (30g)', kcal:80, prot:4, gluc:1, lip:7, cat:'Laitage' },
-  // Légumineuses
-  { nom:'Pois chiches cuits (100g)', kcal:164, prot:9, gluc:27, lip:3, cat:'Légumineuses' },
-  { nom:'Lentilles corail cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
-  { nom:'Lentilles vertes cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
-  // Féculents
-  { nom:'Quinoa cuit (100g)', kcal:120, prot:4, gluc:22, lip:2, cat:'Féculents' },
-  { nom:'Riz complet cuit (100g)', kcal:130, prot:3, gluc:28, lip:1, cat:'Féculents' },
-  { nom:'Semoule cuite (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
-  { nom:'Pain de seigle (1 tranche 30g)', kcal:63, prot:2, gluc:12, lip:0, cat:'Féculents' },
-  { nom:'Pomme de terre cuite (100g)', kcal:87, prot:2, gluc:20, lip:0, cat:'Féculents' },
-  // Légumes
-  { nom:'Épinards (100g)', kcal:23, prot:3, gluc:1, lip:0, cat:'Légumes' },
-  { nom:'Courgette (100g)', kcal:17, prot:1, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Brocolis (100g)', kcal:34, prot:3, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Haricots verts (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Tomates (100g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Légumes' },
-  { nom:'Concombre (100g)', kcal:12, prot:1, gluc:2, lip:0, cat:'Légumes' },
-  { nom:'Salade verte (100g)', kcal:14, prot:1, gluc:2, lip:0, cat:'Légumes' },
-  { nom:'Poivron (100g)', kcal:31, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Champignons (100g)', kcal:22, prot:3, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Poireau (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Carotte (100g)', kcal:41, prot:1, gluc:10, lip:0, cat:'Légumes' },
-  { nom:'Courge butternut (100g)', kcal:45, prot:1, gluc:12, lip:0, cat:'Légumes' },
-  { nom:'Aubergine (100g)', kcal:25, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  // Fruits
-  { nom:'Avocat ½ (70g)', kcal:114, prot:1, gluc:2, lip:11, cat:'Fruits' },
-  { nom:'Fruits rouges (100g)', kcal:52, prot:1, gluc:12, lip:0, cat:'Fruits' },
-  // Graisses & oléagineux
-  { nom:'Huile d\'olive (1 c.s. 10ml)', kcal:88, prot:0, gluc:0, lip:10, cat:'Graisses' },
-  { nom:'Noix de Grenoble (10g ~1 noix)', kcal:65, prot:2, gluc:1, lip:7, cat:'Graisses' },
-  { nom:'Amandes (10g ~10 amandes)', kcal:58, prot:2, gluc:2, lip:5, cat:'Graisses' },
-  { nom:'Graines de chia (1 c.s. 10g)', kcal:49, prot:2, gluc:4, lip:3, cat:'Graisses' },
-  // Légumineuses (complément)
-  { nom:'Haricots rouges cuits (100g)', kcal:127, prot:9, gluc:22, lip:1, cat:'Légumineuses' },
-  { nom:'Haricots blancs cuits (100g)', kcal:139, prot:10, gluc:25, lip:1, cat:'Légumineuses' },
-  { nom:'Haricots noirs cuits (100g)', kcal:132, prot:9, gluc:24, lip:1, cat:'Légumineuses' },
-  { nom:'Edamame (100g)', kcal:122, prot:11, gluc:10, lip:5, cat:'Légumineuses' },
-  { nom:'Fèves cuites (100g)', kcal:110, prot:8, gluc:20, lip:1, cat:'Légumineuses' },
-  { nom:'Pois cassés cuits (100g)', kcal:118, prot:8, gluc:21, lip:0, cat:'Légumineuses' },
-  // Légumes (complément)
-  { nom:'Betterave cuite (100g)', kcal:44, prot:2, gluc:10, lip:0, cat:'Légumes' },
-  { nom:'Céleri branche (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Céleri-rave (100g)', kcal:42, prot:2, gluc:9, lip:0, cat:'Légumes' },
-  { nom:'Chou blanc (100g)', kcal:25, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Chou rouge (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Chou-fleur (100g)', kcal:25, prot:2, gluc:5, lip:0, cat:'Légumes' },
-  { nom:'Endive (100g)', kcal:17, prot:1, gluc:4, lip:0, cat:'Légumes' },
-  { nom:'Épinards cuits (100g)', kcal:23, prot:3, gluc:4, lip:0, cat:'Légumes' },
-  { nom:'Fenouil (100g)', kcal:31, prot:1, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Navet (100g)', kcal:28, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Oignon (100g)', kcal:40, prot:1, gluc:9, lip:0, cat:'Légumes' },
-  { nom:'Petits pois (100g)', kcal:81, prot:5, gluc:14, lip:0, cat:'Légumes' },
-  { nom:'Radis (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Roquette (100g)', kcal:25, prot:3, gluc:4, lip:1, cat:'Légumes' },
-  // Poissons & fruits de mer (complément)
-  { nom:'Anchois à l\'huile (30g)', kcal:62, prot:9, gluc:0, lip:3, cat:'Poisson' },
-  { nom:'Crevettes cuites (100g)', kcal:99, prot:21, gluc:0, lip:1, cat:'Poisson' },
-  { nom:'Moules cuites (100g)', kcal:86, prot:12, gluc:4, lip:2, cat:'Poisson' },
-  { nom:'Dorade (100g)', kcal:96, prot:20, gluc:0, lip:2, cat:'Poisson' },
-  { nom:'Truite (100g)', kcal:149, prot:20, gluc:0, lip:7, cat:'Poisson' },
-  // Viandes (complément)
-  { nom:'Veau escalope (100g)', kcal:105, prot:22, gluc:0, lip:2, cat:'Viande' },
-  { nom:'Porc filet mignon (100g)', kcal:143, prot:22, gluc:0, lip:6, cat:'Viande' },
-  { nom:'Magret de canard (100g)', kcal:190, prot:22, gluc:0, lip:11, cat:'Viande' },
-  // Laitages (complément)
-  { nom:'Yaourt nature (125g)', kcal:74, prot:4, gluc:6, lip:4, cat:'Laitage' },
-  { nom:'Yaourt grec 0% (125g)', kcal:75, prot:10, gluc:5, lip:0, cat:'Laitage' },
-  { nom:'Ricotta (50g)', kcal:72, prot:3, gluc:1, lip:6, cat:'Laitage' },
-  { nom:'Parmesan (20g)', kcal:83, prot:7, gluc:0, lip:6, cat:'Laitage' },
-  { nom:'Mozzarella (50g)', kcal:124, prot:8, gluc:1, lip:10, cat:'Laitage' },
-  // Féculents (complément)
-  { nom:'Orge perlé cuit (100g)', kcal:123, prot:2, gluc:28, lip:0, cat:'Féculents' },
-  { nom:'Boulgour cuit (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
-  { nom:'Pâtes complètes cuites (100g)', kcal:124, prot:5, gluc:25, lip:1, cat:'Féculents' },
-  { nom:'Pain complet (1 tranche 30g)', kcal:68, prot:3, gluc:13, lip:1, cat:'Féculents' },
-  { nom:'Pain de mie complet (1 tranche 25g)', kcal:58, prot:2, gluc:11, lip:1, cat:'Féculents' },
-  // Fruits (complément)
-  { nom:'Pomme (1 moyenne 150g)', kcal:78, prot:0, gluc:21, lip:0, cat:'Fruits' },
-  { nom:'Orange (1 moyenne 150g)', kcal:72, prot:1, gluc:18, lip:0, cat:'Fruits' },
-  { nom:'Banane (1 moyenne 120g)', kcal:107, prot:1, gluc:27, lip:0, cat:'Fruits' },
-  { nom:'Poire (1 moyenne 150g)', kcal:85, prot:1, gluc:22, lip:0, cat:'Fruits' },
-  { nom:'Kiwi (1 kiwi 80g)', kcal:43, prot:1, gluc:10, lip:0, cat:'Fruits' },
-  { nom:'Raisin (100g)', kcal:69, prot:1, gluc:18, lip:0, cat:'Fruits' },
-  { nom:'Melon (100g)', kcal:34, prot:1, gluc:8, lip:0, cat:'Fruits' },
-  // Graisses (complément)
-  { nom:'Olives noires (10 olives 30g)', kcal:45, prot:0, gluc:1, lip:5, cat:'Graisses' },
-  { nom:'Olives vertes (10 olives 30g)', kcal:36, prot:0, gluc:0, lip:4, cat:'Graisses' },
-  { nom:'Tahini sésame (1 c.s. 15g)', kcal:86, prot:3, gluc:3, lip:8, cat:'Graisses' },
-  { nom:'Noix de cajou (30g)', kcal:164, prot:5, gluc:9, lip:13, cat:'Graisses' },
-  { nom:'Noisettes (30g)', kcal:188, prot:4, gluc:5, lip:18, cat:'Graisses' },
-  // Condiments & sauces
-  { nom:'Moutarde (1 c.s. 15g)', kcal:13, prot:1, gluc:1, lip:1, cat:'Condiments' },
-  { nom:'Vinaigre balsamique (1 c.s. 15ml)', kcal:18, prot:0, gluc:4, lip:0, cat:'Condiments' },
-  { nom:'Sauce soja (1 c.s. 15ml)', kcal:9, prot:1, gluc:1, lip:0, cat:'Condiments' },
-  { nom:'Concentré de tomates (1 c.s. 20g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Condiments' },
-  { nom:'Harissa (1 c.c. 5g)', kcal:12, prot:0, gluc:2, lip:1, cat:'Condiments' },
-  // Boissons
-  { nom:'Lait demi-écrémé (100ml)', kcal:46, prot:3, gluc:5, lip:2, cat:'Boissons' },
-  { nom:'Lait végétal avoine (100ml)', kcal:47, prot:1, gluc:7, lip:2, cat:'Boissons' },
-  { nom:'Jus d\'orange (100ml)', kcal:45, prot:1, gluc:10, lip:0, cat:'Boissons' },
-  { nom:'Vin rouge (1 verre 150ml)', kcal:127, prot:0, gluc:4, lip:0, cat:'Boissons' },
-  { nom:'Vin blanc sec (1 verre 150ml)', kcal:120, prot:0, gluc:3, lip:0, cat:'Boissons' },
-  { nom:'Bière (1 pinte 330ml)', kcal:139, prot:1, gluc:13, lip:0, cat:'Boissons' },
-  // Soupes
-  { nom:'Soupe légumes maison (250ml)', kcal:60, prot:2, gluc:10, lip:1, cat:'Soupes' },
-  { nom:'Soupe lentilles (250ml)', kcal:150, prot:9, gluc:22, lip:2, cat:'Soupes' },
-  { nom:'Velouté butternut (250ml)', kcal:110, prot:2, gluc:18, lip:3, cat:'Soupes' },
-  { nom:'Gaspacho tomates (250ml)', kcal:75, prot:2, gluc:12, lip:3, cat:'Soupes' },
-  { nom:'Soupe poireaux-pomme de terre (250ml)', kcal:120, prot:3, gluc:18, lip:4, cat:'Soupes' },
-  // Divers festin
-  { nom:'Pizza (1 part 100g)', kcal:266, prot:11, gluc:33, lip:10, cat:'Festin' },
-  { nom:'Pâtes bolognaise (300g)', kcal:450, prot:25, gluc:55, lip:12, cat:'Festin' },
-  { nom:'Fromage camembert (30g)', kcal:87, prot:5, gluc:0, lip:7, cat:'Festin' },
-  { nom:'Chocolat noir 70% (20g)', kcal:114, prot:2, gluc:10, lip:8, cat:'Festin' },
-  { nom:'Tarte ou gâteau (1 part 100g)', kcal:320, prot:5, gluc:40, lip:16, cat:'Festin' },
-];
-
-const KCAL_OBJECTIF = 1500;
-const PROT_OBJECTIF = 90;
-
-let journal = {};
-
-async function loadJournal(dateKey) {
-  try {
-    const ref = doc(db, 'users', USER_ID, 'journal', dateKey);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      journal[dateKey] = snap.data().items || [];
-    } else {
-      journal[dateKey] = [];
-    }
-  } catch(e) {
-    journal[dateKey] = JSON.parse(localStorage.getItem('journal_' + dateKey) || '[]');
-  }
-}
-
-async function saveJournalDay(dateKey) {
-  const items = journal[dateKey] || [];
-  try {
-    await setDoc(doc(db, 'users', USER_ID, 'journal', dateKey), { items, updatedAt: Date.now() });
-    localStorage.setItem('journal_' + dateKey, JSON.stringify(items));
-  } catch(e) {
-    localStorage.setItem('journal_' + dateKey, JSON.stringify(items));
-  }
-}
-
-let journalDate = new Date().toISOString().slice(0, 10);
-let journalSearch = '';
-let journalMoment = 'Matin'; // Matin | Déjeuner | Collation | Dîner
-let pendingAliment = null;
-let pendingQty = '100';
-
-function todayKey() { return new Date().toISOString().slice(0, 10); }
 
 function getJournalItems(dateKey) {
   return journal[dateKey] || [];
@@ -791,8 +653,9 @@ function getJournalBilan(dateKey) {
 }
 
 function dateLabel(dateKey) {
-  const today = todayKey();
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+  const today = new Date().toISOString().slice(0, 10);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
   const yKey = yesterday.toISOString().slice(0, 10);
   if (dateKey === today) return "Aujourd'hui";
   if (dateKey === yKey) return 'Hier';
@@ -843,9 +706,9 @@ async function removeJournalItem(dateKey, id) {
 
 function openQtyModal(index) {
   const filtered = ALIMENTS.filter(a =>
-    journalSearch.length < 2 ? false : a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())
+    journalSearch.trim().length < 1 ? false : a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())
   );
-  pendingAliment = filtered[index];
+  pendingAliment = filtered[index] || null;
   pendingQty = '100';
   render();
 }
@@ -857,7 +720,7 @@ function viewJournal() {
   const kcalClass = bilan.kcal > KCAL_OBJECTIF * 1.1 ? 'over' : bilan.kcal > KCAL_OBJECTIF * 0.8 ? 'ok' : 'warn';
   const protClass = bilan.prot >= PROT_OBJECTIF ? 'ok' : bilan.prot >= PROT_OBJECTIF * 0.7 ? 'warn' : 'over';
 
-  const filtered = journalSearch.length >= 2
+  const filtered = journalSearch.trim().length >= 1
     ? ALIMENTS.filter(a => a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())).slice(0, 15)
     : [];
 
@@ -911,7 +774,7 @@ function viewJournal() {
     <div class="date-nav">
       <button class="date-nav-btn" onclick="shiftJournalDate(-1)">‹</button>
       <span class="date-nav-label">${dateLabel(journalDate)}</span>
-      <button class="date-nav-btn" onclick="shiftJournalDate(1)" ${journalDate === todayKey() ? 'disabled style="opacity:0.3"' : ''}>›</button>
+      <button class="date-nav-btn" onclick="shiftJournalDate(1)" ${journalDate === new Date().toISOString().slice(0, 10) ? 'disabled style="opacity:0.3"' : ''}>›</button>
     </div>
 
     <div class="bilan-bar">
@@ -944,10 +807,10 @@ function viewJournal() {
             <div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div>
           </div>
           <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
-        </div>`).join('')}</div>` : journalSearch.length >= 2 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat pour "${journalSearch}"</div>` : ''}
+        </div>`).join('')}</div>` : journalSearch.trim().length >= 1 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat pour "${journalSearch}"</div>` : ''}
     </div>
 
-    ${items.length > 0 ? journalHtml : `<div class="empty" style="padding-top:16px">Aucun aliment enregistré.<br>Tape le nom d'un aliment ci-dessus.${journalDate !== todayKey() ? '<br><span style="font-size:12px">Jour passé — édition possible.</span>' : ''}</div>`}
+    ${items.length > 0 ? journalHtml : `<div class="empty" style="padding-top:16px">Aucun aliment enregistré.<br>Tape le nom d'un aliment ci-dessus.${journalDate !== new Date().toISOString().slice(0, 10) ? '<br><span style="font-size:12px">Jour passé — édition possible.</span>' : ''}</div>`}
 
     <div style="height:16px"></div>
     ${modalHtml}
@@ -955,10 +818,10 @@ function viewJournal() {
 }
 
 function renderAlimentsList() {
-  const filtered = journalSearch.length >= 2
+  const filtered = journalSearch.trim().length >= 1
     ? ALIMENTS.filter(a => a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())).slice(0, 15)
     : [];
-  if (filtered.length === 0) return journalSearch.length >= 2 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat.</div>` : '';
+  if (filtered.length === 0) return journalSearch.trim().length >= 1 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat.</div>` : '';
   return `<div class="aliments-list">${filtered.map((a, i) => `
     <div class="aliment-row">
       <div>
@@ -971,15 +834,7 @@ function renderAlimentsList() {
 
 function setMoment(m) {
   journalMoment = m;
-  ['Matin','Déjeuner','Collation','Dîner'].forEach(mom => {
-    const btn = document.getElementById('mbtn-' + mom);
-    if (!btn) return;
-    const active = mom === m;
-    btn.style.borderColor = active ? 'var(--teal)' : 'var(--border)';
-    btn.style.background = active ? 'var(--teal-light)' : 'transparent';
-    btn.style.color = active ? 'var(--teal)' : 'var(--muted)';
-    btn.style.fontWeight = active ? '700' : '400';
-  });
+  render();
 }
 
 function renderQtyPreview() {
@@ -990,24 +845,19 @@ function renderQtyPreview() {
   }
 }
 
-// ─── RENDER ─────────────────────────────────────────────
 function render() {
   const titles = { home: 'Mon suivi santé', saisie: 'Pesée hebdomadaire', historique: 'Historique', repas: 'Plan repas méditerranéen', journal: 'Journal alimentaire' };
   const subs = { home: `Objectif 84 kg · 27 juillet 2026 · ${daysLeft()} jours`, saisie: 'Lundi matin à jeun', historique: `${entries.length} semaine${entries.length > 1 ? 's' : ''} enregistrée${entries.length > 1 ? 's' : ''}`, repas: '~1 400–1 600 kcal/j · festin vendredi', journal: `Objectif : ${KCAL_OBJECTIF} kcal · ${PROT_OBJECTIF}g protéines` };
-  document.getElementById('page-title').textContent = titles[currentView];
-  document.getElementById('page-sub').textContent = subs[currentView];
+  pageTitle.textContent = titles[currentView];
+  pageSub.textContent = subs[currentView];
   const views = { home: viewHome, saisie: viewSaisie, historique: viewHistorique, repas: viewRepas, journal: viewJournal };
-  document.getElementById('main').innerHTML = views[currentView]();
-  document.getElementById('main').scrollTop = 0;
+  main.innerHTML = views[currentView]();
+  main.scrollTop = 0;
   if (currentView === 'journal') {
     const inp = document.getElementById('journal-search');
     if (inp) inp.focus();
   }
 }
-
-// ─── PWA INSTALL ────────────────────────────────────────
-let deferredPrompt = null;
-window._showInstall = false;
 
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
@@ -1025,7 +875,6 @@ function installPWA() {
   });
 }
 
-// ─── EXPOSE GLOBALS (requis car type=module) ─────────────
 window.goTo = goTo;
 window.setDay = setDay;
 window.setPas = setPas;
@@ -1039,20 +888,30 @@ window.setMoment = setMoment;
 window.renderQtyPreview = renderQtyPreview;
 window.renderAlimentsList = renderAlimentsList;
 window.installPWA = installPWA;
+window.render = render;
+Object.defineProperty(window, 'formState', { get: () => formState, set: v => { formState = v; } });
+Object.defineProperty(window, 'journalSearch', { get: () => journalSearch, set: v => { journalSearch = v; } });
+Object.defineProperty(window, 'pendingQty', { get: () => pendingQty, set: v => { pendingQty = v; } });
+Object.defineProperty(window, 'pendingAliment', { get: () => pendingAliment, set: v => { pendingAliment = v; } });
 
-// ─── SERVICE WORKER ─────────────────────────────────────
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+  navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW registration skipped:', err));
 }
 
-// ─── INIT ───────────────────────────────────────────────
 showLoader('Connexion à la base de données…');
 signInAnonymously(auth)
-  .then(() => loadEntries())
-  .then(() => render())
-  .catch(e => {
+  .then(async () => {
+    firebaseReady = true;
+    await loadEntries();
+    if (!journal[journalDate]) await loadJournal(journalDate);
+    render();
+  })
+  .catch(async e => {
     console.error('Auth error', e);
-    loadEntries().then(() => render());
+    firebaseReady = false;
+    await loadEntries();
+    if (!journal[journalDate]) await loadJournal(journalDate);
+    render();
   });
 </script>
 </body>
