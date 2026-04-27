@@ -7,7 +7,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Santé">
-<link rel="manifest" href="/manifest.json">
+<link rel="manifest" href="./manifest.json">
 <title>Suivi Santé</title>
 <style>
   :root {
@@ -78,118 +78,127 @@
   .pas-btn.active-high { border-color: #2A7F6F; background: #2A7F6F18; color: #2A7F6F; font-weight: 700; }
 
   /* BUTTONS */
-  .btn-primary { width: 100%; padding: 14px; font-size: 16px; background: var(--deep); color: #fff; border: none; border-radius: 12px; cursor: pointer; font-family: sans-serif; font-weight: 600; transition: background 0.2s; margin-top: 4px; }
-  .btn-primary:active { opacity: 0.85; }
-  .btn-primary.terra { background: var(--terra); }
-  .btn-primary.saved { background: var(--teal); }
-  .btn-secondary { width: 100%; padding: 12px; font-size: 15px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; font-family: sans-serif; margin-top: 8px; }
+  .btn-primary, .btn-secondary { width: 100%; border: none; border-radius: 12px; padding: 14px 16px; font-size: 15px; font-family: sans-serif; font-weight: 700; cursor: pointer; }
+  .btn-primary { background: var(--deep); color: white; }
+  .btn-secondary { background: var(--teal-light); color: var(--teal); margin-top: 10px; }
 
   /* HISTORIQUE */
-  .hist-row { padding: 14px 0; border-bottom: 1px solid var(--border); }
-  .hist-row:last-child { border-bottom: none; }
-  .hist-header { display: flex; justify-content: space-between; align-items: flex-start; }
-  .hist-date { font-size: 12px; color: var(--muted); font-family: sans-serif; }
-  .hist-poids { font-size: 22px; font-weight: 700; margin-top: 2px; }
-  .pill { font-size: 13px; font-weight: 700; padding: 3px 11px; border-radius: 20px; display: inline-block; }
-  .pill.green { background: var(--teal-light); color: var(--teal); }
-  .pill.red { background: var(--terra-light); color: var(--terra); }
-  .pill.gray { background: var(--sand); color: var(--muted); }
-  .hist-meta { display: flex; gap: 14px; margin-top: 8px; align-items: center; font-family: sans-serif; }
-  .hist-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; font-family: sans-serif; }
+  .entry-list { margin-top: 10px; }
+  .entry {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .entry:last-child { border-bottom: none; }
+  .entry-date { font-size: 13px; font-family: sans-serif; color: var(--muted); }
+  .entry-weight { font-size: 20px; font-weight: 700; }
+  .entry-meta { font-size: 12px; font-family: sans-serif; color: var(--muted); margin-top: 2px; }
+  .tag-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .tag { font-size: 11px; font-family: sans-serif; padding: 4px 8px; border-radius: 999px; background: var(--bg); color: var(--muted); }
 
-  /* PLAN REPAS */
-  .day-tabs { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; padding: 0 16px; margin-top: 16px; scrollbar-width: none; }
-  .day-tabs::-webkit-scrollbar { display: none; }
-  .day-tab { flex: 0 0 auto; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 13px; font-family: sans-serif; cursor: pointer; white-space: nowrap; }
-  .day-tab.active { background: var(--deep); color: #fff; border-color: var(--deep); font-weight: 600; }
-  .meal-card { background: var(--surface); border-radius: 14px; margin: 10px 16px 0; border: 1px solid var(--border); overflow: hidden; }
-  .meal-header { padding: 10px 16px 0; }
-  .meal-time { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-family: sans-serif; }
-  .meal-name { font-size: 16px; font-weight: 700; color: var(--deep); margin: 3px 0 6px; }
-  .meal-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
-  .badge { font-size: 11px; padding: 2px 9px; border-radius: 12px; font-family: sans-serif; font-weight: 600; }
-  .badge-p { background: #E1F5EE; color: #085041; }
-  .badge-l { background: #EAF3DE; color: #27500A; }
-  .badge-f { background: #FAEEDA; color: #633806; }
-  .badge-g { background: #EEEDFE; color: #3C3489; }
-  .badge-s { background: #E6F1FB; color: #0C447C; }
-  .meal-detail { font-size: 13px; color: var(--muted); font-family: sans-serif; line-height: 1.55; padding: 0 16px 14px; }
-  .macros-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--border); }
-  .macro-cell { text-align: center; padding: 10px 8px; border-right: 1px solid var(--border); }
-  .macro-cell:last-child { border-right: none; }
-  .macro-val { font-size: 16px; font-weight: 700; color: var(--deep); }
-  .macro-label { font-size: 10px; color: var(--muted); font-family: sans-serif; margin-top: 1px; }
-  .tip-box { margin: 10px 16px 0; background: var(--teal-light); border-radius: 12px; padding: 12px 14px; font-size: 12px; color: var(--teal); font-family: sans-serif; line-height: 1.5; border-left: 3px solid var(--teal); }
-  .principes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 16px 0; }
-  .principe { background: var(--surface); border-radius: 12px; padding: 12px 14px; border: 1px solid var(--border); font-size: 12px; color: var(--muted); font-family: sans-serif; line-height: 1.45; }
-  .principe strong { display: block; color: var(--deep); font-size: 13px; margin-bottom: 3px; }
-
-  /* EMPTY */
-  .empty { text-align: center; padding: 32px 20px; font-family: sans-serif; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  /* REPAS */
+  .meal-grid { display: grid; gap: 10px; margin-top: 8px; }
+  .meal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; }
+  .meal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .meal-name { font-size: 16px; font-weight: 700; }
+  .meal-kcal { font-size: 14px; font-family: sans-serif; color: var(--terra); font-weight: 700; }
+  .meal-desc { font-size: 13px; font-family: sans-serif; color: var(--muted); line-height: 1.4; }
+  .macro-row { display: flex; gap: 12px; margin-top: 10px; font-size: 12px; font-family: sans-serif; color: var(--muted); }
 
   /* JOURNAL */
-  .bilan-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin: 12px 16px 0; }
-  .bilan-cell { background: var(--surface); border-radius: 12px; padding: 10px 8px; text-align: center; border: 1px solid var(--border); }
-  .bilan-val { font-size: 18px; font-weight: 700; color: var(--deep); line-height: 1; }
-  .bilan-label { font-size: 10px; color: var(--muted); font-family: sans-serif; margin-top: 3px; }
+  .date-nav {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin: 16px 16px 0;
+  }
+  .date-nav-btn {
+    width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border);
+    background: var(--surface); color: var(--deep); font-size: 18px; cursor: pointer;
+  }
+  .date-nav-label {
+    font-size: 14px; font-family: sans-serif; font-weight: 700; min-width: 180px; text-align: center;
+  }
+  .bilan-bar {
+    margin: 12px 16px 0; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 14px 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+  }
+  .bilan-cell { text-align: center; }
+  .bilan-val { font-size: 20px; font-weight: 700; line-height: 1; }
   .bilan-val.ok { color: var(--teal); }
   .bilan-val.warn { color: #D4A72C; }
   .bilan-val.over { color: var(--terra); }
-  .progress-wrap { margin: 10px 16px 0; }
-  .progress-track { height: 8px; background: var(--sand); border-radius: 4px; overflow: hidden; margin-top: 4px; }
-  .progress-fill-bar { height: 8px; border-radius: 4px; transition: width 0.4s; }
-  .progress-label { display: flex; justify-content: space-between; font-size: 11px; font-family: sans-serif; color: var(--muted); }
-  .search-wrap { margin: 12px 16px 0; position: relative; }
-  .search-input { width: 100%; padding: 11px 14px 11px 38px; font-size: 15px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--deep); font-family: sans-serif; outline: none; }
-  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--muted); pointer-events: none; }
-  .aliments-list { margin: 6px 16px 0; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; max-height: 260px; overflow-y: auto; }
-  .aliment-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; }
-  .aliment-row:last-child { border-bottom: none; }
-  .aliment-row:active { background: var(--bg); }
-  .aliment-name { font-size: 14px; color: var(--deep); font-family: sans-serif; font-weight: 500; }
-  .aliment-macros { font-size: 11px; color: var(--muted); font-family: sans-serif; margin-top: 2px; }
-  .aliment-add { background: var(--teal); color: #fff; border: none; border-radius: 8px; padding: 5px 12px; font-size: 12px; font-family: sans-serif; font-weight: 600; cursor: pointer; flex: 0 0 auto; }
-  .qty-modal { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--surface); border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + var(--safe-bottom)); z-index: 200; box-shadow: 0 -4px 24px rgba(0,0,0,0.12); }
-  .qty-modal h3 { font-size: 16px; color: var(--deep); margin-bottom: 4px; }
-  .qty-modal p { font-size: 12px; color: var(--muted); font-family: sans-serif; margin-bottom: 14px; }
-  .qty-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-  .qty-input { flex: 1; padding: 10px 14px; font-size: 18px; font-weight: 700; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--deep); font-family: sans-serif; outline: none; text-align: center; }
-  .qty-unit { font-size: 14px; color: var(--muted); font-family: sans-serif; }
-  .qty-preview { background: var(--teal-light); border-radius: 10px; padding: 10px 14px; font-family: sans-serif; font-size: 13px; color: var(--teal); margin-bottom: 14px; display: flex; justify-content: space-around; }
-  .journal-list { margin: 10px 16px 0; display: flex; flex-direction: column; gap: 6px; }
-  .journal-item { background: var(--surface); border-radius: 12px; padding: 10px 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
-  .journal-item-name { font-size: 14px; font-weight: 500; color: var(--deep); font-family: sans-serif; }
-  .journal-item-detail { font-size: 11px; color: var(--muted); font-family: sans-serif; margin-top: 2px; }
-  .journal-delete { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 0 0 0 8px; line-height: 1; }
-  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 199; }
-  .meal-section { margin: 12px 16px 0; }
-  .meal-section-title { font-size: 11px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; padding-left: 2px; }
-  .date-nav { display: flex; align-items: center; justify-content: space-between; margin: 12px 16px 0; }
-  .date-nav-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 18px; cursor: pointer; color: var(--deep); }
-  .date-nav-label { font-size: 14px; font-family: sans-serif; font-weight: 600; color: var(--deep); }
+  .bilan-label { font-size: 10px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; margin-top: 4px; letter-spacing: 0.06em; }
 
-  /* INSTALLED BANNER */
-  .install-banner { margin: 12px 16px 0; background: var(--deep); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .install-banner p { font-size: 13px; color: rgba(255,255,255,0.8); font-family: sans-serif; line-height: 1.4; }
-  .install-banner button { flex: 0 0 auto; background: var(--terra); color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-family: sans-serif; font-weight: 600; cursor: pointer; }
-  .install-banner .close { background: transparent; color: rgba(255,255,255,0.5); border: none; font-size: 18px; cursor: pointer; padding: 0; }
+  .progress-wrap { margin: 12px 16px 0; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 12px; font-family: sans-serif; color: var(--muted); margin-bottom: 6px; }
+  .progress-track { width: 100%; height: 10px; background: var(--sand); border-radius: 999px; overflow: hidden; }
+  .progress-fill-bar { height: 100%; border-radius: 999px; }
+
+  .search-wrap {
+    margin: 16px 16px 0; position: relative;
+  }
+  .search-input {
+    width: 100%; padding: 12px 14px 12px 40px; border: 1.5px solid var(--border);
+    border-radius: 12px; background: var(--surface); font-size: 15px; font-family: sans-serif; outline: none;
+  }
+  .search-icon {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 16px; opacity: 0.45;
+  }
+
+  .aliments-list { margin: 10px 16px 0; display: grid; gap: 8px; }
+  .aliment-row {
+    display: flex; justify-content: space-between; gap: 12px; align-items: center;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px;
+  }
+  .aliment-name { font-size: 14px; font-family: sans-serif; font-weight: 700; }
+  .aliment-macros { font-size: 11px; font-family: sans-serif; color: var(--muted); margin-top: 3px; }
+  .aliment-add {
+    width: 34px; height: 34px; border-radius: 50%; border: none; background: var(--deep);
+    color: white; font-size: 22px; line-height: 1; cursor: pointer;
+  }
+
+  .meal-section { margin: 14px 16px 0; }
+  .meal-section-title { font-size: 12px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+  .journal-item {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 8px;
+  }
+  .journal-item-name { font-size: 14px; font-family: sans-serif; font-weight: 700; }
+  .journal-item-detail { font-size: 11px; font-family: sans-serif; color: var(--muted); margin-top: 2px; }
+  .journal-delete {
+    width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--terra-light); color: var(--terra);
+    font-size: 20px; line-height: 1; cursor: pointer;
+  }
+
+  .overlay {
+    position: fixed; inset: 0; background: rgba(26,58,74,0.28); z-index: 190;
+  }
+  .qty-modal {
+    position: fixed; left: 16px; right: 16px; bottom: calc(16px + var(--safe-bottom));
+    background: var(--surface); border-radius: 20px; padding: 18px 18px 16px; z-index: 200;
+    border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(26,58,74,0.14);
+  }
+  .qty-modal h3 { font-size: 20px; margin-bottom: 6px; }
+  .qty-modal p { font-size: 12px; font-family: sans-serif; color: var(--muted); margin-bottom: 12px; line-height: 1.4; }
+  .qty-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .qty-input {
+    flex: 1; padding: 12px 14px; border: 1.5px solid var(--border); border-radius: 12px;
+    font-size: 18px; font-family: sans-serif; outline: none; background: var(--bg);
+  }
+  .qty-unit { font-size: 13px; font-family: sans-serif; color: var(--muted); }
+  .qty-preview {
+    display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; font-family: sans-serif;
+    color: var(--muted); margin-bottom: 14px;
+  }
+
+  /* LOADER */
+  .loader { padding: 28px 20px; font-family: sans-serif; color: var(--muted); text-align: center; }
+
+  /* EMPTY */
+  .empty { padding: 24px 20px; text-align: center; font-family: sans-serif; font-size: 13px; color: var(--muted); }
 </style>
 </head>
 <body>
-<div id="app">
-  <div class="header">
-    <h1 id="page-title">Mon suivi santé</h1>
-    <p id="page-sub">Objectif 84 kg · 27 juillet 2026</p>
-  </div>
-  <div class="scroll-zone" id="main"></div>
-  <nav>
-    <button class="active" onclick="goTo('home')" id="nav-home"><span class="ico">⌂</span>Accueil</button>
-    <button onclick="goTo('saisie')" id="nav-saisie"><span class="ico">＋</span>Peser</button>
-    <button onclick="goTo('historique')" id="nav-historique"><span class="ico">≡</span>Historique</button>
-    <button onclick="goTo('repas')" id="nav-repas"><span class="ico">🍽</span>Repas</button>
-    <button onclick="goTo('journal')" id="nav-journal"><span class="ico">📋</span>Journal</button>
-  </nav>
-</div>
+<div id="app"></div>
 
 <script type="module">
 // ─── FIREBASE ────────────────────────────────────────────
@@ -198,581 +207,341 @@ import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy 
 import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBMtwIOSSSTIkNLh5nIDXmEH4WD-5jdGIM",
+  apiKey: "AIzaSyXXXXXXX",
   authDomain: "pwa---sante.firebaseapp.com",
   projectId: "pwa---sante",
   storageBucket: "pwa---sante.firebasestorage.app",
-  messagingSenderId: "99523195154",
-  appId: "1:99523195154:web:760668e987669a5e1303cb"
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:abcdef123456"
 };
 
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 const auth = getAuth(fbApp);
-const USER_ID = 'sylvain'; // identifiant fixe
+let firebaseReady = false;
 
-// ─── DATA ───────────────────────────────────────────────
-const DEPART = 94, OBJECTIF = 84;
+const USER_ID = 'sylvain';
+
+// ─── STATE ───────────────────────────────────────────────
+let currentView = 'home';
 let entries = [];
-let dbReady = false;
+let form = { weight: '', faim: 2, fatigue: 2, pas: 'mid', note: '' };
+let journal = {};
+let journalDate = todayKey();
+let journalSearch = '';
+let pendingAliment = null;
+let pendingQty = '100';
+let journalMoment = 'Déjeuner';
 
-// Indicateur de chargement
-function showLoader(msg) {
-  document.getElementById('main').innerHTML = `<div class="empty" style="padding-top:60px">
-    <div style="font-size:32px;margin-bottom:12px">⏳</div>
-    <div style="font-family:sans-serif;color:var(--muted)">${msg}</div>
-  </div>`;
+const OBJECTIF = 84;
+
+// ─── APP ─────────────────────────────────────────────────
+const app = document.getElementById('app');
+
+function showLoader(txt='Chargement…') {
+  app.innerHTML = `<div class="loader">${txt}</div>`;
+}
+
+function todayKey() {
+  const d = new Date();
+  return d.toISOString().slice(0, 10);
+}
+
+function formatDateFR(key) {
+  const d = new Date(`${key}T12:00:00`);
+  return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function weekdayFR(key) {
+  const d = new Date(`${key}T12:00:00`);
+  return d.toLocaleDateString('fr-FR', { weekday: 'long' });
+}
+
+function weightDelta() {
+  if (entries.length < 2) return null;
+  return +(entries[0].weight - entries[1].weight).toFixed(1);
+}
+
+function currentWeight() {
+  return entries.length ? entries[0].weight : '—';
+}
+
+function progressPct() {
+  if (!entries.length) return 0;
+  const start = 98;
+  const current = entries[0].weight;
+  const total = start - OBJECTIF;
+  const done = start - current;
+  return Math.max(0, Math.min(100, Math.round((done / total) * 100)));
+}
+
+function avgPerteSemaine() {
+  if (entries.length < 2) return 0;
+  const first = entries[entries.length - 1];
+  const last = entries[0];
+  const days = (new Date(last.key) - new Date(first.key)) / 86400000;
+  if (days <= 0) return 0;
+  return +(((first.weight - last.weight) / days) * 7).toFixed(2);
 }
 
 async function loadEntries() {
+  if (!firebaseReady) { entries = []; return; }
   try {
     const ref = collection(db, 'users', USER_ID, 'pesees');
     const q = query(ref, orderBy('key', 'desc'));
     const snap = await getDocs(q);
     entries = snap.docs.map(d => d.data());
-    dbReady = true;
-  } catch(e) {
-    console.error('Firestore load error', e);
-    // fallback localStorage
-    try { entries = JSON.parse(localStorage.getItem('sante_backup') || '[]'); } catch(_) {}
-    dbReady = true;
+    await loadJournal(journalDate);
+  } catch (e) {
+    console.error(e);
+    entries = [];
   }
 }
 
-async function saveEntries() {
-  // Sauvegarde chaque pesée comme document séparé (key = ID du doc)
-  const entry = entries[0];
-  if (!entry) return;
+async function saveEntry(entry) {
+  if (!firebaseReady) return false;
   try {
     await setDoc(doc(db, 'users', USER_ID, 'pesees', entry.key), entry);
-    // Backup local aussi
-    localStorage.setItem('sante_backup', JSON.stringify(entries));
-  } catch(e) {
-    console.error('Firestore save error', e);
-    localStorage.setItem('sante_backup', JSON.stringify(entries));
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
   }
 }
 
-// ─── ROUTING ────────────────────────────────────────────
-let currentView = 'home';
-let currentDay = 0;
-let formState = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
-let savedAnim = false;
+function normalizeWeight(v) {
+  if (typeof v !== 'string') v = String(v);
+  v = v.replace(',', '.').trim();
+  const n = parseFloat(v);
+  if (Number.isNaN(n)) return null;
+  return +n.toFixed(1);
+}
 
-async function goTo(view) {
-  currentView = view;
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-' + view).classList.add('active');
-  if (view === 'journal' && !journal[journalDate]) {
-    showLoader('Chargement du journal…');
-    await loadJournal(journalDate);
+async function submitForm() {
+  const weight = normalizeWeight(form.weight);
+  if (!weight) {
+    alert('Entre un poids valide.');
+    return;
   }
+  const entry = {
+    key: todayKey(),
+    weight,
+    faim: form.faim,
+    fatigue: form.fatigue,
+    pas: form.pas,
+    note: form.note.trim(),
+    ts: Date.now()
+  };
+  await saveEntry(entry);
+  await loadEntries();
+  form = { weight: '', faim: 2, fatigue: 2, pas: 'mid', note: '' };
+  currentView = 'home';
   render();
 }
 
-// ─── UTILS ──────────────────────────────────────────────
-function getWeekKey(date) {
-  const d = date ? new Date(date) : new Date();
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
-  return d.toISOString().slice(0, 10);
-}
-
-function getWeekLabel(key) {
-  const s = new Date(key), e = new Date(key);
-  e.setDate(s.getDate() + 6);
-  const f = d => d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-  return f(s) + ' – ' + f(e);
-}
-
-function daysLeft() {
-  const target = new Date(2026, 6, 27);
-  return Math.max(0, Math.ceil((target - new Date()) / 86400000));
-}
-
-function dots(val, max, cls) {
-  return Array.from({length: max}, (_, i) =>
-    `<span class="dot ${i < val ? cls || 'on' : ''}"></span>`
-  ).join('');
-}
-
-function pasColor(v) { return {low:'#C4622D', mid:'#D4A72C', high:'#2A7F6F'}[v]; }
-function pasLabel(v) { return {low:'< 5 000', mid:'5–10k', high:'> 10 000'}[v]; }
-
-// ─── RING SVG ───────────────────────────────────────────
-function ring(pct) {
-  const r = 52, c = 64, circ = 2 * Math.PI * r;
-  const dash = circ * Math.min(1, pct / 100);
-  return `<svg width="128" height="128" viewBox="0 0 128 128">
-    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="#E8E0D0" stroke-width="10"/>
-    <circle cx="${c}" cy="${c}" r="${r}" fill="none" stroke="#2A7F6F" stroke-width="10"
-      stroke-dasharray="${dash} ${circ}" stroke-linecap="round"
-      transform="rotate(-90 64 64)" style="transition:stroke-dasharray .6s"/>
-    <text x="${c}" y="${c - 7}" text-anchor="middle" fill="#1A3A4A" font-size="22" font-weight="700" font-family="Georgia,serif">${Math.round(pct)}%</text>
-    <text x="${c}" y="${c + 13}" text-anchor="middle" fill="#6B7A82" font-size="11" font-family="sans-serif">objectif</text>
+function ringSvg() {
+  const pct = progressPct();
+  const r = 52;
+  const c = 2 * Math.PI * r;
+  const dash = c * pct / 100;
+  return `
+  <svg width="130" height="130" viewBox="0 0 130 130" aria-hidden="true">
+    <circle cx="65" cy="65" r="${r}" fill="none" stroke="#E8E0D0" stroke-width="10"/>
+    <circle cx="65" cy="65" r="${r}" fill="none" stroke="#2A7F6F" stroke-width="10"
+      stroke-linecap="round" stroke-dasharray="${dash} ${c-dash}"
+      transform="rotate(-90 65 65)"/>
+    <text x="65" y="62" text-anchor="middle" font-size="30" font-family="Georgia" font-weight="700" fill="#1A3A4A">${pct}</text>
+    <text x="65" y="82" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#6B7A82">%</text>
   </svg>`;
 }
 
-// ─── PLAN REPAS DATA ─────────────────────────────────────
-const DAYS = [
-  { label:'Lun', full:'Lundi', meals:[
-    { time:'Matin', name:'Tartine seigle + œuf mollet', detail:'1 tranche pain de seigle · 1 œuf mollet · tomates cerises · filet d\'huile d\'olive', b:['p','l','g'] },
-    { time:'Déjeuner', name:'Bowl quinoa-pois chiches-feta', detail:'80g quinoa cuit · 100g pois chiches · dés de feta · concombre · tomates · herbes · citron · huile d\'olive', b:['g','s','p'] },
-    { time:'Dîner', name:'Saumon poêlé + épinards sautés', detail:'150g saumon · 200g épinards ail-citron · filet d\'huile d\'olive. 10 minutes chrono.', b:['p','l'] }
-  ], kcal:1480, prot:'88g', fibres:'26g', tip:'Le quinoa se prépare le dimanche pour toute la semaine (5 portions).' },
-
-  { label:'Mar', full:'Mardi', meals:[
-    { time:'Matin', name:'Skyr + fruits rouges + chia', detail:'150g Skyr · poignée fruits rouges (surgelés ok) · 1 c.s. graines de chia', b:['p'] },
-    { time:'Déjeuner', name:'Soupe lentilles-carottes + pain seigle', detail:'Soupe épaisse lentilles corail · carottes · cumin · 1 tranche pain de seigle. Plat complet rassasiant.', b:['s','l','g'] },
-    { time:'Dîner', name:'Omelette légumes du soleil', detail:'2 œufs · courgette · poivron · oignon poêlés · herbes de Provence · filet d\'huile d\'olive', b:['p','l'] }
-  ], kcal:1420, prot:'80g', fibres:'30g', tip:'La soupe lentilles tient 4-5h. Idéal si l\'après-midi est chargé.' },
-
-  { label:'Mer', full:'Mercredi', meals:[
-    { time:'Matin', name:'Cottage cheese + concombre + noix', detail:'200g cottage cheese · ½ concombre en rondelles · 8 noix de Grenoble. Pas d\'œufs ce matin.', b:['p'] },
-    { time:'Déjeuner', name:'Poulet citron-herbes + taboulé léger', detail:'1 escalope marinée ail-citron-herbes · taboulé : 60g semoule fine · tomates · menthe · persil · citron · huile d\'olive', b:['p','l','g'] },
-    { time:'Dîner', name:'Maquereau + salade verte', detail:'1 boîte maquereau au naturel · grande salade · tomates · vinaigrette légère. Zéro préparation.', b:['p','l'] }
-  ], kcal:1440, prot:'95g', fibres:'22g', tip:'Le maquereau en boîte : le poisson le plus riche en oméga-3 et le moins cher.' },
-
-  { label:'Jeu', full:'Jeudi', meals:[
-    { time:'Matin', name:'Œufs brouillés tomates + pain seigle', detail:'2 œufs brouillés · 2 tomates · 1 tranche pain de seigle', b:['p','l','g'] },
-    { time:'Déjeuner', name:'Cabillaud vapeur + riz complet + courgettes', detail:'150g cabillaud vapeur · 60g riz complet · courgettes vapeur · huile d\'olive · herbes', b:['p','l','g'] },
-    { time:'Dîner', name:'Velouté butternut + fromage blanc', detail:'Soupe courge butternut · oignon · bouillon · cumin · 100g fromage blanc 0% en dessert. Léger avant le festin.', b:['l'] }
-  ], kcal:1380, prot:'85g', fibres:'24g', tip:'Jeudi intentionnellement léger — le festin arrive demain.' },
-
-  { label:'Ven ★', full:'Vendredi — Festin', meals:[
-    { time:'Matin', name:'Skyr + quelques noix', detail:'150g Skyr nature · 8 noix. Matin léger.', b:['p'] },
-    { time:'Déjeuner', name:'Salade niçoise légère', detail:'Thon au naturel · œuf dur · haricots verts · tomates · olives · vinaigrette citron-olive', b:['p','l'] },
-    { time:'Dîner', name:'Repas familial — festin libre', detail:'Tu manges ce que ta famille mange. Sans calcul, sans culpabilité. C\'est le contrat, pas l\'exception.', b:['f'] }
-  ], kcal:null, prot:'—', fibres:'—', tip:'Règle du festin : reprend si tu veux, évite la 3e assiette. Un verre de vin, pas de problème. Reprendre le plan samedi matin suffit.' },
-
-  { label:'Sam', full:'Samedi', meals:[
-    { time:'Matin', name:'Tartine avocat + œuf poché', detail:'½ avocat écrasé · 1 tranche pain de seigle · 1 œuf poché · pincée de piment · citron', b:['p','l','g'] },
-    { time:'Déjeuner', name:'Dinde rôtie + ratatouille', detail:'150g escalope de dinde · ratatouille courgettes-aubergines-tomates-poivrons. Plat familial compatible.', b:['p','l'] },
-    { time:'Dîner', name:'Sardines + salade composée', detail:'1 boîte sardines · laitue · tomates · concombre · radis · vinaigrette légère', b:['p','l'] }
-  ], kcal:1460, prot:'90g', fibres:'28g', tip:'La ratatouille se conserve 4 jours. En préparer une grande cocotte pour la semaine.' },
-
-  { label:'Dim', full:'Dimanche', meals:[
-    { time:'Matin', name:'Œufs à la coque + crudités', detail:'2 œufs à la coque · radis · concombre · tomates cerises', b:['p','l'] },
-    { time:'Déjeuner', name:'Poulet rôti + légumes rôtis', detail:'Blanc ou cuisse sans peau · courgettes-carottes-oignons rôtis à l\'huile d\'olive · 2-3 pommes de terre rôties ok', b:['p','l','g'] },
-    { time:'Dîner', name:'Soupe maison + jambon', detail:'Soupe de légumes (fond du frigo) · 1 tranche jambon blanc. Ce soir : préparer le quinoa de la semaine.', b:['l','p'] }
-  ], kcal:1500, prot:'92g', fibres:'25g', tip:'Dimanche soir : cuisiner le quinoa (5 portions) + une soupe. 30 min = semaine facilitée.' }
-];
-
-const BADGE_DEF = {
-  p: ['badge-p', 'Protéines'],
-  l: ['badge-l', 'Légumes'],
-  f: ['badge-f', 'Festin ★'],
-  g: ['badge-g', 'Féculents'],
-  s: ['badge-s', 'Légumineuses']
-};
-
-// ─── VIEWS ──────────────────────────────────────────────
 function viewHome() {
-  const latest = entries[0];
-  const perdu = latest ? Math.max(0, DEPART - latest.poids) : 0;
-  const pct = Math.min(100, (perdu / (DEPART - OBJECTIF)) * 100);
-  const rythme = entries.length > 1 ? ((DEPART - latest.poids) / (entries.length - 1)).toFixed(2) : null;
-
-  let deltaHtml = `<div class="delta neutral">Départ : ${DEPART} kg</div>`;
-  if (latest && entries.length > 1) {
-    const diff = (entries[1].poids - latest.poids).toFixed(1);
-    const good = diff > 0;
-    deltaHtml = `<div class="delta ${good ? 'good' : 'bad'}">${good ? '−' : '+'}${Math.abs(diff)} kg cette semaine</div>`;
-  }
-
-  let installBanner = '';
-  if (window._showInstall) {
-    installBanner = `<div class="install-banner">
-      <p>Installer l'app sur ton écran d'accueil pour un accès rapide</p>
-      <button onclick="installPWA()">Installer</button>
-      <button class="close" onclick="this.closest('.install-banner').remove()">×</button>
-    </div>`;
-  }
+  const cw = currentWeight();
+  const delta = weightDelta();
+  const deltaCls = delta === null ? 'neutral' : delta < 0 ? 'good' : delta > 0 ? 'bad' : 'neutral';
+  const deltaTxt = delta === null ? 'Première mesure' : delta < 0 ? `${Math.abs(delta)} kg depuis la dernière pesée` : delta > 0 ? `+${delta} kg depuis la dernière pesée` : 'Stable depuis la dernière pesée';
 
   return `
-    ${installBanner}
-    <div class="card">
-      <div class="ring-wrap">
-        ${ring(pct)}
-        <div>
-          <div class="card-title">Dernier poids</div>
-          <div class="big-num">${latest ? latest.poids.toFixed(1) : '—'}<span class="unit"> kg</span></div>
-          ${deltaHtml}
-        </div>
-      </div>
-    </div>
+    <header class="header">
+      <h1>Mon suivi santé</h1>
+      <p>Objectif 84 kg · 27 juillet 2026</p>
+    </header>
 
-    <div class="grid2">
-      <div class="mini-card">
-        <div class="mini-val" style="color:var(--teal)">${perdu > 0 ? '−' + perdu.toFixed(1) : '0'} <span style="font-size:14px;color:var(--muted)">kg</span></div>
-        <div class="mini-label">Perdu au total</div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-val">${entries.length} <span style="font-size:14px;color:var(--muted)">sem</span></div>
-        <div class="mini-label">Semaines de suivi</div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-val" style="font-size:20px">${rythme || '—'} <span style="font-size:13px;color:var(--muted)">kg/sem</span></div>
-        <div class="mini-label">Rythme moyen</div>
-      </div>
-      <div class="mini-card">
-        <div class="mini-val" style="color:var(--terra)">${daysLeft()} <span style="font-size:14px;color:var(--muted)">j</span></div>
-        <div class="mini-label">Avant l'objectif</div>
-      </div>
-    </div>
+    <main class="scroll-zone">
+      <section class="card">
+        <div class="card-title">Poids actuel</div>
+        <div class="ring-wrap">
+          <div>${ringSvg()}</div>
+          <div>
+            <div class="big-num">${cw}<span class="unit"> kg</span></div>
+            <div class="delta ${deltaCls}">${deltaTxt}</div>
+          </div>
+        </div>
+      </section>
 
-    ${latest ? `
-    <div class="card" style="margin-top:12px">
-      <div class="card-title">Dernière semaine · ${getWeekLabel(latest.key)}</div>
-      <div style="display:flex;flex-direction:column;gap:10px;font-family:sans-serif">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;color:var(--muted)">Moral</span>
-          <div class="dots">${dots(latest.moral, 5, 'on')}</div>
+      <section class="grid2">
+        <div class="mini-card">
+          <div class="mini-val">${entries.length}</div>
+          <div class="mini-label">Pesées enregistrées</div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;color:var(--muted)">Respect du plan</span>
-          <div class="dots">${dots(latest.plan, 5, 'on-deep')}</div>
+        <div class="mini-card">
+          <div class="mini-val">${avgPerteSemaine()}</div>
+          <div class="mini-label">kg / semaine</div>
         </div>
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;color:var(--muted)">Pas quotidiens</span>
-          <span style="font-size:13px;font-weight:700;color:${pasColor(latest.pas)}">${pasLabel(latest.pas)}</span>
-        </div>
-        ${latest.note ? `<div style="font-size:13px;color:var(--muted);font-style:italic;border-top:1px solid var(--border);padding-top:8px">"${latest.note}"</div>` : ''}
-      </div>
-    </div>` : ''}
+      </section>
 
-    <div style="margin:16px 16px 0">
-      <button class="btn-primary terra" onclick="goTo('saisie')">+ Saisir la pesée du lundi</button>
-    </div>
+      <section class="card">
+        <div class="card-title">Aujourd’hui</div>
+        <button class="btn-primary" onclick="go('saisie')">Enregistrer une pesée</button>
+        <button class="btn-secondary" onclick="go('journal')">Ouvrir le journal repas</button>
+      </section>
+    </main>
   `;
 }
 
+function dots(active, deep = false) {
+  let html = `<div class="dots">`;
+  for (let i = 1; i <= 5; i++) {
+    html += `<span class="dot ${i <= active ? (deep ? 'on-deep' : 'on') : ''}"></span>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
 function viewSaisie() {
-  const wk = getWeekLabel(getWeekKey());
-  const s = formState;
   return `
-    <div class="card">
-      <div class="card-title">Pesée · ${wk}</div>
-      <label class="field-label">Poids ce matin (kg)</label>
-      <input type="number" step="0.1" min="70" max="130" placeholder="ex : 92.5"
-        value="${s.poids}" oninput="formState.poids=this.value" inputmode="decimal">
+    <header class="header">
+      <h1>Pesée du jour</h1>
+      <p>${formatDateFR(todayKey())}</p>
+    </header>
 
-      <label class="field-label">Moral cette semaine</label>
-      <div class="slider-row">
-        <input type="range" min="1" max="5" step="1" value="${s.moral}"
-          oninput="formState.moral=+this.value;renderDots('m-dots',formState.moral,'on')">
-        <div class="dots" id="m-dots">${dots(s.moral, 5, 'on')}</div>
-      </div>
+    <main class="scroll-zone">
+      <section class="card">
+        <label class="field-label">Poids</label>
+        <input type="number" step="0.1" inputmode="decimal" placeholder="Ex. 92.4" value="${form.weight}"
+          oninput="form.weight=this.value">
 
-      <label class="field-label">Respect du plan alimentaire</label>
-      <div class="slider-row">
-        <input type="range" min="1" max="5" step="1" value="${s.plan}"
-          oninput="formState.plan=+this.value;renderDots('p-dots',formState.plan,'on-deep')">
-        <div class="dots" id="p-dots">${dots(s.plan, 5, 'on-deep')}</div>
-      </div>
+        <label class="field-label">Faim ressentie</label>
+        <div class="slider-row">
+          ${dots(form.faim)}
+          <input type="range" min="1" max="5" value="${form.faim}" oninput="form.faim=+this.value;render()">
+        </div>
 
-      <label class="field-label">Pas quotidiens (moyenne semaine)</label>
-      <div class="pas-row">
-        <button class="pas-btn ${s.pas==='low'?'active-low':''}" onclick="setPas('low')">< 5 000</button>
-        <button class="pas-btn ${s.pas==='mid'?'active-mid':''}" onclick="setPas('mid')">5–10k</button>
-        <button class="pas-btn ${s.pas==='high'?'active-high':''}" onclick="setPas('high')">> 10 000</button>
-      </div>
+        <label class="field-label">Fatigue</label>
+        <div class="slider-row">
+          ${dots(form.fatigue, true)}
+          <input type="range" min="1" max="5" value="${form.fatigue}" oninput="form.fatigue=+this.value;render()">
+        </div>
 
-      <label class="field-label">Note libre (optionnel)</label>
-      <textarea placeholder="ex : bonne semaine, faim ok…" rows="2"
-        oninput="formState.note=this.value">${s.note}</textarea>
+        <label class="field-label">Pas / activité</label>
+        <div class="pas-row">
+          <button class="pas-btn ${form.pas==='low'?'active-low':''}" onclick="form.pas='low';render()">Faible</button>
+          <button class="pas-btn ${form.pas==='mid'?'active-mid':''}" onclick="form.pas='mid';render()">Moyen</button>
+          <button class="pas-btn ${form.pas==='high'?'active-high':''}" onclick="form.pas='high';render()">Élevé</button>
+        </div>
 
-      <button class="btn-primary ${savedAnim ? 'saved' : ''}" id="btn-save" onclick="submitForm()">
-        ${savedAnim ? '✓ Enregistré !' : 'Enregistrer la pesée'}
-      </button>
-      <button class="btn-secondary" onclick="goTo('home')">Annuler</button>
-    </div>
+        <label class="field-label">Note libre</label>
+        <textarea rows="4" placeholder="Énergie, digestion, écarts, sommeil..." oninput="form.note=this.value">${form.note}</textarea>
+
+        <button class="btn-primary" onclick="submitForm()">Enregistrer</button>
+      </section>
+    </main>
   `;
 }
 
 function viewHistorique() {
-  if (entries.length === 0) return `<div class="empty">Aucune pesée enregistrée.<br>Commence lundi matin à jeun,<br>dans les mêmes conditions chaque semaine.</div>`;
-  return `<div class="card">
-    <div class="card-title">Toutes les pesées (${entries.length})</div>
-    ${entries.map((e, i) => {
-      const prev = entries[i + 1];
-      const diff = prev ? (prev.poids - e.poids) : null;
-      let pillHtml = `<span class="pill gray">départ</span>`;
-      if (diff !== null) {
-        const good = diff > 0;
-        pillHtml = `<span class="pill ${good ? 'green' : 'red'}">${good ? '−' : '+'}${Math.abs(diff).toFixed(1)} kg</span>`;
-      }
-      return `<div class="hist-row">
-        <div class="hist-header">
-          <div>
-            <div class="hist-date">${getWeekLabel(e.key)}</div>
-            <div class="hist-poids">${e.poids.toFixed(1)} kg</div>
-          </div>
-          ${pillHtml}
-        </div>
-        <div class="hist-meta">
-          <div class="dots">${dots(e.moral, 5, 'on')}</div>
-          <div class="dots">${dots(e.plan, 5, 'on-deep')}</div>
-          <span style="font-size:12px;font-weight:700;color:${pasColor(e.pas)}">${pasLabel(e.pas)}</span>
-        </div>
-        ${e.note ? `<div class="hist-note">"${e.note}"</div>` : ''}
-      </div>`;
-    }).join('')}
-  </div>`;
-}
-
-function viewRepas() {
-  const d = DAYS[currentDay];
-  const badgeHtml = b => `<span class="badge ${BADGE_DEF[b][0]}">${BADGE_DEF[b][1]}</span>`;
-  const mealsHtml = d.meals.map(m => `
-    <div class="meal-card">
-      <div class="meal-header">
-        <div class="meal-time">${m.time}</div>
-        <div class="meal-name">${m.name}</div>
-        <div class="meal-badges">${m.b.map(badgeHtml).join('')}</div>
-      </div>
-      <div class="meal-detail">${m.detail}</div>
-    </div>`).join('');
-
-  const macrosHtml = d.kcal ? `
-    <div class="meal-card" style="margin-top:10px">
-      <div class="macros-bar">
-        <div class="macro-cell"><div class="macro-val">~${d.kcal}</div><div class="macro-label">kcal</div></div>
-        <div class="macro-cell"><div class="macro-val">${d.prot}</div><div class="macro-label">protéines</div></div>
-        <div class="macro-cell"><div class="macro-val">${d.fibres}</div><div class="macro-label">fibres</div></div>
-      </div>
-    </div>` : '';
-
   return `
-    <div class="principes">
-      <div class="principe"><strong>Poisson 3×/sem</strong>saumon, maquereau, cabillaud, sardines</div>
-      <div class="principe"><strong>Féculents complets</strong>le midi uniquement</div>
-      <div class="principe"><strong>Légumes</strong>à volonté à chaque repas</div>
-      <div class="principe"><strong>Festin vendredi</strong>sans culpabilité</div>
-    </div>
-    <div class="day-tabs">
-      ${DAYS.map((day, i) => `<button class="day-tab ${i === currentDay ? 'active' : ''}" onclick="setDay(${i})">${day.label}</button>`).join('')}
-    </div>
-    ${mealsHtml}
-    ${macrosHtml}
-    <div class="tip-box">${d.tip}</div>
-    <div style="height:8px"></div>
+    <header class="header">
+      <h1>Historique</h1>
+      <p>${entries.length} entrée${entries.length > 1 ? 's' : ''}</p>
+    </header>
+
+    <main class="scroll-zone">
+      <section class="card">
+        <div class="card-title">Toutes les pesées</div>
+        <div class="entry-list">
+          ${entries.length ? entries.map(e => `
+            <div class="entry">
+              <div>
+                <div class="entry-date">${weekdayFR(e.key)} · ${formatDateFR(e.key)}</div>
+                <div class="entry-meta">
+                  faim ${e.faim}/5 · fatigue ${e.fatigue}/5 · activité ${e.pas}
+                </div>
+                ${e.note ? `<div class="tag-row"><span class="tag">${e.note}</span></div>` : ''}
+              </div>
+              <div class="entry-weight">${e.weight} kg</div>
+            </div>
+          `).join('') : `<div class="empty">Aucune pesée pour l’instant.</div>`}
+        </div>
+      </section>
+    </main>
   `;
 }
 
-// ─── ACTIONS ────────────────────────────────────────────
-function renderDots(id, val, cls) {
-  const el = document.getElementById(id);
-  if (el) el.innerHTML = dots(val, 5, cls);
-}
-
-function setPas(val) {
-  formState.pas = val;
-  document.querySelectorAll('.pas-btn').forEach(b => {
-    b.className = 'pas-btn';
-    if (b.textContent.includes('5 000') && val === 'low') b.classList.add('active-low');
-    if (b.textContent.includes('10k') && val === 'mid') b.classList.add('active-mid');
-    if (b.textContent.includes('10 000') && val === 'high') b.classList.add('active-high');
-  });
-}
-
-function setDay(i) {
-  currentDay = i;
-  document.getElementById('main').innerHTML = viewRepas();
-}
-
-function submitForm() {
-  const poids = parseFloat(formState.poids);
-  if (isNaN(poids) || poids < 60 || poids > 130) {
-    alert('Entre un poids valide (ex : 92.5)');
-    return;
-  }
-  const key = getWeekKey();
-  entries = [
-    { key, poids, moral: formState.moral, plan: formState.plan, pas: formState.pas, note: formState.note.trim() },
-    ...entries.filter(e => e.key !== key)
-  ];
-  saveEntries();
-  formState = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
-  savedAnim = true;
-  render();
-  setTimeout(() => { savedAnim = false; goTo('home'); }, 1200);
-}
-
-// ─── JOURNAL DATA ────────────────────────────────────────
-const ALIMENTS = [
-  // Protéines animales
-  { nom:'Saumon (100g)', kcal:208, prot:20, gluc:0, lip:13, cat:'Poisson' },
-  { nom:'Cabillaud (100g)', kcal:82, prot:18, gluc:0, lip:1, cat:'Poisson' },
-  { nom:'Maquereau (100g)', kcal:205, prot:19, gluc:0, lip:14, cat:'Poisson' },
-  { nom:'Sardines boîte (100g)', kcal:185, prot:22, gluc:0, lip:11, cat:'Poisson' },
-  { nom:'Thon naturel boîte (100g)', kcal:116, prot:26, gluc:0, lip:1, cat:'Poisson' },
-  { nom:'Poulet escalope (100g)', kcal:110, prot:23, gluc:0, lip:2, cat:'Volaille' },
-  { nom:'Dinde escalope (100g)', kcal:104, prot:22, gluc:0, lip:1, cat:'Volaille' },
-  { nom:'Steak haché 5% (100g)', kcal:135, prot:21, gluc:0, lip:5, cat:'Viande' },
-  { nom:'Jambon blanc (1 tranche 30g)', kcal:33, prot:6, gluc:0, lip:1, cat:'Viande' },
-  { nom:'Œuf entier (1 œuf)', kcal:78, prot:6, gluc:0, lip:5, cat:'Œufs' },
-  { nom:'Œufs brouillés 2 œufs', kcal:156, prot:12, gluc:1, lip:11, cat:'Œufs' },
-  { nom:'Omelette 2 œufs', kcal:160, prot:12, gluc:1, lip:12, cat:'Œufs' },
-  // Laitages
-  { nom:'Skyr nature (125g)', kcal:75, prot:11, gluc:5, lip:0, cat:'Laitage' },
-  { nom:'Cottage cheese (100g)', kcal:98, prot:11, gluc:4, lip:4, cat:'Laitage' },
-  { nom:'Fromage blanc 0% (100g)', kcal:44, prot:8, gluc:4, lip:0, cat:'Laitage' },
-  { nom:'Feta (30g)', kcal:80, prot:4, gluc:1, lip:7, cat:'Laitage' },
-  // Légumineuses
-  { nom:'Pois chiches cuits (100g)', kcal:164, prot:9, gluc:27, lip:3, cat:'Légumineuses' },
-  { nom:'Lentilles corail cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
-  { nom:'Lentilles vertes cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
-  // Féculents
-  { nom:'Quinoa cuit (100g)', kcal:120, prot:4, gluc:22, lip:2, cat:'Féculents' },
-  { nom:'Riz complet cuit (100g)', kcal:130, prot:3, gluc:28, lip:1, cat:'Féculents' },
-  { nom:'Semoule cuite (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
-  { nom:'Pain de seigle (1 tranche 30g)', kcal:63, prot:2, gluc:12, lip:0, cat:'Féculents' },
-  { nom:'Pomme de terre cuite (100g)', kcal:87, prot:2, gluc:20, lip:0, cat:'Féculents' },
-  // Légumes
-  { nom:'Épinards (100g)', kcal:23, prot:3, gluc:1, lip:0, cat:'Légumes' },
-  { nom:'Courgette (100g)', kcal:17, prot:1, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Brocolis (100g)', kcal:34, prot:3, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Haricots verts (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Tomates (100g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Légumes' },
-  { nom:'Concombre (100g)', kcal:12, prot:1, gluc:2, lip:0, cat:'Légumes' },
-  { nom:'Salade verte (100g)', kcal:14, prot:1, gluc:2, lip:0, cat:'Légumes' },
-  { nom:'Poivron (100g)', kcal:31, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Champignons (100g)', kcal:22, prot:3, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Poireau (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Carotte (100g)', kcal:41, prot:1, gluc:10, lip:0, cat:'Légumes' },
-  { nom:'Courge butternut (100g)', kcal:45, prot:1, gluc:12, lip:0, cat:'Légumes' },
-  { nom:'Aubergine (100g)', kcal:25, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  // Fruits
-  { nom:'Avocat ½ (70g)', kcal:114, prot:1, gluc:2, lip:11, cat:'Fruits' },
-  { nom:'Fruits rouges (100g)', kcal:52, prot:1, gluc:12, lip:0, cat:'Fruits' },
-  // Graisses & oléagineux
-  { nom:'Huile d\'olive (1 c.s. 10ml)', kcal:88, prot:0, gluc:0, lip:10, cat:'Graisses' },
-  { nom:'Noix de Grenoble (10g ~1 noix)', kcal:65, prot:2, gluc:1, lip:7, cat:'Graisses' },
-  { nom:'Amandes (10g ~10 amandes)', kcal:58, prot:2, gluc:2, lip:5, cat:'Graisses' },
-  { nom:'Graines de chia (1 c.s. 10g)', kcal:49, prot:2, gluc:4, lip:3, cat:'Graisses' },
-  // Légumineuses (complément)
-  { nom:'Haricots rouges cuits (100g)', kcal:127, prot:9, gluc:22, lip:1, cat:'Légumineuses' },
-  { nom:'Haricots blancs cuits (100g)', kcal:139, prot:10, gluc:25, lip:1, cat:'Légumineuses' },
-  { nom:'Haricots noirs cuits (100g)', kcal:132, prot:9, gluc:24, lip:1, cat:'Légumineuses' },
-  { nom:'Edamame (100g)', kcal:122, prot:11, gluc:10, lip:5, cat:'Légumineuses' },
-  { nom:'Fèves cuites (100g)', kcal:110, prot:8, gluc:20, lip:1, cat:'Légumineuses' },
-  { nom:'Pois cassés cuits (100g)', kcal:118, prot:8, gluc:21, lip:0, cat:'Légumineuses' },
-  // Légumes (complément)
-  { nom:'Betterave cuite (100g)', kcal:44, prot:2, gluc:10, lip:0, cat:'Légumes' },
-  { nom:'Céleri branche (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Céleri-rave (100g)', kcal:42, prot:2, gluc:9, lip:0, cat:'Légumes' },
-  { nom:'Chou blanc (100g)', kcal:25, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Chou rouge (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Chou-fleur (100g)', kcal:25, prot:2, gluc:5, lip:0, cat:'Légumes' },
-  { nom:'Endive (100g)', kcal:17, prot:1, gluc:4, lip:0, cat:'Légumes' },
-  { nom:'Épinards cuits (100g)', kcal:23, prot:3, gluc:4, lip:0, cat:'Légumes' },
-  { nom:'Fenouil (100g)', kcal:31, prot:1, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Navet (100g)', kcal:28, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Oignon (100g)', kcal:40, prot:1, gluc:9, lip:0, cat:'Légumes' },
-  { nom:'Petits pois (100g)', kcal:81, prot:5, gluc:14, lip:0, cat:'Légumes' },
-  { nom:'Radis (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Roquette (100g)', kcal:25, prot:3, gluc:4, lip:1, cat:'Légumes' },
-  // Poissons & fruits de mer (complément)
-  { nom:'Anchois à l\'huile (30g)', kcal:62, prot:9, gluc:0, lip:3, cat:'Poisson' },
-  { nom:'Crevettes cuites (100g)', kcal:99, prot:21, gluc:0, lip:1, cat:'Poisson' },
-  { nom:'Moules cuites (100g)', kcal:86, prot:12, gluc:4, lip:2, cat:'Poisson' },
-  { nom:'Dorade (100g)', kcal:96, prot:20, gluc:0, lip:2, cat:'Poisson' },
-  { nom:'Truite (100g)', kcal:149, prot:20, gluc:0, lip:7, cat:'Poisson' },
-  // Viandes (complément)
-  { nom:'Veau escalope (100g)', kcal:105, prot:22, gluc:0, lip:2, cat:'Viande' },
-  { nom:'Porc filet mignon (100g)', kcal:143, prot:22, gluc:0, lip:6, cat:'Viande' },
-  { nom:'Magret de canard (100g)', kcal:190, prot:22, gluc:0, lip:11, cat:'Viande' },
-  // Laitages (complément)
-  { nom:'Yaourt nature (125g)', kcal:74, prot:4, gluc:6, lip:4, cat:'Laitage' },
-  { nom:'Yaourt grec 0% (125g)', kcal:75, prot:10, gluc:5, lip:0, cat:'Laitage' },
-  { nom:'Ricotta (50g)', kcal:72, prot:3, gluc:1, lip:6, cat:'Laitage' },
-  { nom:'Parmesan (20g)', kcal:83, prot:7, gluc:0, lip:6, cat:'Laitage' },
-  { nom:'Mozzarella (50g)', kcal:124, prot:8, gluc:1, lip:10, cat:'Laitage' },
-  // Féculents (complément)
-  { nom:'Orge perlé cuit (100g)', kcal:123, prot:2, gluc:28, lip:0, cat:'Féculents' },
-  { nom:'Boulgour cuit (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
-  { nom:'Pâtes complètes cuites (100g)', kcal:124, prot:5, gluc:25, lip:1, cat:'Féculents' },
-  { nom:'Pain complet (1 tranche 30g)', kcal:68, prot:3, gluc:13, lip:1, cat:'Féculents' },
-  { nom:'Pain de mie complet (1 tranche 25g)', kcal:58, prot:2, gluc:11, lip:1, cat:'Féculents' },
-  // Fruits (complément)
-  { nom:'Pomme (1 moyenne 150g)', kcal:78, prot:0, gluc:21, lip:0, cat:'Fruits' },
-  { nom:'Orange (1 moyenne 150g)', kcal:72, prot:1, gluc:18, lip:0, cat:'Fruits' },
-  { nom:'Banane (1 moyenne 120g)', kcal:107, prot:1, gluc:27, lip:0, cat:'Fruits' },
-  { nom:'Poire (1 moyenne 150g)', kcal:85, prot:1, gluc:22, lip:0, cat:'Fruits' },
-  { nom:'Kiwi (1 kiwi 80g)', kcal:43, prot:1, gluc:10, lip:0, cat:'Fruits' },
-  { nom:'Raisin (100g)', kcal:69, prot:1, gluc:18, lip:0, cat:'Fruits' },
-  { nom:'Melon (100g)', kcal:34, prot:1, gluc:8, lip:0, cat:'Fruits' },
-  // Graisses (complément)
-  { nom:'Olives noires (10 olives 30g)', kcal:45, prot:0, gluc:1, lip:5, cat:'Graisses' },
-  { nom:'Olives vertes (10 olives 30g)', kcal:36, prot:0, gluc:0, lip:4, cat:'Graisses' },
-  { nom:'Tahini sésame (1 c.s. 15g)', kcal:86, prot:3, gluc:3, lip:8, cat:'Graisses' },
-  { nom:'Noix de cajou (30g)', kcal:164, prot:5, gluc:9, lip:13, cat:'Graisses' },
-  { nom:'Noisettes (30g)', kcal:188, prot:4, gluc:5, lip:18, cat:'Graisses' },
-  // Condiments & sauces
-  { nom:'Moutarde (1 c.s. 15g)', kcal:13, prot:1, gluc:1, lip:1, cat:'Condiments' },
-  { nom:'Vinaigre balsamique (1 c.s. 15ml)', kcal:18, prot:0, gluc:4, lip:0, cat:'Condiments' },
-  { nom:'Sauce soja (1 c.s. 15ml)', kcal:9, prot:1, gluc:1, lip:0, cat:'Condiments' },
-  { nom:'Concentré de tomates (1 c.s. 20g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Condiments' },
-  { nom:'Harissa (1 c.c. 5g)', kcal:12, prot:0, gluc:2, lip:1, cat:'Condiments' },
-  // Boissons
-  { nom:'Lait demi-écrémé (100ml)', kcal:46, prot:3, gluc:5, lip:2, cat:'Boissons' },
-  { nom:'Lait végétal avoine (100ml)', kcal:47, prot:1, gluc:7, lip:2, cat:'Boissons' },
-  { nom:'Jus d\'orange (100ml)', kcal:45, prot:1, gluc:10, lip:0, cat:'Boissons' },
-  { nom:'Vin rouge (1 verre 150ml)', kcal:127, prot:0, gluc:4, lip:0, cat:'Boissons' },
-  { nom:'Vin blanc sec (1 verre 150ml)', kcal:120, prot:0, gluc:3, lip:0, cat:'Boissons' },
-  { nom:'Bière (1 pinte 330ml)', kcal:139, prot:1, gluc:13, lip:0, cat:'Boissons' },
-  // Soupes
-  { nom:'Soupe légumes maison (250ml)', kcal:60, prot:2, gluc:10, lip:1, cat:'Soupes' },
-  { nom:'Soupe lentilles (250ml)', kcal:150, prot:9, gluc:22, lip:2, cat:'Soupes' },
-  { nom:'Velouté butternut (250ml)', kcal:110, prot:2, gluc:18, lip:3, cat:'Soupes' },
-  { nom:'Gaspacho tomates (250ml)', kcal:75, prot:2, gluc:12, lip:3, cat:'Soupes' },
-  { nom:'Soupe poireaux-pomme de terre (250ml)', kcal:120, prot:3, gluc:18, lip:4, cat:'Soupes' },
-  // Divers festin
-  { nom:'Pizza (1 part 100g)', kcal:266, prot:11, gluc:33, lip:10, cat:'Festin' },
-  { nom:'Pâtes bolognaise (300g)', kcal:450, prot:25, gluc:55, lip:12, cat:'Festin' },
-  { nom:'Fromage camembert (30g)', kcal:87, prot:5, gluc:0, lip:7, cat:'Festin' },
-  { nom:'Chocolat noir 70% (20g)', kcal:114, prot:2, gluc:10, lip:8, cat:'Festin' },
-  { nom:'Tarte ou gâteau (1 part 100g)', kcal:320, prot:5, gluc:40, lip:16, cat:'Festin' },
+const MEALS = [
+  { name:'Petit-déjeuner type', kcal:380, desc:'Skyr, flocons d’avoine, fruits rouges, noix.', prot:'28g', gluc:'38g', lip:'12g' },
+  { name:'Déjeuner méditerranéen', kcal:620, desc:'Poulet, quinoa, légumes rôtis, huile d’olive.', prot:'42g', gluc:'46g', lip:'24g' },
+  { name:'Dîner léger', kcal:520, desc:'Saumon, haricots verts, patate douce.', prot:'39g', gluc:'31g', lip:'22g' }
 ];
 
-const KCAL_OBJECTIF = 1500;
-const PROT_OBJECTIF = 90;
+function viewRepas() {
+  return `
+    <header class="header">
+      <h1>Repas repères</h1>
+      <p>Base simple pour rester régulier</p>
+    </header>
 
-let journal = {};
-
-async function loadJournal(dateKey) {
-  try {
-    const ref = doc(db, 'users', USER_ID, 'journal', dateKey);
-    const snap = await getDoc(ref);
-    if (snap.exists()) {
-      journal[dateKey] = snap.data().items || [];
-    } else {
-      journal[dateKey] = [];
-    }
-  } catch(e) {
-    journal[dateKey] = JSON.parse(localStorage.getItem('journal_' + dateKey) || '[]');
-  }
+    <main class="scroll-zone">
+      <section class="card">
+        <div class="card-title">Exemples</div>
+        <div class="meal-grid">
+          ${MEALS.map(m => `
+            <div class="meal-card">
+              <div class="meal-header">
+                <div class="meal-name">${m.name}</div>
+                <div class="meal-kcal">${m.kcal} kcal</div>
+              </div>
+              <div class="meal-desc">${m.desc}</div>
+              <div class="macro-row">
+                <span>Prot ${m.prot}</span>
+                <span>Gluc ${m.gluc}</span>
+                <span>Lip ${m.lip}</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </section>
+    </main>
+  `;
 }
 
-async function saveJournalDay(dateKey) {
-  const items = journal[dateKey] || [];
-  try {
-    await setDoc(doc(db, 'users', USER_ID, 'journal', dateKey), { items, updatedAt: Date.now() });
-    localStorage.setItem('journal_' + dateKey, JSON.stringify(items));
-  } catch(e) {
-    localStorage.setItem('journal_' + dateKey, JSON.stringify(items));
-  }
-}
+const ALIMENTS = [
+  { nom:'Œuf entier (100g)', cat:'Protéines', kcal:143, prot:13, gluc:1, lip:10 },
+  { nom:'Blanc de poulet (100g)', cat:'Protéines', kcal:165, prot:31, gluc:0, lip:3.6 },
+  { nom:'Saumon (100g)', cat:'Poissons', kcal:208, prot:20, gluc:0, lip:13 },
+  { nom:'Thon nature (100g)', cat:'Poissons', kcal:132, prot:29, gluc:0, lip:1 },
+  { nom:'Skyr nature (100g)', cat:'Laitages', kcal:63, prot:11, gluc:4, lip:0.2 },
+  { nom:'Yaourt grec 0% (100g)', cat:'Laitages', kcal:59, prot:10, gluc:3.6, lip:0.4 },
+  { nom:'Lentilles cuites (100g)', cat:'Légumineuses', kcal:116, prot:9, gluc:20, lip:0.4 },
+  { nom:'Pois chiches cuits (100g)', cat:'Légumineuses', kcal:164, prot:8.9, gluc:27, lip:2.6 },
+  { nom:'Riz basmati cuit (100g)', cat:'Féculents', kcal:130, prot:2.7, gluc:28, lip:0.3 },
+  { nom:'Pommes de terre cuites (100g)', cat:'Féculents', kcal:87, prot:1.9, gluc:20, lip:0.1 },
+  { nom:'Patate douce cuite (100g)', cat:'Féculents', kcal:90, prot:2, gluc:21, lip:0.1 },
+  { nom:'Flocons d’avoine (100g)', cat:'Petit-déjeuner', kcal:372, prot:13, gluc:60, lip:7 },
+  { nom:'Amandes (100g)', cat:'Oléagineux', kcal:579, prot:21, gluc:22, lip:50 },
+  { nom:'Noix (100g)', cat:'Oléagineux', kcal:654, prot:15, gluc:14, lip:65 },
+  { nom:'Huile d’olive (100g)', cat:'Matières grasses', kcal:884, prot:0, gluc:0, lip:100 },
+  { nom:'Brocoli (100g)', cat:'Légumes', kcal:34, prot:2.8, gluc:7, lip:0.4 },
+  { nom:'Haricots verts (100g)', cat:'Légumes', kcal:31, prot:1.8, gluc:7, lip:0.1 },
+  { nom:'Tomate (100g)', cat:'Légumes', kcal:18, prot:0.9, gluc:3.9, lip:0.2 },
+  { nom:'Avocat (100g)', cat:'Légumes gras', kcal:160, prot:2, gluc:9, lip:15 },
+  { nom:'Banane (100g)', cat:'Fruits', kcal:89, prot:1.1, gluc:23, lip:0.3 },
+  { nom:'Pomme (100g)', cat:'Fruits', kcal:52, prot:0.3, gluc:14, lip:0.2 },
+  { nom:'Fruits rouges (100g)', cat:'Fruits', kcal:50, prot:1, gluc:12, lip:0.3 }
+];
 
-let journalDate = new Date().toISOString().slice(0, 10);
-let journalSearch = '';
-let journalMoment = 'Matin'; // Matin | Déjeuner | Collation | Dîner
-let pendingAliment = null;
-let pendingQty = '100';
-
-function todayKey() { return new Date().toISOString().slice(0, 10); }
+const KCAL_OBJECTIF = 1900;
+const PROT_OBJECTIF = 140;
 
 function getJournalItems(dateKey) {
   return journal[dateKey] || [];
@@ -780,23 +549,44 @@ function getJournalItems(dateKey) {
 
 function getJournalBilan(dateKey) {
   const items = getJournalItems(dateKey);
-  return items.reduce((acc, item) => {
-    const factor = item.qty / 100;
-    acc.kcal += Math.round(item.kcal * factor);
-    acc.prot += Math.round(item.prot * factor);
-    acc.gluc += Math.round(item.gluc * factor);
-    acc.lip += Math.round(item.lip * factor);
+  return items.reduce((acc, i) => {
+    const f = i.qty / 100;
+    acc.kcal += Math.round(i.kcal * f);
+    acc.prot += Math.round(i.prot * f);
+    acc.gluc += Math.round(i.gluc * f);
+    acc.lip += Math.round(i.lip * f);
     return acc;
-  }, { kcal: 0, prot: 0, gluc: 0, lip: 0 });
+  }, { kcal:0, prot:0, gluc:0, lip:0 });
 }
 
-function dateLabel(dateKey) {
+async function loadJournal(dateKey) {
+  if (!firebaseReady) { journal[dateKey] = journal[dateKey] || []; return; }
+  try {
+    const ref = doc(db, 'users', USER_ID, 'journal', dateKey);
+    const snap = await getDoc(ref);
+    journal[dateKey] = snap.exists() ? (snap.data().items || []) : [];
+  } catch (e) {
+    console.error(e);
+    journal[dateKey] = [];
+  }
+}
+
+async function saveJournalDay(dateKey) {
+  if (!firebaseReady) return false;
+  try {
+    const items = journal[dateKey] || [];
+    await setDoc(doc(db, 'users', USER_ID, 'journal', dateKey), { items, updatedAt: Date.now() });
+    return true;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+}
+
+function dateLabel(key) {
+  const d = new Date(`${key}T12:00:00`);
   const today = todayKey();
-  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-  const yKey = yesterday.toISOString().slice(0, 10);
-  if (dateKey === today) return "Aujourd'hui";
-  if (dateKey === yKey) return 'Hier';
-  const d = new Date(dateKey);
+  if (key === today) return "Aujourd’hui";
   return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 }
 
@@ -908,49 +698,56 @@ function viewJournal() {
     </div>` : '';
 
   return `
-    <div class="date-nav">
-      <button class="date-nav-btn" onclick="shiftJournalDate(-1)">‹</button>
-      <span class="date-nav-label">${dateLabel(journalDate)}</span>
-      <button class="date-nav-btn" onclick="shiftJournalDate(1)" ${journalDate === todayKey() ? 'disabled style="opacity:0.3"' : ''}>›</button>
-    </div>
+    <header class="header">
+      <h1>Journal repas</h1>
+      <p>${dateLabel(journalDate)}</p>
+    </header>
 
-    <div class="bilan-bar">
-      <div class="bilan-cell"><div class="bilan-val ${kcalClass}">${bilan.kcal}</div><div class="bilan-label">kcal</div></div>
-      <div class="bilan-cell"><div class="bilan-val ${protClass}">${bilan.prot}g</div><div class="bilan-label">protéines</div></div>
-      <div class="bilan-cell"><div class="bilan-val">${bilan.gluc}g</div><div class="bilan-label">glucides</div></div>
-      <div class="bilan-cell"><div class="bilan-val">${bilan.lip}g</div><div class="bilan-label">lipides</div></div>
-    </div>
+    <main class="scroll-zone">
+      <div class="date-nav">
+        <button class="date-nav-btn" onclick="shiftJournalDate(-1)">‹</button>
+        <span class="date-nav-label">${dateLabel(journalDate)}</span>
+        <button class="date-nav-btn" onclick="shiftJournalDate(1)" ${journalDate === todayKey() ? 'disabled style="opacity:0.3"' : ''}>›</button>
+      </div>
 
-    <div class="progress-wrap">
-      <div class="progress-label"><span>Calories</span><span>${bilan.kcal} / ${KCAL_OBJECTIF} kcal</span></div>
-      <div class="progress-track"><div class="progress-fill-bar" style="width:${kcalPct}%;background:${bilan.kcal > KCAL_OBJECTIF * 1.1 ? 'var(--terra)' : 'var(--teal)'}"></div></div>
-    </div>
-    <div class="progress-wrap" style="margin-top:6px">
-      <div class="progress-label"><span>Protéines</span><span>${bilan.prot} / ${PROT_OBJECTIF}g</span></div>
-      <div class="progress-track"><div class="progress-fill-bar" style="width:${protPct}%;background:var(--deep)"></div></div>
-    </div>
+      <div class="bilan-bar">
+        <div class="bilan-cell"><div class="bilan-val ${kcalClass}">${bilan.kcal}</div><div class="bilan-label">kcal</div></div>
+        <div class="bilan-cell"><div class="bilan-val ${protClass}">${bilan.prot}g</div><div class="bilan-label">protéines</div></div>
+        <div class="bilan-cell"><div class="bilan-val">${bilan.gluc}g</div><div class="bilan-label">glucides</div></div>
+        <div class="bilan-cell"><div class="bilan-val">${bilan.lip}g</div><div class="bilan-label">lipides</div></div>
+      </div>
 
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" type="text" placeholder="Ajouter un aliment… (ex: saumon, œuf, skyr)" value="${journalSearch}"
-        oninput="journalSearch=this.value;document.getElementById('aliments-res').innerHTML=renderAlimentsList()" id="journal-search">
-    </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Calories</span><span>${bilan.kcal} / ${KCAL_OBJECTIF} kcal</span></div>
+        <div class="progress-track"><div class="progress-fill-bar" style="width:${kcalPct}%;background:${bilan.kcal > KCAL_OBJECTIF * 1.1 ? 'var(--terra)' : 'var(--teal)'}"></div></div>
+      </div>
+      <div class="progress-wrap" style="margin-top:6px">
+        <div class="progress-label"><span>Protéines</span><span>${bilan.prot} / ${PROT_OBJECTIF}g</span></div>
+        <div class="progress-track"><div class="progress-fill-bar" style="width:${protPct}%;background:var(--deep)"></div></div>
+      </div>
 
-    <div id="aliments-res">
-      ${filtered.length > 0 ? `<div class="aliments-list">${filtered.map((a, i) => `
-        <div class="aliment-row">
-          <div>
-            <div class="aliment-name">${a.nom}</div>
-            <div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div>
-          </div>
-          <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
-        </div>`).join('')}</div>` : journalSearch.length >= 2 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat pour "${journalSearch}"</div>` : ''}
-    </div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" type="text" placeholder="Ajouter un aliment… (ex: saumon, œuf, skyr)" value="${journalSearch}"
+          oninput="journalSearch=this.value;document.getElementById('aliments-res').innerHTML=renderAlimentsList()" id="journal-search">
+      </div>
 
-    ${items.length > 0 ? journalHtml : `<div class="empty" style="padding-top:16px">Aucun aliment enregistré.<br>Tape le nom d'un aliment ci-dessus.${journalDate !== todayKey() ? '<br><span style="font-size:12px">Jour passé — édition possible.</span>' : ''}</div>`}
+      <div id="aliments-res">
+        ${filtered.length > 0 ? `<div class="aliments-list">${filtered.map((a, i) => `
+          <div class="aliment-row">
+            <div>
+              <div class="aliment-name">${a.nom}</div>
+              <div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div>
+            </div>
+            <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
+          </div>`).join('')}</div>` : journalSearch.length >= 2 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat pour "${journalSearch}"</div>` : ''}
+      </div>
 
-    <div style="height:16px"></div>
-    ${modalHtml}
+      ${items.length > 0 ? journalHtml : `<div class="empty" style="padding-top:16px">Aucun aliment enregistré.<br>Tape le nom d'un aliment ci-dessus.${journalDate !== todayKey() ? '<br><span style="font-size:12px">Jour passé — édition possible.</span>' : ''}</div>`}
+
+      <div style="height:16px"></div>
+      ${modalHtml}
+    </main>
   `;
 }
 
@@ -971,89 +768,84 @@ function renderAlimentsList() {
 
 function setMoment(m) {
   journalMoment = m;
-  ['Matin','Déjeuner','Collation','Dîner'].forEach(mom => {
-    const btn = document.getElementById('mbtn-' + mom);
-    if (!btn) return;
-    const active = mom === m;
-    btn.style.borderColor = active ? 'var(--teal)' : 'var(--border)';
-    btn.style.background = active ? 'var(--teal-light)' : 'transparent';
-    btn.style.color = active ? 'var(--teal)' : 'var(--muted)';
-    btn.style.fontWeight = active ? '700' : '400';
-  });
+  render();
 }
 
 function renderQtyPreview() {
-  const qty = parseFloat(document.getElementById('qty-inp')?.value || pendingQty) / 100;
-  const el = document.getElementById('qty-preview');
-  if (el && pendingAliment) {
-    el.innerHTML = `<span>⚡ ${Math.round(pendingAliment.kcal*qty)} kcal</span><span>💪 ${Math.round(pendingAliment.prot*qty)}g prot</span><span>🌾 ${Math.round(pendingAliment.gluc*qty)}g gluc</span>`;
-  }
+  const box = document.getElementById('qty-preview');
+  if (!box || !pendingAliment) return;
+  const f = Math.max(0, parseFloat(pendingQty || '0')) / 100;
+  box.innerHTML = `<span>⚡ ${Math.round(pendingAliment.kcal*f)} kcal</span><span>💪 ${Math.round(pendingAliment.prot*f)}g prot</span><span>🌾 ${Math.round(pendingAliment.gluc*f)}g gluc</span>`;
 }
 
-// ─── RENDER ─────────────────────────────────────────────
 function render() {
-  const titles = { home: 'Mon suivi santé', saisie: 'Pesée hebdomadaire', historique: 'Historique', repas: 'Plan repas méditerranéen', journal: 'Journal alimentaire' };
-  const subs = { home: `Objectif 84 kg · 27 juillet 2026 · ${daysLeft()} jours`, saisie: 'Lundi matin à jeun', historique: `${entries.length} semaine${entries.length > 1 ? 's' : ''} enregistrée${entries.length > 1 ? 's' : ''}`, repas: '~1 400–1 600 kcal/j · festin vendredi', journal: `Objectif : ${KCAL_OBJECTIF} kcal · ${PROT_OBJECTIF}g protéines` };
-  document.getElementById('page-title').textContent = titles[currentView];
-  document.getElementById('page-sub').textContent = subs[currentView];
   const views = { home: viewHome, saisie: viewSaisie, historique: viewHistorique, repas: viewRepas, journal: viewJournal };
-  document.getElementById('main').innerHTML = views[currentView]();
-  document.getElementById('main').scrollTop = 0;
-  if (currentView === 'journal') {
-    const inp = document.getElementById('journal-search');
-    if (inp) inp.focus();
+  app.innerHTML = `
+    ${views[currentView]()}
+    <nav>
+      <button class="${currentView==='home'?'active':''}" onclick="go('home')"><span class="ico">⌂</span>Accueil</button>
+      <button class="${currentView==='saisie'?'active':''}" onclick="go('saisie')"><span class="ico">⚖︎</span>Peser</button>
+      <button class="${currentView==='historique'?'active':''}" onclick="go('historique')"><span class="ico">◔</span>Historique</button>
+      <button class="${currentView==='repas'?'active':''}" onclick="go('repas')"><span class="ico">◌</span>Repas</button>
+      <button class="${currentView==='journal'?'active':''}" onclick="go('journal')"><span class="ico">✎</span>Journal</button>
+    </nav>
+  `;
+  if (pendingAliment) renderQtyPreview();
+}
+
+function go(view) {
+  currentView = view;
+  if (currentView === 'journal' && !journal[journalDate]) {
+    showLoader('Chargement du journal…');
+    loadJournal(journalDate).then(() => render());
+    return;
   }
-}
-
-// ─── PWA INSTALL ────────────────────────────────────────
-let deferredPrompt = null;
-window._showInstall = false;
-
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredPrompt = e;
-  window._showInstall = true;
   if (currentView === 'home') render();
-});
-
-function installPWA() {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(() => {
-    deferredPrompt = null;
-    window._showInstall = false;
-  });
+  else render();
 }
 
-// ─── EXPOSE GLOBALS (requis car type=module) ─────────────
-window.goTo = goTo;
-window.setDay = setDay;
-window.setPas = setPas;
+// Expose inline handlers
+window.go = go;
 window.submitForm = submitForm;
-window.renderDots = renderDots;
 window.shiftJournalDate = shiftJournalDate;
 window.openQtyModal = openQtyModal;
+window.setMoment = setMoment;
 window.addAlimentToJournal = addAlimentToJournal;
 window.removeJournalItem = removeJournalItem;
-window.setMoment = setMoment;
 window.renderQtyPreview = renderQtyPreview;
 window.renderAlimentsList = renderAlimentsList;
-window.installPWA = installPWA;
+window.form = form;
+window.pendingAliment = pendingAliment;
+window.pendingQty = pendingQty;
+window.journalSearch = journalSearch;
+window.journalMoment = journalMoment;
 
-// ─── SERVICE WORKER ─────────────────────────────────────
+// Sync globals for inline handlers
+setInterval(() => {
+  window.form = form;
+  window.pendingAliment = pendingAliment;
+  window.pendingQty = pendingQty;
+  window.journalSearch = journalSearch;
+  window.journalMoment = journalMoment;
+}, 250);
+
+// PWA
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+  navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW registration skipped:', err));
 }
 
-// ─── INIT ───────────────────────────────────────────────
-showLoader('Connexion à la base de données…');
+// Start
+showLoader('Connexion…');
 signInAnonymously(auth)
   .then(() => loadEntries())
   .then(() => render())
-  .catch(e => {
-    console.error('Auth error', e);
+  .catch((error) => {
+    firebaseReady = false;
+    console.warn('Firebase anonymous auth unavailable, fallback local mode:', error);
     loadEntries().then(() => render());
   });
+
+firebaseReady = true;
 </script>
 </body>
 </html>
