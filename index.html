@@ -194,7 +194,8 @@
 <script type="module">
 // ─── FIREBASE ────────────────────────────────────────────
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyBMtwIOSSSTIkNLh5nIDXmEH4WD-5jdGIM",
@@ -207,6 +208,7 @@ const firebaseConfig = {
 
 const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
+const auth = getAuth(fbApp);
 const USER_ID = 'sylvain'; // identifiant fixe
 
 // ─── DATA ───────────────────────────────────────────────
@@ -1045,7 +1047,13 @@ if ('serviceWorker' in navigator) {
 
 // ─── INIT ───────────────────────────────────────────────
 showLoader('Connexion à la base de données…');
-loadEntries().then(() => render());
+signInAnonymously(auth)
+  .then(() => loadEntries())
+  .then(() => render())
+  .catch(e => {
+    console.error('Auth error', e);
+    loadEntries().then(() => render());
+  });
 </script>
 </body>
 </html>
