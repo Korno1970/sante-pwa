@@ -597,10 +597,89 @@ const ALIMENTS = [
   { nom:'Noix de Grenoble (10g ~1 noix)', kcal:65, prot:2, gluc:1, lip:7, cat:'Graisses' },
   { nom:'Amandes (10g ~10 amandes)', kcal:58, prot:2, gluc:2, lip:5, cat:'Graisses' },
   { nom:'Graines de chia (1 c.s. 10g)', kcal:49, prot:2, gluc:4, lip:3, cat:'Graisses' },
+  // Légumineuses (complément)
+  { nom:'Haricots rouges cuits (100g)', kcal:127, prot:9, gluc:22, lip:1, cat:'Légumineuses' },
+  { nom:'Haricots blancs cuits (100g)', kcal:139, prot:10, gluc:25, lip:1, cat:'Légumineuses' },
+  { nom:'Haricots noirs cuits (100g)', kcal:132, prot:9, gluc:24, lip:1, cat:'Légumineuses' },
+  { nom:'Edamame (100g)', kcal:122, prot:11, gluc:10, lip:5, cat:'Légumineuses' },
+  { nom:'Fèves cuites (100g)', kcal:110, prot:8, gluc:20, lip:1, cat:'Légumineuses' },
+  { nom:'Pois cassés cuits (100g)', kcal:118, prot:8, gluc:21, lip:0, cat:'Légumineuses' },
+  // Légumes (complément)
+  { nom:'Betterave cuite (100g)', kcal:44, prot:2, gluc:10, lip:0, cat:'Légumes' },
+  { nom:'Céleri branche (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Céleri-rave (100g)', kcal:42, prot:2, gluc:9, lip:0, cat:'Légumes' },
+  { nom:'Chou blanc (100g)', kcal:25, prot:1, gluc:6, lip:0, cat:'Légumes' },
+  { nom:'Chou rouge (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Chou-fleur (100g)', kcal:25, prot:2, gluc:5, lip:0, cat:'Légumes' },
+  { nom:'Endive (100g)', kcal:17, prot:1, gluc:4, lip:0, cat:'Légumes' },
+  { nom:'Épinards cuits (100g)', kcal:23, prot:3, gluc:4, lip:0, cat:'Légumes' },
+  { nom:'Fenouil (100g)', kcal:31, prot:1, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Navet (100g)', kcal:28, prot:1, gluc:6, lip:0, cat:'Légumes' },
+  { nom:'Oignon (100g)', kcal:40, prot:1, gluc:9, lip:0, cat:'Légumes' },
+  { nom:'Petits pois (100g)', kcal:81, prot:5, gluc:14, lip:0, cat:'Légumes' },
+  { nom:'Radis (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Roquette (100g)', kcal:25, prot:3, gluc:4, lip:1, cat:'Légumes' },
+  // Poissons & fruits de mer (complément)
+  { nom:'Anchois à l\'huile (30g)', kcal:62, prot:9, gluc:0, lip:3, cat:'Poisson' },
+  { nom:'Crevettes cuites (100g)', kcal:99, prot:21, gluc:0, lip:1, cat:'Poisson' },
+  { nom:'Moules cuites (100g)', kcal:86, prot:12, gluc:4, lip:2, cat:'Poisson' },
+  { nom:'Dorade (100g)', kcal:96, prot:20, gluc:0, lip:2, cat:'Poisson' },
+  { nom:'Truite (100g)', kcal:149, prot:20, gluc:0, lip:7, cat:'Poisson' },
+  // Viandes (complément)
+  { nom:'Veau escalope (100g)', kcal:105, prot:22, gluc:0, lip:2, cat:'Viande' },
+  { nom:'Porc filet mignon (100g)', kcal:143, prot:22, gluc:0, lip:6, cat:'Viande' },
+  { nom:'Magret de canard (100g)', kcal:190, prot:22, gluc:0, lip:11, cat:'Viande' },
+  // Laitages (complément)
+  { nom:'Yaourt nature (125g)', kcal:74, prot:4, gluc:6, lip:4, cat:'Laitage' },
+  { nom:'Yaourt grec 0% (125g)', kcal:75, prot:10, gluc:5, lip:0, cat:'Laitage' },
+  { nom:'Ricotta (50g)', kcal:72, prot:3, gluc:1, lip:6, cat:'Laitage' },
+  { nom:'Parmesan (20g)', kcal:83, prot:7, gluc:0, lip:6, cat:'Laitage' },
+  { nom:'Mozzarella (50g)', kcal:124, prot:8, gluc:1, lip:10, cat:'Laitage' },
+  // Féculents (complément)
+  { nom:'Orge perlé cuit (100g)', kcal:123, prot:2, gluc:28, lip:0, cat:'Féculents' },
+  { nom:'Boulgour cuit (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
+  { nom:'Pâtes complètes cuites (100g)', kcal:124, prot:5, gluc:25, lip:1, cat:'Féculents' },
+  { nom:'Pain complet (1 tranche 30g)', kcal:68, prot:3, gluc:13, lip:1, cat:'Féculents' },
+  { nom:'Pain de mie complet (1 tranche 25g)', kcal:58, prot:2, gluc:11, lip:1, cat:'Féculents' },
+  // Fruits (complément)
+  { nom:'Pomme (1 moyenne 150g)', kcal:78, prot:0, gluc:21, lip:0, cat:'Fruits' },
+  { nom:'Orange (1 moyenne 150g)', kcal:72, prot:1, gluc:18, lip:0, cat:'Fruits' },
+  { nom:'Banane (1 moyenne 120g)', kcal:107, prot:1, gluc:27, lip:0, cat:'Fruits' },
+  { nom:'Poire (1 moyenne 150g)', kcal:85, prot:1, gluc:22, lip:0, cat:'Fruits' },
+  { nom:'Kiwi (1 kiwi 80g)', kcal:43, prot:1, gluc:10, lip:0, cat:'Fruits' },
+  { nom:'Raisin (100g)', kcal:69, prot:1, gluc:18, lip:0, cat:'Fruits' },
+  { nom:'Melon (100g)', kcal:34, prot:1, gluc:8, lip:0, cat:'Fruits' },
+  // Graisses (complément)
+  { nom:'Olives noires (10 olives 30g)', kcal:45, prot:0, gluc:1, lip:5, cat:'Graisses' },
+  { nom:'Olives vertes (10 olives 30g)', kcal:36, prot:0, gluc:0, lip:4, cat:'Graisses' },
+  { nom:'Tahini sésame (1 c.s. 15g)', kcal:86, prot:3, gluc:3, lip:8, cat:'Graisses' },
+  { nom:'Noix de cajou (30g)', kcal:164, prot:5, gluc:9, lip:13, cat:'Graisses' },
+  { nom:'Noisettes (30g)', kcal:188, prot:4, gluc:5, lip:18, cat:'Graisses' },
+  // Condiments & sauces
+  { nom:'Moutarde (1 c.s. 15g)', kcal:13, prot:1, gluc:1, lip:1, cat:'Condiments' },
+  { nom:'Vinaigre balsamique (1 c.s. 15ml)', kcal:18, prot:0, gluc:4, lip:0, cat:'Condiments' },
+  { nom:'Sauce soja (1 c.s. 15ml)', kcal:9, prot:1, gluc:1, lip:0, cat:'Condiments' },
+  { nom:'Concentré de tomates (1 c.s. 20g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Condiments' },
+  { nom:'Harissa (1 c.c. 5g)', kcal:12, prot:0, gluc:2, lip:1, cat:'Condiments' },
+  // Boissons
+  { nom:'Lait demi-écrémé (100ml)', kcal:46, prot:3, gluc:5, lip:2, cat:'Boissons' },
+  { nom:'Lait végétal avoine (100ml)', kcal:47, prot:1, gluc:7, lip:2, cat:'Boissons' },
+  { nom:'Jus d\'orange (100ml)', kcal:45, prot:1, gluc:10, lip:0, cat:'Boissons' },
+  { nom:'Vin rouge (1 verre 150ml)', kcal:127, prot:0, gluc:4, lip:0, cat:'Boissons' },
+  { nom:'Vin blanc sec (1 verre 150ml)', kcal:120, prot:0, gluc:3, lip:0, cat:'Boissons' },
+  { nom:'Bière (1 pinte 330ml)', kcal:139, prot:1, gluc:13, lip:0, cat:'Boissons' },
   // Soupes
   { nom:'Soupe légumes maison (250ml)', kcal:60, prot:2, gluc:10, lip:1, cat:'Soupes' },
   { nom:'Soupe lentilles (250ml)', kcal:150, prot:9, gluc:22, lip:2, cat:'Soupes' },
   { nom:'Velouté butternut (250ml)', kcal:110, prot:2, gluc:18, lip:3, cat:'Soupes' },
+  { nom:'Gaspacho tomates (250ml)', kcal:75, prot:2, gluc:12, lip:3, cat:'Soupes' },
+  { nom:'Soupe poireaux-pomme de terre (250ml)', kcal:120, prot:3, gluc:18, lip:4, cat:'Soupes' },
+  // Divers festin
+  { nom:'Pizza (1 part 100g)', kcal:266, prot:11, gluc:33, lip:10, cat:'Festin' },
+  { nom:'Pâtes bolognaise (300g)', kcal:450, prot:25, gluc:55, lip:12, cat:'Festin' },
+  { nom:'Fromage camembert (30g)', kcal:87, prot:5, gluc:0, lip:7, cat:'Festin' },
+  { nom:'Chocolat noir 70% (20g)', kcal:114, prot:2, gluc:10, lip:8, cat:'Festin' },
+  { nom:'Tarte ou gâteau (1 part 100g)', kcal:320, prot:5, gluc:40, lip:16, cat:'Festin' },
 ];
 
 const KCAL_OBJECTIF = 1500;
@@ -738,7 +817,7 @@ function viewJournal() {
       <div style="margin-bottom:10px">
         <label class="field-label">Moment du repas</label>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${moments.map(m => `<button style="padding:6px 12px;border-radius:20px;font-size:12px;font-family:sans-serif;border:1.5px solid ${journalMoment===m?'var(--teal)':'var(--border)'};background:${journalMoment===m?'var(--teal-light)':'transparent'};color:${journalMoment===m?'var(--teal)':'var(--muted)'};cursor:pointer;font-weight:${journalMoment===m?700:400}" onclick="journalMoment='${m}';document.getElementById('moment-label').textContent='${m}';this.parentElement.querySelectorAll('button').forEach(b=>b.setAttribute('data-m','')); renderQtyPreview()">${momentIcons[m]} ${m}</button>`).join('')}
+          ${moments.map(m => `<button id="mbtn-${m}" style="padding:6px 12px;border-radius:20px;font-size:12px;font-family:sans-serif;border:1.5px solid ${journalMoment===m?'var(--teal)':'var(--border)'};background:${journalMoment===m?'var(--teal-light)':'transparent'};color:${journalMoment===m?'var(--teal)':'var(--muted)'};cursor:pointer;font-weight:${journalMoment===m?700:400}" onclick="setMoment('${m}')">${momentIcons[m]} ${m}</button>`).join('')}
         </div>
       </div>
       <div class="qty-row">
@@ -811,6 +890,19 @@ function renderAlimentsList() {
       </div>
       <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
     </div>`).join('')}</div>`;
+}
+
+function setMoment(m) {
+  journalMoment = m;
+  ['Matin','Déjeuner','Collation','Dîner'].forEach(mom => {
+    const btn = document.getElementById('mbtn-' + mom);
+    if (!btn) return;
+    const active = mom === m;
+    btn.style.borderColor = active ? 'var(--teal)' : 'var(--border)';
+    btn.style.background = active ? 'var(--teal-light)' : 'transparent';
+    btn.style.color = active ? 'var(--teal)' : 'var(--muted)';
+    btn.style.fontWeight = active ? '700' : '400';
+  });
 }
 
 function renderQtyPreview() {
