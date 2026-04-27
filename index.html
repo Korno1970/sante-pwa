@@ -1023,6 +1023,21 @@ function installPWA() {
   });
 }
 
+// ─── EXPOSE GLOBALS (requis car type=module) ─────────────
+window.goTo = goTo;
+window.setDay = setDay;
+window.setPas = setPas;
+window.submitForm = submitForm;
+window.renderDots = renderDots;
+window.shiftJournalDate = shiftJournalDate;
+window.openQtyModal = openQtyModal;
+window.addAlimentToJournal = addAlimentToJournal;
+window.removeJournalItem = removeJournalItem;
+window.setMoment = setMoment;
+window.renderQtyPreview = renderQtyPreview;
+window.renderAlimentsList = renderAlimentsList;
+window.installPWA = installPWA;
+
 // ─── SERVICE WORKER ─────────────────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(() => {});
