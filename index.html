@@ -127,6 +127,47 @@
   /* EMPTY */
   .empty { text-align: center; padding: 32px 20px; font-family: sans-serif; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
+  /* JOURNAL */
+  .bilan-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin: 12px 16px 0; }
+  .bilan-cell { background: var(--surface); border-radius: 12px; padding: 10px 8px; text-align: center; border: 1px solid var(--border); }
+  .bilan-val { font-size: 18px; font-weight: 700; color: var(--deep); line-height: 1; }
+  .bilan-label { font-size: 10px; color: var(--muted); font-family: sans-serif; margin-top: 3px; }
+  .bilan-val.ok { color: var(--teal); }
+  .bilan-val.warn { color: #D4A72C; }
+  .bilan-val.over { color: var(--terra); }
+  .progress-wrap { margin: 10px 16px 0; }
+  .progress-track { height: 8px; background: var(--sand); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+  .progress-fill-bar { height: 8px; border-radius: 4px; transition: width 0.4s; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 11px; font-family: sans-serif; color: var(--muted); }
+  .search-wrap { margin: 12px 16px 0; position: relative; }
+  .search-input { width: 100%; padding: 11px 14px 11px 38px; font-size: 15px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--deep); font-family: sans-serif; outline: none; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--muted); pointer-events: none; }
+  .aliments-list { margin: 6px 16px 0; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; max-height: 260px; overflow-y: auto; }
+  .aliment-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .aliment-row:last-child { border-bottom: none; }
+  .aliment-row:active { background: var(--bg); }
+  .aliment-name { font-size: 14px; color: var(--deep); font-family: sans-serif; font-weight: 500; }
+  .aliment-macros { font-size: 11px; color: var(--muted); font-family: sans-serif; margin-top: 2px; }
+  .aliment-add { background: var(--teal); color: #fff; border: none; border-radius: 8px; padding: 5px 12px; font-size: 12px; font-family: sans-serif; font-weight: 600; cursor: pointer; flex: 0 0 auto; }
+  .qty-modal { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--surface); border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + var(--safe-bottom)); z-index: 200; box-shadow: 0 -4px 24px rgba(0,0,0,0.12); }
+  .qty-modal h3 { font-size: 16px; color: var(--deep); margin-bottom: 4px; }
+  .qty-modal p { font-size: 12px; color: var(--muted); font-family: sans-serif; margin-bottom: 14px; }
+  .qty-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .qty-input { flex: 1; padding: 10px 14px; font-size: 18px; font-weight: 700; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--deep); font-family: sans-serif; outline: none; text-align: center; }
+  .qty-unit { font-size: 14px; color: var(--muted); font-family: sans-serif; }
+  .qty-preview { background: var(--teal-light); border-radius: 10px; padding: 10px 14px; font-family: sans-serif; font-size: 13px; color: var(--teal); margin-bottom: 14px; display: flex; justify-content: space-around; }
+  .journal-list { margin: 10px 16px 0; display: flex; flex-direction: column; gap: 6px; }
+  .journal-item { background: var(--surface); border-radius: 12px; padding: 10px 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .journal-item-name { font-size: 14px; font-weight: 500; color: var(--deep); font-family: sans-serif; }
+  .journal-item-detail { font-size: 11px; color: var(--muted); font-family: sans-serif; margin-top: 2px; }
+  .journal-delete { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 0 0 0 8px; line-height: 1; }
+  .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 199; }
+  .meal-section { margin: 12px 16px 0; }
+  .meal-section-title { font-size: 11px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; padding-left: 2px; }
+  .date-nav { display: flex; align-items: center; justify-content: space-between; margin: 12px 16px 0; }
+  .date-nav-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 18px; cursor: pointer; color: var(--deep); }
+  .date-nav-label { font-size: 14px; font-family: sans-serif; font-weight: 600; color: var(--deep); }
+
   /* INSTALLED BANNER */
   .install-banner { margin: 12px 16px 0; background: var(--deep); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .install-banner p { font-size: 13px; color: rgba(255,255,255,0.8); font-family: sans-serif; line-height: 1.4; }
@@ -146,6 +187,7 @@
     <button onclick="goTo('saisie')" id="nav-saisie"><span class="ico">＋</span>Peser</button>
     <button onclick="goTo('historique')" id="nav-historique"><span class="ico">≡</span>Historique</button>
     <button onclick="goTo('repas')" id="nav-repas"><span class="ico">🍽</span>Repas</button>
+    <button onclick="goTo('journal')" id="nav-journal"><span class="ico">📋</span>Journal</button>
   </nav>
 </div>
 
@@ -503,15 +545,295 @@ function submitForm() {
   setTimeout(() => { savedAnim = false; goTo('home'); }, 1200);
 }
 
+// ─── JOURNAL DATA ────────────────────────────────────────
+const ALIMENTS = [
+  // Protéines animales
+  { nom:'Saumon (100g)', kcal:208, prot:20, gluc:0, lip:13, cat:'Poisson' },
+  { nom:'Cabillaud (100g)', kcal:82, prot:18, gluc:0, lip:1, cat:'Poisson' },
+  { nom:'Maquereau (100g)', kcal:205, prot:19, gluc:0, lip:14, cat:'Poisson' },
+  { nom:'Sardines boîte (100g)', kcal:185, prot:22, gluc:0, lip:11, cat:'Poisson' },
+  { nom:'Thon naturel boîte (100g)', kcal:116, prot:26, gluc:0, lip:1, cat:'Poisson' },
+  { nom:'Poulet escalope (100g)', kcal:110, prot:23, gluc:0, lip:2, cat:'Volaille' },
+  { nom:'Dinde escalope (100g)', kcal:104, prot:22, gluc:0, lip:1, cat:'Volaille' },
+  { nom:'Steak haché 5% (100g)', kcal:135, prot:21, gluc:0, lip:5, cat:'Viande' },
+  { nom:'Jambon blanc (1 tranche 30g)', kcal:33, prot:6, gluc:0, lip:1, cat:'Viande' },
+  { nom:'Œuf entier (1 œuf)', kcal:78, prot:6, gluc:0, lip:5, cat:'Œufs' },
+  { nom:'Œufs brouillés 2 œufs', kcal:156, prot:12, gluc:1, lip:11, cat:'Œufs' },
+  { nom:'Omelette 2 œufs', kcal:160, prot:12, gluc:1, lip:12, cat:'Œufs' },
+  // Laitages
+  { nom:'Skyr nature (125g)', kcal:75, prot:11, gluc:5, lip:0, cat:'Laitage' },
+  { nom:'Cottage cheese (100g)', kcal:98, prot:11, gluc:4, lip:4, cat:'Laitage' },
+  { nom:'Fromage blanc 0% (100g)', kcal:44, prot:8, gluc:4, lip:0, cat:'Laitage' },
+  { nom:'Feta (30g)', kcal:80, prot:4, gluc:1, lip:7, cat:'Laitage' },
+  // Légumineuses
+  { nom:'Pois chiches cuits (100g)', kcal:164, prot:9, gluc:27, lip:3, cat:'Légumineuses' },
+  { nom:'Lentilles corail cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
+  { nom:'Lentilles vertes cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
+  // Féculents
+  { nom:'Quinoa cuit (100g)', kcal:120, prot:4, gluc:22, lip:2, cat:'Féculents' },
+  { nom:'Riz complet cuit (100g)', kcal:130, prot:3, gluc:28, lip:1, cat:'Féculents' },
+  { nom:'Semoule cuite (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
+  { nom:'Pain de seigle (1 tranche 30g)', kcal:63, prot:2, gluc:12, lip:0, cat:'Féculents' },
+  { nom:'Pomme de terre cuite (100g)', kcal:87, prot:2, gluc:20, lip:0, cat:'Féculents' },
+  // Légumes
+  { nom:'Épinards (100g)', kcal:23, prot:3, gluc:1, lip:0, cat:'Légumes' },
+  { nom:'Courgette (100g)', kcal:17, prot:1, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Brocolis (100g)', kcal:34, prot:3, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Haricots verts (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Tomates (100g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Légumes' },
+  { nom:'Concombre (100g)', kcal:12, prot:1, gluc:2, lip:0, cat:'Légumes' },
+  { nom:'Salade verte (100g)', kcal:14, prot:1, gluc:2, lip:0, cat:'Légumes' },
+  { nom:'Poivron (100g)', kcal:31, prot:1, gluc:6, lip:0, cat:'Légumes' },
+  { nom:'Champignons (100g)', kcal:22, prot:3, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Poireau (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Carotte (100g)', kcal:41, prot:1, gluc:10, lip:0, cat:'Légumes' },
+  { nom:'Courge butternut (100g)', kcal:45, prot:1, gluc:12, lip:0, cat:'Légumes' },
+  { nom:'Aubergine (100g)', kcal:25, prot:1, gluc:6, lip:0, cat:'Légumes' },
+  // Fruits
+  { nom:'Avocat ½ (70g)', kcal:114, prot:1, gluc:2, lip:11, cat:'Fruits' },
+  { nom:'Fruits rouges (100g)', kcal:52, prot:1, gluc:12, lip:0, cat:'Fruits' },
+  // Graisses & oléagineux
+  { nom:'Huile d\'olive (1 c.s. 10ml)', kcal:88, prot:0, gluc:0, lip:10, cat:'Graisses' },
+  { nom:'Noix de Grenoble (10g ~1 noix)', kcal:65, prot:2, gluc:1, lip:7, cat:'Graisses' },
+  { nom:'Amandes (10g ~10 amandes)', kcal:58, prot:2, gluc:2, lip:5, cat:'Graisses' },
+  { nom:'Graines de chia (1 c.s. 10g)', kcal:49, prot:2, gluc:4, lip:3, cat:'Graisses' },
+  // Soupes
+  { nom:'Soupe légumes maison (250ml)', kcal:60, prot:2, gluc:10, lip:1, cat:'Soupes' },
+  { nom:'Soupe lentilles (250ml)', kcal:150, prot:9, gluc:22, lip:2, cat:'Soupes' },
+  { nom:'Velouté butternut (250ml)', kcal:110, prot:2, gluc:18, lip:3, cat:'Soupes' },
+];
+
+const KCAL_OBJECTIF = 1500;
+const PROT_OBJECTIF = 90;
+const JOURNAL_KEY = 'journal_sylvain_v1';
+
+let journal = {}; // { 'YYYY-MM-DD': [{id, nom, kcal, prot, gluc, lip, qty, moment}, ...] }
+try { journal = JSON.parse(localStorage.getItem(JOURNAL_KEY) || '{}'); } catch(e) {}
+
+function saveJournal() {
+  try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(journal)); } catch(e) {}
+}
+
+let journalDate = new Date().toISOString().slice(0, 10);
+let journalSearch = '';
+let journalMoment = 'Matin'; // Matin | Déjeuner | Collation | Dîner
+let pendingAliment = null;
+let pendingQty = '100';
+
+function todayKey() { return new Date().toISOString().slice(0, 10); }
+
+function getJournalItems(dateKey) {
+  return journal[dateKey] || [];
+}
+
+function getJournalBilan(dateKey) {
+  const items = getJournalItems(dateKey);
+  return items.reduce((acc, item) => {
+    const factor = item.qty / 100;
+    acc.kcal += Math.round(item.kcal * factor);
+    acc.prot += Math.round(item.prot * factor);
+    acc.gluc += Math.round(item.gluc * factor);
+    acc.lip += Math.round(item.lip * factor);
+    return acc;
+  }, { kcal: 0, prot: 0, gluc: 0, lip: 0 });
+}
+
+function dateLabel(dateKey) {
+  const today = todayKey();
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
+  const yKey = yesterday.toISOString().slice(0, 10);
+  if (dateKey === today) return "Aujourd'hui";
+  if (dateKey === yKey) return 'Hier';
+  const d = new Date(dateKey);
+  return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+}
+
+function shiftJournalDate(delta) {
+  const d = new Date(journalDate);
+  d.setDate(d.getDate() + delta);
+  const today = new Date();
+  if (d > today) return;
+  journalDate = d.toISOString().slice(0, 10);
+  render();
+}
+
+function addAlimentToJournal() {
+  const qty = parseFloat(pendingQty);
+  if (!pendingAliment || isNaN(qty) || qty <= 0) return;
+  if (!journal[journalDate]) journal[journalDate] = [];
+  journal[journalDate].push({
+    id: Date.now(),
+    nom: pendingAliment.nom,
+    kcal: pendingAliment.kcal,
+    prot: pendingAliment.prot,
+    gluc: pendingAliment.gluc,
+    lip: pendingAliment.lip,
+    qty,
+    moment: journalMoment
+  });
+  saveJournal();
+  pendingAliment = null;
+  pendingQty = '100';
+  journalSearch = '';
+  render();
+}
+
+function removeJournalItem(dateKey, id) {
+  if (!journal[dateKey]) return;
+  journal[dateKey] = journal[dateKey].filter(i => i.id !== id);
+  saveJournal();
+  render();
+}
+
+function openQtyModal(index) {
+  const filtered = ALIMENTS.filter(a =>
+    journalSearch.length < 2 ? false : a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())
+  );
+  pendingAliment = filtered[index];
+  pendingQty = '100';
+  render();
+}
+
+function viewJournal() {
+  const bilan = getJournalBilan(journalDate);
+  const kcalPct = Math.min(100, Math.round((bilan.kcal / KCAL_OBJECTIF) * 100));
+  const protPct = Math.min(100, Math.round((bilan.prot / PROT_OBJECTIF) * 100));
+  const kcalClass = bilan.kcal > KCAL_OBJECTIF * 1.1 ? 'over' : bilan.kcal > KCAL_OBJECTIF * 0.8 ? 'ok' : 'warn';
+  const protClass = bilan.prot >= PROT_OBJECTIF ? 'ok' : bilan.prot >= PROT_OBJECTIF * 0.7 ? 'warn' : 'over';
+
+  const filtered = journalSearch.length >= 2
+    ? ALIMENTS.filter(a => a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())).slice(0, 15)
+    : [];
+
+  const items = getJournalItems(journalDate);
+  const moments = ['Matin', 'Déjeuner', 'Collation', 'Dîner'];
+  const momentIcons = { Matin:'🌅', Déjeuner:'☀️', Collation:'🍎', Dîner:'🌙' };
+
+  let journalHtml = '';
+  moments.forEach(m => {
+    const mItems = items.filter(i => i.moment === m);
+    if (mItems.length === 0) return;
+    const mKcal = mItems.reduce((s, i) => s + Math.round(i.kcal * i.qty / 100), 0);
+    journalHtml += `<div class="meal-section">
+      <div class="meal-section-title">${momentIcons[m]} ${m} · ${mKcal} kcal</div>
+      ${mItems.map(i => {
+        const k = Math.round(i.kcal * i.qty / 100);
+        const p = Math.round(i.prot * i.qty / 100);
+        return `<div class="journal-item">
+          <div>
+            <div class="journal-item-name">${i.nom.replace(/\(100g\)/,'').replace(/\(.*?\)/,'').trim()} ${i.qty !== 100 ? `· ${i.qty}g` : ''}</div>
+            <div class="journal-item-detail">${k} kcal · ${p}g prot</div>
+          </div>
+          <button class="journal-delete" onclick="removeJournalItem('${journalDate}', ${i.id})">×</button>
+        </div>`;
+      }).join('')}
+    </div>`;
+  });
+
+  const modalHtml = pendingAliment ? `
+    <div class="overlay" onclick="pendingAliment=null;render()"></div>
+    <div class="qty-modal">
+      <h3>${pendingAliment.nom.replace(/\(100g\)/,'').trim()}</h3>
+      <p>${pendingAliment.cat} · base 100g : ${pendingAliment.kcal} kcal · ${pendingAliment.prot}g prot</p>
+      <div style="margin-bottom:10px">
+        <label class="field-label">Moment du repas</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${moments.map(m => `<button style="padding:6px 12px;border-radius:20px;font-size:12px;font-family:sans-serif;border:1.5px solid ${journalMoment===m?'var(--teal)':'var(--border)'};background:${journalMoment===m?'var(--teal-light)':'transparent'};color:${journalMoment===m?'var(--teal)':'var(--muted)'};cursor:pointer;font-weight:${journalMoment===m?700:400}" onclick="journalMoment='${m}';document.getElementById('moment-label').textContent='${m}';this.parentElement.querySelectorAll('button').forEach(b=>b.setAttribute('data-m','')); renderQtyPreview()">${momentIcons[m]} ${m}</button>`).join('')}
+        </div>
+      </div>
+      <div class="qty-row">
+        <input class="qty-input" type="number" id="qty-inp" value="${pendingQty}" min="1" max="2000" oninput="pendingQty=this.value;renderQtyPreview()" inputmode="decimal">
+        <span class="qty-unit">grammes</span>
+      </div>
+      <div class="qty-preview" id="qty-preview">
+        ${(() => { const f = parseFloat(pendingQty)/100; return `<span>⚡ ${Math.round(pendingAliment.kcal*f)} kcal</span><span>💪 ${Math.round(pendingAliment.prot*f)}g prot</span><span>🌾 ${Math.round(pendingAliment.gluc*f)}g gluc</span>`; })()}
+      </div>
+      <button class="btn-primary" onclick="addAlimentToJournal()">Ajouter au journal</button>
+    </div>` : '';
+
+  return `
+    <div class="date-nav">
+      <button class="date-nav-btn" onclick="shiftJournalDate(-1)">‹</button>
+      <span class="date-nav-label">${dateLabel(journalDate)}</span>
+      <button class="date-nav-btn" onclick="shiftJournalDate(1)" ${journalDate === todayKey() ? 'disabled style="opacity:0.3"' : ''}>›</button>
+    </div>
+
+    <div class="bilan-bar">
+      <div class="bilan-cell"><div class="bilan-val ${kcalClass}">${bilan.kcal}</div><div class="bilan-label">kcal</div></div>
+      <div class="bilan-cell"><div class="bilan-val ${protClass}">${bilan.prot}g</div><div class="bilan-label">protéines</div></div>
+      <div class="bilan-cell"><div class="bilan-val">${bilan.gluc}g</div><div class="bilan-label">glucides</div></div>
+      <div class="bilan-cell"><div class="bilan-val">${bilan.lip}g</div><div class="bilan-label">lipides</div></div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-label"><span>Calories</span><span>${bilan.kcal} / ${KCAL_OBJECTIF} kcal</span></div>
+      <div class="progress-track"><div class="progress-fill-bar" style="width:${kcalPct}%;background:${bilan.kcal > KCAL_OBJECTIF * 1.1 ? 'var(--terra)' : 'var(--teal)'}"></div></div>
+    </div>
+    <div class="progress-wrap" style="margin-top:6px">
+      <div class="progress-label"><span>Protéines</span><span>${bilan.prot} / ${PROT_OBJECTIF}g</span></div>
+      <div class="progress-track"><div class="progress-fill-bar" style="width:${protPct}%;background:var(--deep)"></div></div>
+    </div>
+
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="text" placeholder="Ajouter un aliment… (ex: saumon, œuf, skyr)" value="${journalSearch}"
+        oninput="journalSearch=this.value;document.getElementById('aliments-res').innerHTML=renderAlimentsList()" id="journal-search">
+    </div>
+
+    <div id="aliments-res">
+      ${filtered.length > 0 ? `<div class="aliments-list">${filtered.map((a, i) => `
+        <div class="aliment-row">
+          <div>
+            <div class="aliment-name">${a.nom}</div>
+            <div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div>
+          </div>
+          <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
+        </div>`).join('')}</div>` : journalSearch.length >= 2 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat pour "${journalSearch}"</div>` : ''}
+    </div>
+
+    ${items.length > 0 ? journalHtml : `<div class="empty" style="padding-top:16px">Aucun aliment enregistré.<br>Tape le nom d'un aliment ci-dessus.${journalDate !== todayKey() ? '<br><span style="font-size:12px">Jour passé — édition possible.</span>' : ''}</div>`}
+
+    <div style="height:16px"></div>
+    ${modalHtml}
+  `;
+}
+
+function renderAlimentsList() {
+  const filtered = journalSearch.length >= 2
+    ? ALIMENTS.filter(a => a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())).slice(0, 15)
+    : [];
+  if (filtered.length === 0) return journalSearch.length >= 2 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat.</div>` : '';
+  return `<div class="aliments-list">${filtered.map((a, i) => `
+    <div class="aliment-row">
+      <div>
+        <div class="aliment-name">${a.nom}</div>
+        <div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div>
+      </div>
+      <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
+    </div>`).join('')}</div>`;
+}
+
+function renderQtyPreview() {
+  const qty = parseFloat(document.getElementById('qty-inp')?.value || pendingQty) / 100;
+  const el = document.getElementById('qty-preview');
+  if (el && pendingAliment) {
+    el.innerHTML = `<span>⚡ ${Math.round(pendingAliment.kcal*qty)} kcal</span><span>💪 ${Math.round(pendingAliment.prot*qty)}g prot</span><span>🌾 ${Math.round(pendingAliment.gluc*qty)}g gluc</span>`;
+  }
+}
+
 // ─── RENDER ─────────────────────────────────────────────
 function render() {
-  const titles = { home: 'Mon suivi santé', saisie: 'Pesée hebdomadaire', historique: 'Historique', repas: 'Plan repas méditerranéen' };
-  const subs = { home: `Objectif 84 kg · 27 juillet 2026 · ${daysLeft()} jours`, saisie: 'Lundi matin à jeun', historique: `${entries.length} semaine${entries.length > 1 ? 's' : ''} enregistrée${entries.length > 1 ? 's' : ''}`, repas: '~1 400–1 600 kcal/j · festin vendredi' };
+  const titles = { home: 'Mon suivi santé', saisie: 'Pesée hebdomadaire', historique: 'Historique', repas: 'Plan repas méditerranéen', journal: 'Journal alimentaire' };
+  const subs = { home: `Objectif 84 kg · 27 juillet 2026 · ${daysLeft()} jours`, saisie: 'Lundi matin à jeun', historique: `${entries.length} semaine${entries.length > 1 ? 's' : ''} enregistrée${entries.length > 1 ? 's' : ''}`, repas: '~1 400–1 600 kcal/j · festin vendredi', journal: `Objectif : ${KCAL_OBJECTIF} kcal · ${PROT_OBJECTIF}g protéines` };
   document.getElementById('page-title').textContent = titles[currentView];
   document.getElementById('page-sub').textContent = subs[currentView];
-  const views = { home: viewHome, saisie: viewSaisie, historique: viewHistorique, repas: viewRepas };
+  const views = { home: viewHome, saisie: viewSaisie, historique: viewHistorique, repas: viewRepas, journal: viewJournal };
   document.getElementById('main').innerHTML = views[currentView]();
   document.getElementById('main').scrollTop = 0;
+  if (currentView === 'journal') {
+    const inp = document.getElementById('journal-search');
+    if (inp) inp.focus();
+  }
 }
 
 // ─── PWA INSTALL ────────────────────────────────────────
