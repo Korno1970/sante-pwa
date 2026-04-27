@@ -191,15 +191,64 @@
   </nav>
 </div>
 
-<script>
+<script type="module">
+// ─── FIREBASE ────────────────────────────────────────────
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, doc, getDoc, setDoc, collection, getDocs, deleteDoc, addDoc, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBMtwIOSSSTIkNLh5nIDXmEH4WD-5jdGIM",
+  authDomain: "pwa---sante.firebaseapp.com",
+  projectId: "pwa---sante",
+  storageBucket: "pwa---sante.firebasestorage.app",
+  messagingSenderId: "99523195154",
+  appId: "1:99523195154:web:760668e987669a5e1303cb"
+};
+
+const fbApp = initializeApp(firebaseConfig);
+const db = getFirestore(fbApp);
+const USER_ID = 'sylvain'; // identifiant fixe
+
 // ─── DATA ───────────────────────────────────────────────
 const DEPART = 94, OBJECTIF = 84;
-const STORAGE_KEY = 'sante_sylvain_v2';
 let entries = [];
-try { entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) {}
+let dbReady = false;
 
-function saveEntries() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(entries)); } catch(e) {}
+// Indicateur de chargement
+function showLoader(msg) {
+  document.getElementById('main').innerHTML = `<div class="empty" style="padding-top:60px">
+    <div style="font-size:32px;margin-bottom:12px">⏳</div>
+    <div style="font-family:sans-serif;color:var(--muted)">${msg}</div>
+  </div>`;
+}
+
+async function loadEntries() {
+  try {
+    const ref = collection(db, 'users', USER_ID, 'pesees');
+    const q = query(ref, orderBy('key', 'desc'));
+    const snap = await getDocs(q);
+    entries = snap.docs.map(d => d.data());
+    dbReady = true;
+  } catch(e) {
+    console.error('Firestore load error', e);
+    // fallback localStorage
+    try { entries = JSON.parse(localStorage.getItem('sante_backup') || '[]'); } catch(_) {}
+    dbReady = true;
+  }
+}
+
+async function saveEntries() {
+  // Sauvegarde chaque pesée comme document séparé (key = ID du doc)
+  const entry = entries[0];
+  if (!entry) return;
+  try {
+    await setDoc(doc(db, 'users', USER_ID, 'pesees', entry.key), entry);
+    // Backup local aussi
+    localStorage.setItem('sante_backup', JSON.stringify(entries));
+  } catch(e) {
+    console.error('Firestore save error', e);
+    localStorage.setItem('sante_backup', JSON.stringify(entries));
+  }
 }
 
 // ─── ROUTING ────────────────────────────────────────────
@@ -208,10 +257,14 @@ let currentDay = 0;
 let formState = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
 let savedAnim = false;
 
-function goTo(view) {
+async function goTo(view) {
   currentView = view;
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('nav-' + view).classList.add('active');
+  if (view === 'journal' && !journal[journalDate]) {
+    showLoader('Chargement du journal…');
+    await loadJournal(journalDate);
+  }
   render();
 }
 
@@ -684,13 +737,31 @@ const ALIMENTS = [
 
 const KCAL_OBJECTIF = 1500;
 const PROT_OBJECTIF = 90;
-const JOURNAL_KEY = 'journal_sylvain_v1';
 
-let journal = {}; // { 'YYYY-MM-DD': [{id, nom, kcal, prot, gluc, lip, qty, moment}, ...] }
-try { journal = JSON.parse(localStorage.getItem(JOURNAL_KEY) || '{}'); } catch(e) {}
+let journal = {};
 
-function saveJournal() {
-  try { localStorage.setItem(JOURNAL_KEY, JSON.stringify(journal)); } catch(e) {}
+async function loadJournal(dateKey) {
+  try {
+    const ref = doc(db, 'users', USER_ID, 'journal', dateKey);
+    const snap = await getDoc(ref);
+    if (snap.exists()) {
+      journal[dateKey] = snap.data().items || [];
+    } else {
+      journal[dateKey] = [];
+    }
+  } catch(e) {
+    journal[dateKey] = JSON.parse(localStorage.getItem('journal_' + dateKey) || '[]');
+  }
+}
+
+async function saveJournalDay(dateKey) {
+  const items = journal[dateKey] || [];
+  try {
+    await setDoc(doc(db, 'users', USER_ID, 'journal', dateKey), { items, updatedAt: Date.now() });
+    localStorage.setItem('journal_' + dateKey, JSON.stringify(items));
+  } catch(e) {
+    localStorage.setItem('journal_' + dateKey, JSON.stringify(items));
+  }
 }
 
 let journalDate = new Date().toISOString().slice(0, 10);
@@ -727,16 +798,20 @@ function dateLabel(dateKey) {
   return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 }
 
-function shiftJournalDate(delta) {
+async function shiftJournalDate(delta) {
   const d = new Date(journalDate);
   d.setDate(d.getDate() + delta);
   const today = new Date();
   if (d > today) return;
   journalDate = d.toISOString().slice(0, 10);
+  if (!journal[journalDate]) {
+    showLoader('Chargement du journal…');
+    await loadJournal(journalDate);
+  }
   render();
 }
 
-function addAlimentToJournal() {
+async function addAlimentToJournal() {
   const qty = parseFloat(pendingQty);
   if (!pendingAliment || isNaN(qty) || qty <= 0) return;
   if (!journal[journalDate]) journal[journalDate] = [];
@@ -750,17 +825,17 @@ function addAlimentToJournal() {
     qty,
     moment: journalMoment
   });
-  saveJournal();
+  await saveJournalDay(journalDate);
   pendingAliment = null;
   pendingQty = '100';
   journalSearch = '';
   render();
 }
 
-function removeJournalItem(dateKey, id) {
+async function removeJournalItem(dateKey, id) {
   if (!journal[dateKey]) return;
   journal[dateKey] = journal[dateKey].filter(i => i.id !== id);
-  saveJournal();
+  await saveJournalDay(dateKey);
   render();
 }
 
@@ -954,7 +1029,8 @@ if ('serviceWorker' in navigator) {
 }
 
 // ─── INIT ───────────────────────────────────────────────
-render();
+showLoader('Connexion à la base de données…');
+loadEntries().then(() => render());
 </script>
 </body>
 </html>
