@@ -413,6 +413,15 @@ function pasColor(v) {
   return v === 'low' ? '#C4622D' : v === 'mid' ? '#D4A72C' : '#2A7F6F';
 }
 
+function normalizeSearch(str) {
+  return (str || '')
+    .toLowerCase()
+    .replace(/œ/g, 'oe')
+    .replace(/æ/g, 'ae')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
 async function loadEntries() {
   if (!firebaseReady) {
     entries = safeLocalGet('sante_backup', []);
@@ -583,6 +592,12 @@ function viewHome() {
   <div class="grid2">
     <div class="mini-card"><div class="mini-val">${entries.length}</div><div class="mini-label">Pesées enregistrées</div></div>
     <div class="mini-card"><div class="mini-val">${avgPerWeek()}</div><div class="mini-label">kg / semaine</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Statut</div>
+    <div style="font-size:13px;font-family:sans-serif;color:var(--muted);line-height:1.5">
+      ${firebaseReady ? 'Synchronisé avec Firebase.' : 'Mode local actif.'}
+    </div>
   </div>`;
 }
 
@@ -616,7 +631,7 @@ function viewSaisie() {
       <label class="field-label">Note libre (optionnel)</label>
       <textarea placeholder="ex : bonne semaine, faim ok…" rows="2" oninput="formState.note=this.value">${s.note}</textarea>
 
-      <button class="btn-primary ${savedAnim ? 'saved' : ''}" onclick="submitForm()">${savedAnim ? '✓ Enregistré !' : 'Enregistrer la pesée'}</button>
+      <button class="btn-primary ${savedAnim ? 'saved' : ''}" id="btn-save" onclick="submitForm()">${savedAnim ? '✓ Enregistré !' : 'Enregistrer la pesée'}</button>
       <button class="btn-secondary" onclick="goTo('home')">Annuler</button>
     </div>`;
 }
@@ -660,15 +675,17 @@ function viewRepas() {
     <div class="day-tabs">
       ${DAYS.map((day, i) => `<button class="day-tab ${i===currentDay?'active':''}" onclick="setDay(${i})">${day.nom}</button>`).join('')}
     </div>
-    ${d.meals.map(m => `<div class="meal-card">
-      <div class="meal-header">
-        <div class="meal-time">${m.time}</div>
-        <div class="meal-kcal">${m.kcal} kcal</div>
-      </div>
-      <div class="meal-name">${m.name}</div>
-      <div class="meal-desc">${m.desc}</div>
-      <div class="badge-row">${m.badges.map(badgeHtml).join('')}</div>
-    </div>`).join('')}
+    <div class="meal-grid">
+      ${d.meals.map(m => `<div class="meal-card">
+        <div class="meal-header">
+          <div class="meal-time">${m.time}</div>
+          <div class="meal-kcal">${m.kcal} kcal</div>
+        </div>
+        <div class="meal-name">${m.name}</div>
+        <div class="meal-desc">${m.desc}</div>
+        <div class="badge-row">${m.badges.map(badgeHtml).join('')}</div>
+      </div>`).join('')}
+    </div>
   </div>`;
 }
 
@@ -741,12 +758,38 @@ async function removeJournalItem(dateKey, id) {
 }
 
 function openQtyModal(index) {
-  const filtered = ALIMENTS.filter(a =>
-    journalSearch.trim().length < 1 ? false : a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())
-  );
+  const filtered = ALIMENTS.filter(a => {
+    if (journalSearch.trim().length < 1) return false;
+    const q = normalizeSearch(journalSearch);
+    return normalizeSearch(a.nom).includes(q) || normalizeSearch(a.cat).includes(q);
+  });
   pendingAliment = filtered[index] || null;
   pendingQty = '100';
   render();
+}
+
+function renderAlimentsList() {
+  const filtered = journalSearch.trim().length >= 1
+    ? ALIMENTS.filter(a => {
+        const q = normalizeSearch(journalSearch);
+        return normalizeSearch(a.nom).includes(q) || normalizeSearch(a.cat).includes(q);
+      }).slice(0, 15)
+    : [];
+
+  if (filtered.length === 0) {
+    return journalSearch.trim().length >= 1
+      ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat.</div>`
+      : '';
+  }
+
+  return `<div class="aliments-list">${filtered.map((a, i) => `
+    <div class="aliment-row">
+      <div>
+        <div class="aliment-name">${a.nom}</div>
+        <div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div>
+      </div>
+      <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
+    </div>`).join('')}</div>`;
 }
 
 function setMoment(m) {
@@ -762,21 +805,6 @@ function renderQtyPreview() {
   }
 }
 
-function renderAlimentsList() {
-  const filtered = journalSearch.trim().length >= 1
-    ? ALIMENTS.filter(a => a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())).slice(0, 15)
-    : [];
-  if (filtered.length === 0) return journalSearch.trim().length >= 1 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat.</div>` : '';
-  return `<div class="aliments-list">${filtered.map((a, i) => `
-    <div class="aliment-row">
-      <div>
-        <div class="aliment-name">${a.nom}</div>
-        <div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div>
-      </div>
-      <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
-    </div>`).join('')}</div>`;
-}
-
 function viewJournal() {
   const bilan = getJournalBilan(journalDate);
   const kcalPct = Math.min(100, Math.round((bilan.kcal / KCAL_OBJECTIF) * 100));
@@ -785,7 +813,10 @@ function viewJournal() {
   const protClass = bilan.prot >= PROT_OBJECTIF ? 'ok' : bilan.prot >= PROT_OBJECTIF * 0.7 ? 'warn' : 'over';
 
   const filtered = journalSearch.trim().length >= 1
-    ? ALIMENTS.filter(a => a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())).slice(0, 15)
+    ? ALIMENTS.filter(a => {
+        const q = normalizeSearch(journalSearch);
+        return normalizeSearch(a.nom).includes(q) || normalizeSearch(a.cat).includes(q);
+      }).slice(0, 15)
     : [];
 
   const items = getJournalItems(journalDate);
@@ -857,7 +888,8 @@ function viewJournal() {
 
     <div class="search-wrap">
       <span class="search-icon">🔍</span>
-      <input class="search-input" type="text" placeholder="Ajouter un aliment… (ex: saumon, œuf, skyr)" value="${journalSearch}" oninput="journalSearch=this.value;document.getElementById('aliments-res').innerHTML=renderAlimentsList()" id="journal-search">
+      <input class="search-input" type="text" placeholder="Ajouter un aliment… (ex: saumon, œuf, skyr)" value="${journalSearch}"
+        oninput="journalSearch=this.value;document.getElementById('aliments-res').innerHTML=renderAlimentsList()" id="journal-search">
     </div>
 
     <div id="aliments-res">
@@ -872,6 +904,8 @@ function viewJournal() {
     </div>
 
     ${items.length > 0 ? journalHtml : `<div class="empty" style="padding-top:16px">Aucun aliment enregistré.<br>Tape le nom d'un aliment ci-dessus.</div>`}
+
+    <div style="height:16px"></div>
     ${modalHtml}
   `;
 }
@@ -884,10 +918,6 @@ function render() {
   const views = { home: viewHome, saisie: viewSaisie, historique: viewHistorique, repas: viewRepas, journal: viewJournal };
   main.innerHTML = views[currentView]();
   main.scrollTop = 0;
-  if (currentView === 'journal') {
-    const inp = document.getElementById('journal-search');
-    if (inp) inp.focus();
-  }
 }
 
 window.goTo = goTo;
@@ -903,15 +933,10 @@ window.setMoment = setMoment;
 window.renderQtyPreview = renderQtyPreview;
 window.renderAlimentsList = renderAlimentsList;
 window.render = render;
-
 Object.defineProperty(window, 'formState', { get: () => formState, set: v => { formState = v; } });
 Object.defineProperty(window, 'journalSearch', { get: () => journalSearch, set: v => { journalSearch = v; } });
 Object.defineProperty(window, 'pendingQty', { get: () => pendingQty, set: v => { pendingQty = v; } });
 Object.defineProperty(window, 'pendingAliment', { get: () => pendingAliment, set: v => { pendingAliment = v; } });
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW registration skipped:', err));
-}
 
 showLoader('Connexion à la base de données…');
 signInAnonymously(auth)
