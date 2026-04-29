@@ -27,20 +27,25 @@
   html, body { height: 100%; background: var(--bg); font-family: 'Georgia', Georgia, serif; color: var(--deep); }
   #app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
 
+  /* HEADER */
   .header { background: var(--deep); color: #fff; padding: 20px 20px 16px; padding-top: calc(20px + env(safe-area-inset-top, 0px)); }
   .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
   .header p { font-size: 12px; opacity: 0.6; margin-top: 3px; font-family: sans-serif; }
 
+  /* SCROLL ZONE */
   .scroll-zone { flex: 1; overflow-y: auto; padding-bottom: calc(72px + var(--safe-bottom)); }
 
+  /* NAV */
   nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; padding-bottom: calc(10px + var(--safe-bottom)); z-index: 100; }
   nav button { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-family: sans-serif; color: var(--muted); padding: 4px 16px; }
   nav button.active { color: var(--teal); font-weight: 700; }
   nav button span.ico { font-size: 22px; line-height: 1; }
 
+  /* CARDS */
   .card { background: var(--surface); border-radius: 16px; margin: 16px 16px 0; padding: 18px 20px; border: 1px solid var(--border); }
   .card-title { font-size: 11px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; }
 
+  /* PROGRESS RING */
   .ring-wrap { display: flex; align-items: center; gap: 20px; }
   .big-num { font-size: 36px; font-weight: 700; line-height: 1; }
   .unit { font-size: 14px; color: var(--muted); font-family: sans-serif; font-weight: 400; }
@@ -49,13 +54,15 @@
   .delta.bad { color: var(--terra); }
   .delta.neutral { color: var(--muted); font-weight: 400; }
 
+  /* GRID STATS */
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 16px 0; }
   .mini-card { background: var(--surface); border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); }
   .mini-val { font-size: 24px; font-weight: 700; }
   .mini-label { font-size: 11px; font-family: sans-serif; color: var(--muted); margin-top: 3px; }
 
+  /* FORM */
   label.field-label { display: block; font-size: 11px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
-  input[type=number], textarea, input[type=text] { width: 100%; padding: 11px 14px; font-size: 16px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--deep); font-family: sans-serif; outline: none; margin-bottom: 16px; }
+  input[type=number], textarea { width: 100%; padding: 11px 14px; font-size: 16px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--deep); font-family: sans-serif; outline: none; margin-bottom: 16px; }
   input[type=range] { width: 100%; accent-color: var(--teal); }
   .slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
   .dots { display: inline-flex; gap: 5px; }
@@ -63,17 +70,21 @@
   .dot.on { background: var(--teal); }
   .dot.on-deep { background: var(--deep); }
 
+  /* PAS BUTTONS */
   .pas-row { display: flex; gap: 8px; margin-bottom: 16px; }
   .pas-btn { flex: 1; padding: 10px 4px; font-size: 12px; font-family: sans-serif; border-radius: 8px; border: 1.5px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-weight: 400; transition: all 0.15s; }
   .pas-btn.active-low { border-color: #C4622D; background: #C4622D18; color: #C4622D; font-weight: 700; }
   .pas-btn.active-mid { border-color: #D4A72C; background: #D4A72C18; color: #D4A72C; font-weight: 700; }
   .pas-btn.active-high { border-color: #2A7F6F; background: #2A7F6F18; color: #2A7F6F; font-weight: 700; }
 
+  /* BUTTONS */
   .btn-primary { width: 100%; padding: 14px; font-size: 16px; background: var(--deep); color: #fff; border: none; border-radius: 12px; cursor: pointer; font-family: sans-serif; font-weight: 600; transition: background 0.2s; margin-top: 4px; }
   .btn-primary:active { opacity: 0.85; }
+  .btn-primary.terra { background: var(--terra); }
   .btn-primary.saved { background: var(--teal); }
   .btn-secondary { width: 100%; padding: 12px; font-size: 15px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; font-family: sans-serif; margin-top: 8px; }
 
+  /* HISTORIQUE */
   .hist-row { padding: 14px 0; border-bottom: 1px solid var(--border); }
   .hist-row:last-child { border-bottom: none; }
   .hist-header { display: flex; justify-content: space-between; align-items: flex-start; }
@@ -86,28 +97,37 @@
   .hist-meta { display: flex; gap: 14px; margin-top: 8px; align-items: center; font-family: sans-serif; }
   .hist-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; font-family: sans-serif; }
 
+  /* PLAN REPAS */
   .day-tabs { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; padding: 0 16px; margin-top: 16px; scrollbar-width: none; }
   .day-tabs::-webkit-scrollbar { display: none; }
   .day-tab { flex: 0 0 auto; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 13px; font-family: sans-serif; cursor: pointer; white-space: nowrap; }
   .day-tab.active { background: var(--deep); color: #fff; border-color: var(--deep); font-weight: 600; }
-
   .meal-card { background: var(--surface); border-radius: 14px; margin: 10px 16px 0; border: 1px solid var(--border); overflow: hidden; }
-  .meal-header { padding: 10px 16px 0; display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .meal-header { padding: 10px 16px 0; }
   .meal-time { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-family: sans-serif; }
-  .meal-kcal { font-size: 12px; color: var(--muted); font-family: sans-serif; }
-  .meal-name { font-size: 16px; font-weight: 700; color: var(--deep); margin: 3px 16px 6px; }
-  .meal-desc { font-size: 13px; color: var(--muted); font-family: sans-serif; line-height: 1.55; padding: 0 16px 10px; }
-  .badge-row, .meal-badges { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 16px 14px; }
+  .meal-name { font-size: 16px; font-weight: 700; color: var(--deep); margin: 3px 0 6px; }
+  .meal-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
   .badge { font-size: 11px; padding: 2px 9px; border-radius: 12px; font-family: sans-serif; font-weight: 600; }
-  .badge.green, .badge-p { background: #E1F5EE; color: #085041; }
-  .badge.deep, .badge-g { background: #EEEDFE; color: #3C3489; }
-  .badge.sand, .badge-f { background: #FAEEDA; color: #633806; }
-  .badge.terra { background: #FAF0EA; color: #9A4D25; }
+  .badge-p { background: #E1F5EE; color: #085041; }
   .badge-l { background: #EAF3DE; color: #27500A; }
+  .badge-f { background: #FAEEDA; color: #633806; }
+  .badge-g { background: #EEEDFE; color: #3C3489; }
   .badge-s { background: #E6F1FB; color: #0C447C; }
+  .meal-detail { font-size: 13px; color: var(--muted); font-family: sans-serif; line-height: 1.55; padding: 0 16px 14px; }
+  .macros-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--border); }
+  .macro-cell { text-align: center; padding: 10px 8px; border-right: 1px solid var(--border); }
+  .macro-cell:last-child { border-right: none; }
+  .macro-val { font-size: 16px; font-weight: 700; color: var(--deep); }
+  .macro-label { font-size: 10px; color: var(--muted); font-family: sans-serif; margin-top: 1px; }
+  .tip-box { margin: 10px 16px 0; background: var(--teal-light); border-radius: 12px; padding: 12px 14px; font-size: 12px; color: var(--teal); font-family: sans-serif; line-height: 1.5; border-left: 3px solid var(--teal); }
+  .principes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 16px 0; }
+  .principe { background: var(--surface); border-radius: 12px; padding: 12px 14px; border: 1px solid var(--border); font-size: 12px; color: var(--muted); font-family: sans-serif; line-height: 1.45; }
+  .principe strong { display: block; color: var(--deep); font-size: 13px; margin-bottom: 3px; }
 
+  /* EMPTY */
   .empty { text-align: center; padding: 32px 20px; font-family: sans-serif; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
+  /* JOURNAL */
   .bilan-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin: 12px 16px 0; }
   .bilan-cell { background: var(--surface); border-radius: 12px; padding: 10px 8px; text-align: center; border: 1px solid var(--border); }
   .bilan-val { font-size: 18px; font-weight: 700; color: var(--deep); line-height: 1; }
@@ -119,18 +139,16 @@
   .progress-track { height: 8px; background: var(--sand); border-radius: 4px; overflow: hidden; margin-top: 4px; }
   .progress-fill-bar { height: 8px; border-radius: 4px; transition: width 0.4s; }
   .progress-label { display: flex; justify-content: space-between; font-size: 11px; font-family: sans-serif; color: var(--muted); }
-
   .search-wrap { margin: 12px 16px 0; position: relative; }
   .search-input { width: 100%; padding: 11px 14px 11px 38px; font-size: 15px; border: 1.5px solid var(--border); border-radius: 12px; background: var(--surface); color: var(--deep); font-family: sans-serif; outline: none; }
   .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 16px; color: var(--muted); pointer-events: none; }
-
   .aliments-list { margin: 6px 16px 0; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; max-height: 260px; overflow-y: auto; }
-  .aliment-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); }
+  .aliment-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--border); cursor: pointer; }
   .aliment-row:last-child { border-bottom: none; }
+  .aliment-row:active { background: var(--bg); }
   .aliment-name { font-size: 14px; color: var(--deep); font-family: sans-serif; font-weight: 500; }
   .aliment-macros { font-size: 11px; color: var(--muted); font-family: sans-serif; margin-top: 2px; }
-  .aliment-add { background: var(--teal); color: #fff; border: none; border-radius: 8px; padding: 5px 12px; font-size: 12px; font-family: sans-serif; font-weight: 600; cursor: pointer; }
-
+  .aliment-add { background: var(--teal); color: #fff; border: none; border-radius: 8px; padding: 5px 12px; font-size: 12px; font-family: sans-serif; font-weight: 600; cursor: pointer; flex: 0 0 auto; }
   .qty-modal { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--surface); border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; padding: 20px 20px calc(20px + var(--safe-bottom)); z-index: 200; box-shadow: 0 -4px 24px rgba(0,0,0,0.12); }
   .qty-modal h3 { font-size: 16px; color: var(--deep); margin-bottom: 4px; }
   .qty-modal p { font-size: 12px; color: var(--muted); font-family: sans-serif; margin-bottom: 14px; }
@@ -138,16 +156,23 @@
   .qty-input { flex: 1; padding: 10px 14px; font-size: 18px; font-weight: 700; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--deep); font-family: sans-serif; outline: none; text-align: center; }
   .qty-unit { font-size: 14px; color: var(--muted); font-family: sans-serif; }
   .qty-preview { background: var(--teal-light); border-radius: 10px; padding: 10px 14px; font-family: sans-serif; font-size: 13px; color: var(--teal); margin-bottom: 14px; display: flex; justify-content: space-around; }
-
-  .journal-item { background: var(--surface); border-radius: 12px; padding: 10px 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; margin: 6px 16px 0; }
+  .journal-list { margin: 10px 16px 0; display: flex; flex-direction: column; gap: 6px; }
+  .journal-item { background: var(--surface); border-radius: 12px; padding: 10px 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
   .journal-item-name { font-size: 14px; font-weight: 500; color: var(--deep); font-family: sans-serif; }
   .journal-item-detail { font-size: 11px; color: var(--muted); font-family: sans-serif; margin-top: 2px; }
-  .journal-delete { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding-left: 8px; line-height: 1; }
+  .journal-delete { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 0 0 0 8px; line-height: 1; }
   .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 199; }
-  .meal-section-title { font-size: 11px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin: 12px 16px 6px; }
+  .meal-section { margin: 12px 16px 0; }
+  .meal-section-title { font-size: 11px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; padding-left: 2px; }
   .date-nav { display: flex; align-items: center; justify-content: space-between; margin: 12px 16px 0; }
   .date-nav-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 18px; cursor: pointer; color: var(--deep); }
   .date-nav-label { font-size: 14px; font-family: sans-serif; font-weight: 600; color: var(--deep); }
+
+  /* INSTALLED BANNER */
+  .install-banner { margin: 12px 16px 0; background: var(--deep); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .install-banner p { font-size: 13px; color: rgba(255,255,255,0.8); font-family: sans-serif; line-height: 1.4; }
+  .install-banner button { flex: 0 0 auto; background: var(--terra); color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-family: sans-serif; font-weight: 600; cursor: pointer; }
+  .install-banner .close { background: transparent; color: rgba(255,255,255,0.5); border: none; font-size: 18px; cursor: pointer; padding: 0; }
 </style>
 </head>
 <body>
@@ -187,11 +212,12 @@ const USER_ID = 'sylvain';
 
 const DEPART = 94;
 const OBJECTIF = 84;
-const KCAL_OBJECTIF = 1900;
-const PROT_OBJECTIF = 140;
+const KCAL_OBJECTIF = 1500;
+const PROT_OBJECTIF = 90;
 
 let firebaseReady = false;
 let entries = [];
+let dbReady = false;
 let currentView = 'home';
 let currentDay = 0;
 let formState = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
@@ -199,9 +225,12 @@ let savedAnim = false;
 let journal = {};
 let journalDate = new Date().toISOString().slice(0, 10);
 let journalSearch = '';
-let journalMoment = 'Matin';
+let journalPas = 0;
+  let journalMoment = 'Matin';
 let pendingAliment = null;
 let pendingQty = '100';
+let deferredPrompt = null;
+window._showInstall = false;
 
 const DAYS = [
   {
@@ -264,102 +293,140 @@ const ALIMENTS = [
   { nom:'Lentilles corail cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
   { nom:'Lentilles vertes cuites (100g)', kcal:116, prot:9, gluc:20, lip:0, cat:'Légumineuses' },
   { nom:'Quinoa cuit (100g)', kcal:120, prot:4, gluc:22, lip:2, cat:'Féculents' },
-  { nom:'Riz complet cuit (100g)', kcal:130, prot:3, gluc:28, lip:1, cat:'Féculents' },
-  { nom:'Semoule cuite (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
-  { nom:'Pain de seigle (1 tranche 30g)', kcal:63, prot:2, gluc:12, lip:0, cat:'Féculents' },
-  { nom:'Pomme de terre cuite (100g)', kcal:87, prot:2, gluc:20, lip:0, cat:'Féculents' },
-  { nom:'Épinards (100g)', kcal:23, prot:3, gluc:1, lip:0, cat:'Légumes' },
+  { nom:'Riz complet cuit (100g)', kcal:124, prot:2.7, gluc:25, lip:1, cat:'Féculents' },
+  { nom:'Patate douce (100g)', kcal:86, prot:1.6, gluc:20, lip:0, cat:'Féculents' },
+  { nom:'Pommes de terre vapeur (100g)', kcal:80, prot:2, gluc:17, lip:0, cat:'Féculents' },
+  { nom:'Flocons d'avoine (40g)', kcal:148, prot:5, gluc:24, lip:3, cat:'Féculents' },
+  { nom:'Brocoli (100g)', kcal:34, prot:3, gluc:7, lip:0, cat:'Légumes' },
   { nom:'Courgette (100g)', kcal:17, prot:1, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Brocolis (100g)', kcal:34, prot:3, gluc:7, lip:0, cat:'Légumes' },
   { nom:'Haricots verts (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Carottes (100g)', kcal:41, prot:1, gluc:10, lip:0, cat:'Légumes' },
   { nom:'Tomates (100g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Légumes' },
-  { nom:'Concombre (100g)', kcal:12, prot:1, gluc:2, lip:0, cat:'Légumes' },
-  { nom:'Salade verte (100g)', kcal:14, prot:1, gluc:2, lip:0, cat:'Légumes' },
-  { nom:'Poivron (100g)', kcal:31, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Champignons (100g)', kcal:22, prot:3, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Poireau (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Carotte (100g)', kcal:41, prot:1, gluc:10, lip:0, cat:'Légumes' },
-  { nom:'Courge butternut (100g)', kcal:45, prot:1, gluc:12, lip:0, cat:'Légumes' },
-  { nom:'Aubergine (100g)', kcal:25, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Avocat ½ (70g)', kcal:114, prot:1, gluc:2, lip:11, cat:'Fruits' },
-  { nom:'Fruits rouges (100g)', kcal:52, prot:1, gluc:12, lip:0, cat:'Fruits' },
-  { nom:'Huile d\'olive (1 c.s. 10ml)', kcal:88, prot:0, gluc:0, lip:10, cat:'Graisses' },
-  { nom:'Noix de Grenoble (10g ~1 noix)', kcal:65, prot:2, gluc:1, lip:7, cat:'Graisses' },
-  { nom:'Amandes (10g ~10 amandes)', kcal:58, prot:2, gluc:2, lip:5, cat:'Graisses' },
-  { nom:'Graines de chia (1 c.s. 10g)', kcal:49, prot:2, gluc:4, lip:3, cat:'Graisses' },
-  { nom:'Haricots rouges cuits (100g)', kcal:127, prot:9, gluc:22, lip:1, cat:'Légumineuses' },
-  { nom:'Haricots blancs cuits (100g)', kcal:139, prot:10, gluc:25, lip:1, cat:'Légumineuses' },
-  { nom:'Haricots noirs cuits (100g)', kcal:132, prot:9, gluc:24, lip:1, cat:'Légumineuses' },
-  { nom:'Edamame (100g)', kcal:122, prot:11, gluc:10, lip:5, cat:'Légumineuses' },
-  { nom:'Fèves cuites (100g)', kcal:110, prot:8, gluc:20, lip:1, cat:'Légumineuses' },
-  { nom:'Pois cassés cuits (100g)', kcal:118, prot:8, gluc:21, lip:0, cat:'Légumineuses' },
-  { nom:'Betterave cuite (100g)', kcal:44, prot:2, gluc:10, lip:0, cat:'Légumes' },
-  { nom:'Céleri branche (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Céleri-rave (100g)', kcal:42, prot:2, gluc:9, lip:0, cat:'Légumes' },
-  { nom:'Chou blanc (100g)', kcal:25, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Chou rouge (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Chou-fleur (100g)', kcal:25, prot:2, gluc:5, lip:0, cat:'Légumes' },
-  { nom:'Endive (100g)', kcal:17, prot:1, gluc:4, lip:0, cat:'Légumes' },
-  { nom:'Épinards cuits (100g)', kcal:23, prot:3, gluc:4, lip:0, cat:'Légumes' },
-  { nom:'Fenouil (100g)', kcal:31, prot:1, gluc:7, lip:0, cat:'Légumes' },
-  { nom:'Navet (100g)', kcal:28, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  { nom:'Oignon (100g)', kcal:40, prot:1, gluc:9, lip:0, cat:'Légumes' },
-  { nom:'Petits pois (100g)', kcal:81, prot:5, gluc:14, lip:0, cat:'Légumes' },
-  { nom:'Radis (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
-  { nom:'Roquette (100g)', kcal:25, prot:3, gluc:4, lip:1, cat:'Légumes' },
-  { nom:'Anchois à l\'huile (30g)', kcal:62, prot:9, gluc:0, lip:3, cat:'Poisson' },
+  { nom:'Concombre (100g)', kcal:15, prot:1, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Avocat (100g)', kcal:160, prot:2, gluc:9, lip:15, cat:'Légumes' },
+  { nom:'Banane (120g)', kcal:105, prot:1, gluc:27, lip:0, cat:'Fruits' },
+  { nom:'Pomme (150g)', kcal:78, prot:0, gluc:21, lip:0, cat:'Fruits' },
+  { nom:'Fruits rouges (100g)', kcal:50, prot:1, gluc:12, lip:0, cat:'Fruits' },
+  { nom:'Amandes (30g)', kcal:174, prot:6, gluc:5, lip:15, cat:'Oléagineux' },
+  { nom:'Noix (30g)', kcal:196, prot:4, gluc:2, lip:20, cat:'Oléagineux' },
+  { nom:'Huile d'olive (1 càs)', kcal:90, prot:0, gluc:0, lip:10, cat:'Matières grasses' }
+,
+
+  // Volaille & viande (complément)
+  { nom:'Canard magret (100g)', kcal:190, prot:22, gluc:0, lip:11, cat:'Viande' },
+  { nom:'Canard confit cuisse (100g)', kcal:330, prot:19, gluc:0, lip:28, cat:'Viande' },
+  { nom:'Veau escalope (100g)', kcal:105, prot:22, gluc:0, lip:2, cat:'Viande' },
+  { nom:'Porc filet mignon (100g)', kcal:143, prot:22, gluc:0, lip:6, cat:'Viande' },
+  { nom:'Jambon cru (30g)', kcal:75, prot:7, gluc:0, lip:5, cat:'Viande' },
+  { nom:'Boeuf bavette (100g)', kcal:157, prot:22, gluc:0, lip:7, cat:'Viande' },
+  // Poissons & fruits de mer
+  { nom:'Anchois a l huile (30g)', kcal:62, prot:9, gluc:0, lip:3, cat:'Poisson' },
   { nom:'Crevettes cuites (100g)', kcal:99, prot:21, gluc:0, lip:1, cat:'Poisson' },
   { nom:'Moules cuites (100g)', kcal:86, prot:12, gluc:4, lip:2, cat:'Poisson' },
   { nom:'Dorade (100g)', kcal:96, prot:20, gluc:0, lip:2, cat:'Poisson' },
   { nom:'Truite (100g)', kcal:149, prot:20, gluc:0, lip:7, cat:'Poisson' },
-  { nom:'Veau escalope (100g)', kcal:105, prot:22, gluc:0, lip:2, cat:'Viande' },
-  { nom:'Porc filet mignon (100g)', kcal:143, prot:22, gluc:0, lip:6, cat:'Viande' },
-  { nom:'Magret de canard (100g)', kcal:190, prot:22, gluc:0, lip:11, cat:'Viande' },
+  { nom:'Lieu noir (100g)', kcal:90, prot:19, gluc:0, lip:1, cat:'Poisson' },
+  // Oeufs
+  { nom:'Oeuf dur (1)', kcal:78, prot:6, gluc:0, lip:5, cat:'Oeufs' },
+  { nom:'Oeufs durs (2)', kcal:156, prot:12, gluc:1, lip:11, cat:'Oeufs' },
+  { nom:'Oeufs a la coque (2)', kcal:156, prot:12, gluc:1, lip:11, cat:'Oeufs' },
+  // Laitages
   { nom:'Yaourt nature (125g)', kcal:74, prot:4, gluc:6, lip:4, cat:'Laitage' },
   { nom:'Yaourt grec 0% (125g)', kcal:75, prot:10, gluc:5, lip:0, cat:'Laitage' },
-  { nom:'Ricotta (50g)', kcal:72, prot:3, gluc:1, lip:6, cat:'Laitage' },
-  { nom:'Parmesan (20g)', kcal:83, prot:7, gluc:0, lip:6, cat:'Laitage' },
   { nom:'Mozzarella (50g)', kcal:124, prot:8, gluc:1, lip:10, cat:'Laitage' },
-  { nom:'Orge perlé cuit (100g)', kcal:123, prot:2, gluc:28, lip:0, cat:'Féculents' },
+  { nom:'Parmesan rape (20g)', kcal:83, prot:7, gluc:0, lip:6, cat:'Laitage' },
+  { nom:'Camembert (30g)', kcal:87, prot:5, gluc:0, lip:7, cat:'Laitage' },
+  { nom:'Emmental (30g)', kcal:113, prot:8, gluc:0, lip:9, cat:'Laitage' },
+  { nom:'Ricotta (50g)', kcal:72, prot:3, gluc:1, lip:6, cat:'Laitage' },
+  // Légumineuses
+  { nom:'Haricots rouges cuits (100g)', kcal:127, prot:9, gluc:22, lip:1, cat:'Légumineuses' },
+  { nom:'Haricots blancs cuits (100g)', kcal:139, prot:10, gluc:25, lip:1, cat:'Légumineuses' },
+  { nom:'Edamame (100g)', kcal:122, prot:11, gluc:10, lip:5, cat:'Légumineuses' },
+  { nom:'Feves cuites (100g)', kcal:110, prot:8, gluc:20, lip:1, cat:'Légumineuses' },
+  { nom:'Pois casses cuits (100g)', kcal:118, prot:8, gluc:21, lip:0, cat:'Légumineuses' },
+  // Féculents
   { nom:'Boulgour cuit (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
-  { nom:'Pâtes complètes cuites (100g)', kcal:124, prot:5, gluc:25, lip:1, cat:'Féculents' },
-  { nom:'Pain complet (1 tranche 30g)', kcal:68, prot:3, gluc:13, lip:1, cat:'Féculents' },
-  { nom:'Pain de mie complet (1 tranche 25g)', kcal:58, prot:2, gluc:11, lip:1, cat:'Féculents' },
-  { nom:'Pomme (1 moyenne 150g)', kcal:78, prot:0, gluc:21, lip:0, cat:'Fruits' },
-  { nom:'Orange (1 moyenne 150g)', kcal:72, prot:1, gluc:18, lip:0, cat:'Fruits' },
-  { nom:'Banane (1 moyenne 120g)', kcal:107, prot:1, gluc:27, lip:0, cat:'Fruits' },
-  { nom:'Poire (1 moyenne 150g)', kcal:85, prot:1, gluc:22, lip:0, cat:'Fruits' },
-  { nom:'Kiwi (1 kiwi 80g)', kcal:43, prot:1, gluc:10, lip:0, cat:'Fruits' },
+  { nom:'Pates completes cuites (100g)', kcal:124, prot:5, gluc:25, lip:1, cat:'Féculents' },
+  { nom:'Pates blanches cuites (100g)', kcal:131, prot:5, gluc:27, lip:1, cat:'Féculents' },
+  { nom:'Pain de seigle (30g)', kcal:63, prot:2, gluc:12, lip:0, cat:'Féculents' },
+  { nom:'Pain complet (30g)', kcal:68, prot:3, gluc:13, lip:1, cat:'Féculents' },
+  { nom:'Semoule cuite (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
+  // Légumes
+  { nom:'Epinards (100g)', kcal:23, prot:3, gluc:1, lip:0, cat:'Légumes' },
+  { nom:'Poivron rouge (100g)', kcal:31, prot:1, gluc:6, lip:0, cat:'Légumes' },
+  { nom:'Champignons (100g)', kcal:22, prot:3, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Aubergine (100g)', kcal:25, prot:1, gluc:6, lip:0, cat:'Légumes' },
+  { nom:'Poireau (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Chou-fleur (100g)', kcal:25, prot:2, gluc:5, lip:0, cat:'Légumes' },
+  { nom:'Betterave cuite (100g)', kcal:44, prot:2, gluc:10, lip:0, cat:'Légumes' },
+  { nom:'Celeri branche (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Courge butternut (100g)', kcal:45, prot:1, gluc:12, lip:0, cat:'Légumes' },
+  { nom:'Endive (100g)', kcal:17, prot:1, gluc:4, lip:0, cat:'Légumes' },
+  { nom:'Fenouil (100g)', kcal:31, prot:1, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Oignon (100g)', kcal:40, prot:1, gluc:9, lip:0, cat:'Légumes' },
+  { nom:'Petits pois (100g)', kcal:81, prot:5, gluc:14, lip:0, cat:'Légumes' },
+  { nom:'Radis (100g)', kcal:16, prot:1, gluc:3, lip:0, cat:'Légumes' },
+  { nom:'Roquette (100g)', kcal:25, prot:3, gluc:4, lip:1, cat:'Légumes' },
+  { nom:'Salade verte (100g)', kcal:14, prot:1, gluc:2, lip:0, cat:'Légumes' },
+  { nom:'Asperges (100g)', kcal:20, prot:2, gluc:4, lip:0, cat:'Légumes' },
+  { nom:'Artichaut cuit (100g)', kcal:53, prot:3, gluc:10, lip:0, cat:'Légumes' },
+  { nom:'Chou rouge (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
+  { nom:'Navet (100g)', kcal:28, prot:1, gluc:6, lip:0, cat:'Légumes' },
+  // Fruits
+  { nom:'Orange (150g)', kcal:72, prot:1, gluc:18, lip:0, cat:'Fruits' },
+  { nom:'Poire (150g)', kcal:85, prot:1, gluc:22, lip:0, cat:'Fruits' },
+  { nom:'Kiwi (80g)', kcal:43, prot:1, gluc:10, lip:0, cat:'Fruits' },
   { nom:'Raisin (100g)', kcal:69, prot:1, gluc:18, lip:0, cat:'Fruits' },
   { nom:'Melon (100g)', kcal:34, prot:1, gluc:8, lip:0, cat:'Fruits' },
-  { nom:'Olives noires (10 olives 30g)', kcal:45, prot:0, gluc:1, lip:5, cat:'Graisses' },
-  { nom:'Olives vertes (10 olives 30g)', kcal:36, prot:0, gluc:0, lip:4, cat:'Graisses' },
-  { nom:'Tahini sésame (1 c.s. 15g)', kcal:86, prot:3, gluc:3, lip:8, cat:'Graisses' },
-  { nom:'Noix de cajou (30g)', kcal:164, prot:5, gluc:9, lip:13, cat:'Graisses' },
-  { nom:'Noisettes (30g)', kcal:188, prot:4, gluc:5, lip:18, cat:'Graisses' },
-  { nom:'Moutarde (1 c.s. 15g)', kcal:13, prot:1, gluc:1, lip:1, cat:'Condiments' },
-  { nom:'Vinaigre balsamique (1 c.s. 15ml)', kcal:18, prot:0, gluc:4, lip:0, cat:'Condiments' },
-  { nom:'Sauce soja (1 c.s. 15ml)', kcal:9, prot:1, gluc:1, lip:0, cat:'Condiments' },
-  { nom:'Concentré de tomates (1 c.s. 20g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Condiments' },
-  { nom:'Harissa (1 c.c. 5g)', kcal:12, prot:0, gluc:2, lip:1, cat:'Condiments' },
-  { nom:'Lait demi-écrémé (100ml)', kcal:46, prot:3, gluc:5, lip:2, cat:'Boissons' },
-  { nom:'Lait végétal avoine (100ml)', kcal:47, prot:1, gluc:7, lip:2, cat:'Boissons' },
-  { nom:'Jus d\'orange (100ml)', kcal:45, prot:1, gluc:10, lip:0, cat:'Boissons' },
-  { nom:'Vin rouge (1 verre 150ml)', kcal:127, prot:0, gluc:4, lip:0, cat:'Boissons' },
-  { nom:'Vin blanc sec (1 verre 150ml)', kcal:120, prot:0, gluc:3, lip:0, cat:'Boissons' },
-  { nom:'Bière (1 pinte 330ml)', kcal:139, prot:1, gluc:13, lip:0, cat:'Boissons' },
-  { nom:'Soupe légumes maison (250ml)', kcal:60, prot:2, gluc:10, lip:1, cat:'Soupes' },
+  { nom:'Mangue (100g)', kcal:60, prot:1, gluc:15, lip:0, cat:'Fruits' },
+  { nom:'Peche (100g)', kcal:39, prot:1, gluc:10, lip:0, cat:'Fruits' },
+  { nom:'Ananas (100g)', kcal:50, prot:1, gluc:13, lip:0, cat:'Fruits' },
+  { nom:'Fraise (100g)', kcal:32, prot:1, gluc:8, lip:0, cat:'Fruits' },
+  { nom:'Myrtilles (100g)', kcal:57, prot:1, gluc:14, lip:0, cat:'Fruits' },
+  { nom:'Framboises (100g)', kcal:52, prot:1, gluc:12, lip:1, cat:'Fruits' },
+  { nom:'Cerise (100g)', kcal:63, prot:1, gluc:16, lip:0, cat:'Fruits' },
+  { nom:'Abricot (100g)', kcal:48, prot:1, gluc:11, lip:0, cat:'Fruits' },
+  // Oléagineux
+  { nom:'Graines de chia (10g)', kcal:49, prot:2, gluc:4, lip:3, cat:'Oléagineux' },
+  { nom:'Graines de courge (20g)', kcal:112, prot:6, gluc:3, lip:9, cat:'Oléagineux' },
+  { nom:'Noix de cajou (30g)', kcal:164, prot:5, gluc:9, lip:13, cat:'Oléagineux' },
+  { nom:'Noisettes (30g)', kcal:188, prot:4, gluc:5, lip:18, cat:'Oléagineux' },
+  { nom:'Cacahuetes (30g)', kcal:171, prot:8, gluc:5, lip:15, cat:'Oléagineux' },
+  // Matières grasses
+  { nom:'Olives noires (30g)', kcal:45, prot:0, gluc:1, lip:5, cat:'Matières grasses' },
+  { nom:'Olives vertes (30g)', kcal:36, prot:0, gluc:0, lip:4, cat:'Matières grasses' },
+  { nom:'Tahini sesame (15g)', kcal:86, prot:3, gluc:3, lip:8, cat:'Matières grasses' },
+  { nom:'Huile de colza (1 cas)', kcal:90, prot:0, gluc:0, lip:10, cat:'Matières grasses' },
+  // Condiments
+  { nom:'Moutarde (15g)', kcal:13, prot:1, gluc:1, lip:1, cat:'Condiments' },
+  { nom:'Sauce soja (15ml)', kcal:9, prot:1, gluc:1, lip:0, cat:'Condiments' },
+  { nom:'Houmous (30g)', kcal:66, prot:2, gluc:5, lip:4, cat:'Condiments' },
+  { nom:'Harissa (5g)', kcal:12, prot:0, gluc:2, lip:1, cat:'Condiments' },
+  { nom:'Concentre de tomates (20g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Condiments' },
+  // Soupes
+  { nom:'Soupe legumes maison (250ml)', kcal:60, prot:2, gluc:10, lip:1, cat:'Soupes' },
   { nom:'Soupe lentilles (250ml)', kcal:150, prot:9, gluc:22, lip:2, cat:'Soupes' },
-  { nom:'Velouté butternut (250ml)', kcal:110, prot:2, gluc:18, lip:3, cat:'Soupes' },
+  { nom:'Veloute butternut (250ml)', kcal:110, prot:2, gluc:18, lip:3, cat:'Soupes' },
   { nom:'Gaspacho tomates (250ml)', kcal:75, prot:2, gluc:12, lip:3, cat:'Soupes' },
-  { nom:'Soupe poireaux-pomme de terre (250ml)', kcal:120, prot:3, gluc:18, lip:4, cat:'Soupes' },
+  { nom:'Veloute courgette (250ml)', kcal:80, prot:2, gluc:10, lip:3, cat:'Soupes' },
+  // Boissons
+  { nom:'Lait demi-ecreme (200ml)', kcal:92, prot:6, gluc:10, lip:4, cat:'Boissons' },
+  { nom:'Jus orange presse (200ml)', kcal:90, prot:2, gluc:20, lip:0, cat:'Boissons' },
+  { nom:'Vin rouge (150ml)', kcal:127, prot:0, gluc:4, lip:0, cat:'Boissons' },
+  { nom:'Vin blanc sec (150ml)', kcal:120, prot:0, gluc:3, lip:0, cat:'Boissons' },
+  { nom:'Biere (330ml)', kcal:139, prot:1, gluc:13, lip:0, cat:'Boissons' },
+  { nom:'Cafe sans sucre', kcal:2, prot:0, gluc:0, lip:0, cat:'Boissons' },
+  // Festin
   { nom:'Pizza (1 part 100g)', kcal:266, prot:11, gluc:33, lip:10, cat:'Festin' },
-  { nom:'Pâtes bolognaise (300g)', kcal:450, prot:25, gluc:55, lip:12, cat:'Festin' },
-  { nom:'Fromage camembert (30g)', kcal:87, prot:5, gluc:0, lip:7, cat:'Festin' },
+  { nom:'Pates bolognaise (300g)', kcal:450, prot:25, gluc:55, lip:12, cat:'Festin' },
   { nom:'Chocolat noir 70% (20g)', kcal:114, prot:2, gluc:10, lip:8, cat:'Festin' },
-  { nom:'Tarte ou gâteau (1 part 100g)', kcal:320, prot:5, gluc:40, lip:16, cat:'Festin' }
+  { nom:'Gateau (1 part 100g)', kcal:320, prot:5, gluc:40, lip:16, cat:'Festin' },
+  { nom:'Glace (1 boule 60g)', kcal:120, prot:2, gluc:18, lip:5, cat:'Festin' },
+  { nom:'Frites (100g)', kcal:312, prot:4, gluc:41, lip:15, cat:'Festin' },
+  { nom:'Burger (200g)', kcal:490, prot:28, gluc:40, lip:22, cat:'Festin' }
 ];
 
+const app = document.getElementById('app');
 const pageTitle = document.getElementById('page-title');
 const pageSub = document.getElementById('page-sub');
 const main = document.getElementById('main');
@@ -413,18 +480,10 @@ function pasColor(v) {
   return v === 'low' ? '#C4622D' : v === 'mid' ? '#D4A72C' : '#2A7F6F';
 }
 
-function normalizeSearch(str) {
-  return (str || '')
-    .toLowerCase()
-    .replace(/œ/g, 'oe')
-    .replace(/æ/g, 'ae')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
-}
-
 async function loadEntries() {
   if (!firebaseReady) {
     entries = safeLocalGet('sante_backup', []);
+    dbReady = false;
     return;
   }
   try {
@@ -433,9 +492,11 @@ async function loadEntries() {
     const snap = await getDocs(q);
     entries = snap.docs.map(d => d.data());
     safeLocalSet('sante_backup', entries);
+    dbReady = true;
   } catch (e) {
     console.error('Firestore load error', e);
     entries = safeLocalGet('sante_backup', []);
+    dbReady = false;
   }
 }
 
@@ -472,7 +533,8 @@ async function saveJournalDay(dateKey) {
   safeLocalSet('journal_' + dateKey, items);
   if (!firebaseReady) return;
   try {
-    await setDoc(doc(db, 'users', USER_ID, 'journal', dateKey), { items, updatedAt: Date.now() });
+    const pas = journalDate === dateKey ? journalPas : (journal[dateKey+'_pas'] || 0);
+    await setDoc(doc(db, 'users', USER_ID, 'journal', dateKey), { items, pas, updatedAt: Date.now() });
   } catch (e) {
     console.error('Journal save error', e);
   }
@@ -598,6 +660,7 @@ function viewHome() {
     <div style="font-size:13px;font-family:sans-serif;color:var(--muted);line-height:1.5">
       ${firebaseReady ? 'Synchronisé avec Firebase.' : 'Mode local actif.'}
     </div>
+    ${window._showInstall ? `<button class="btn-secondary" style="margin-top:12px" onclick="installPWA()">Installer l’app</button>` : ''}
   </div>`;
 }
 
@@ -758,51 +821,12 @@ async function removeJournalItem(dateKey, id) {
 }
 
 function openQtyModal(index) {
-  const filtered = ALIMENTS.filter(a => {
-    if (journalSearch.trim().length < 1) return false;
-    const q = normalizeSearch(journalSearch);
-    return normalizeSearch(a.nom).includes(q) || normalizeSearch(a.cat).includes(q);
-  });
+  const filtered = ALIMENTS.filter(a =>
+    journalSearch.trim().length < 1 ? false : a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())
+  );
   pendingAliment = filtered[index] || null;
   pendingQty = '100';
   render();
-}
-
-function renderAlimentsList() {
-  const filtered = journalSearch.trim().length >= 1
-    ? ALIMENTS.filter(a => {
-        const q = normalizeSearch(journalSearch);
-        return normalizeSearch(a.nom).includes(q) || normalizeSearch(a.cat).includes(q);
-      }).slice(0, 15)
-    : [];
-
-  if (filtered.length === 0) {
-    return journalSearch.trim().length >= 1
-      ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat.</div>`
-      : '';
-  }
-
-  return `<div class="aliments-list">${filtered.map((a, i) => `
-    <div class="aliment-row">
-      <div>
-        <div class="aliment-name">${a.nom}</div>
-        <div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div>
-      </div>
-      <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
-    </div>`).join('')}</div>`;
-}
-
-function setMoment(m) {
-  journalMoment = m;
-  render();
-}
-
-function renderQtyPreview() {
-  const qty = parseFloat(document.getElementById('qty-inp')?.value || pendingQty) / 100;
-  const el = document.getElementById('qty-preview');
-  if (el && pendingAliment) {
-    el.innerHTML = `<span>⚡ ${Math.round(pendingAliment.kcal*qty)} kcal</span><span>💪 ${Math.round(pendingAliment.prot*qty)}g prot</span><span>🌾 ${Math.round(pendingAliment.gluc*qty)}g gluc</span>`;
-  }
 }
 
 function viewJournal() {
@@ -813,10 +837,7 @@ function viewJournal() {
   const protClass = bilan.prot >= PROT_OBJECTIF ? 'ok' : bilan.prot >= PROT_OBJECTIF * 0.7 ? 'warn' : 'over';
 
   const filtered = journalSearch.trim().length >= 1
-    ? ALIMENTS.filter(a => {
-        const q = normalizeSearch(journalSearch);
-        return normalizeSearch(a.nom).includes(q) || normalizeSearch(a.cat).includes(q);
-      }).slice(0, 15)
+    ? ALIMENTS.filter(a => a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())).slice(0, 15)
     : [];
 
   const items = getJournalItems(journalDate);
@@ -828,7 +849,8 @@ function viewJournal() {
     const mItems = items.filter(i => i.moment === m);
     if (mItems.length === 0) return;
     const mKcal = mItems.reduce((s, i) => s + Math.round(i.kcal * i.qty / 100), 0);
-    journalHtml += `<div class="meal-section-title">${momentIcons[m]} ${m} · ${mKcal} kcal</div>
+    journalHtml += `<div class="meal-section">
+      <div class="meal-section-title">${momentIcons[m]} ${m} · ${mKcal} kcal</div>
       ${mItems.map(i => {
         const k = Math.round(i.kcal * i.qty / 100);
         const p = Math.round(i.prot * i.qty / 100);
@@ -839,7 +861,8 @@ function viewJournal() {
           </div>
           <button class="journal-delete" onclick="removeJournalItem('${journalDate}', ${i.id})">×</button>
         </div>`;
-      }).join('')}`;
+      }).join('')}
+    </div>`;
   });
 
   const modalHtml = pendingAliment ? `
@@ -850,7 +873,7 @@ function viewJournal() {
       <div style="margin-bottom:10px">
         <label class="field-label">Moment du repas</label>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${moments.map(m => `<button style="padding:6px 12px;border-radius:20px;font-size:12px;font-family:sans-serif;border:1.5px solid ${journalMoment===m?'var(--teal)':'var(--border)'};background:${journalMoment===m?'var(--teal-light)':'transparent'};color:${journalMoment===m?'var(--teal)':'var(--muted)'};cursor:pointer;font-weight:${journalMoment===m?700:400}" onclick="setMoment('${m}')">${momentIcons[m]} ${m}</button>`).join('')}
+          ${moments.map(m => `<button id="mbtn-${m}" style="padding:6px 12px;border-radius:20px;font-size:12px;font-family:sans-serif;border:1.5px solid ${journalMoment===m?'var(--teal)':'var(--border)'};background:${journalMoment===m?'var(--teal-light)':'transparent'};color:${journalMoment===m?'var(--teal)':'var(--muted)'};cursor:pointer;font-weight:${journalMoment===m?700:400}" onclick="setMoment('${m}')">${momentIcons[m]} ${m}</button>`).join('')}
         </div>
       </div>
       <div class="qty-row">
@@ -871,10 +894,28 @@ function viewJournal() {
     </div>
 
     <div class="bilan-bar">
-      <div class="bilan-cell"><div class="bilan-val ${kcalClass}">${bilan.kcal}</div><div class="bilan-label">kcal</div></div>
+      <div class="bilan-cell"><div class="bilan-val ${kcalClass}">${bilan.kcal}</div><div class="bilan-label">kcal ingérées</div></div>
       <div class="bilan-cell"><div class="bilan-val ${protClass}">${bilan.prot}g</div><div class="bilan-label">protéines</div></div>
       <div class="bilan-cell"><div class="bilan-val">${bilan.gluc}g</div><div class="bilan-label">glucides</div></div>
       <div class="bilan-cell"><div class="bilan-val">${bilan.lip}g</div><div class="bilan-label">lipides</div></div>
+    </div>
+    <div class="bilan-bar" style="margin-top:8px">
+      <div class="bilan-cell" style="grid-column:span 2">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">👟</span>
+          <input type="number" id="pas-input" value="${journalPas}" min="0" max="50000" step="100"
+            style="width:90px;padding:4px 8px;font-size:16px;font-weight:700;border:1.5px solid var(--border);border-radius:8px;background:var(--bg);color:var(--deep);font-family:sans-serif"
+            oninput="updatePas(this.value)">
+          <span style="font-size:12px;color:var(--muted);font-family:sans-serif">pas aujourd'hui</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);font-family:sans-serif;margin-top:4px">
+          +${Math.round(journalPas * 0.04)} kcal brûlées · Budget total : ${KCAL_OBJECTIF + Math.round(journalPas * 0.04)} kcal
+        </div>
+      </div>
+      <div class="bilan-cell" style="grid-column:span 2">
+        <div class="bilan-val ${(KCAL_OBJECTIF + Math.round(journalPas*0.04) - bilan.kcal) >= 0 ? 'ok' : 'over'}">${Math.abs(KCAL_OBJECTIF + Math.round(journalPas*0.04) - bilan.kcal)}</div>
+        <div class="bilan-label">${(KCAL_OBJECTIF + Math.round(journalPas*0.04) - bilan.kcal) >= 0 ? 'kcal restantes' : 'kcal dépassées'}</div>
+      </div>
     </div>
 
     <div class="progress-wrap">
@@ -903,11 +944,39 @@ function viewJournal() {
         </div>`).join('')}</div>` : journalSearch.trim().length >= 1 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat pour "${journalSearch}"</div>` : ''}
     </div>
 
-    ${items.length > 0 ? journalHtml : `<div class="empty" style="padding-top:16px">Aucun aliment enregistré.<br>Tape le nom d'un aliment ci-dessus.</div>`}
+    ${items.length > 0 ? journalHtml : `<div class="empty" style="padding-top:16px">Aucun aliment enregistré.<br>Tape le nom d'un aliment ci-dessus.${journalDate !== new Date().toISOString().slice(0, 10) ? '<br><span style="font-size:12px">Jour passé — édition possible.</span>' : ''}</div>`}
 
     <div style="height:16px"></div>
     ${modalHtml}
   `;
+}
+
+function renderAlimentsList() {
+  const filtered = journalSearch.trim().length >= 1
+    ? ALIMENTS.filter(a => a.nom.toLowerCase().includes(journalSearch.toLowerCase()) || a.cat.toLowerCase().includes(journalSearch.toLowerCase())).slice(0, 15)
+    : [];
+  if (filtered.length === 0) return journalSearch.trim().length >= 1 ? `<div style="margin:8px 16px;font-size:13px;font-family:sans-serif;color:var(--muted)">Aucun résultat.</div>` : '';
+  return `<div class="aliments-list">${filtered.map((a, i) => `
+    <div class="aliment-row">
+      <div>
+        <div class="aliment-name">${a.nom}</div>
+        <div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div>
+      </div>
+      <button class="aliment-add" onclick="openQtyModal(${i})">+</button>
+    </div>`).join('')}</div>`;
+}
+
+function setMoment(m) {
+  journalMoment = m;
+  render();
+}
+
+function renderQtyPreview() {
+  const qty = parseFloat(document.getElementById('qty-inp')?.value || pendingQty) / 100;
+  const el = document.getElementById('qty-preview');
+  if (el && pendingAliment) {
+    el.innerHTML = `<span>⚡ ${Math.round(pendingAliment.kcal*qty)} kcal</span><span>💪 ${Math.round(pendingAliment.prot*qty)}g prot</span><span>🌾 ${Math.round(pendingAliment.gluc*qty)}g gluc</span>`;
+  }
 }
 
 function render() {
@@ -918,6 +987,36 @@ function render() {
   const views = { home: viewHome, saisie: viewSaisie, historique: viewHistorique, repas: viewRepas, journal: viewJournal };
   main.innerHTML = views[currentView]();
   main.scrollTop = 0;
+  if (currentView === 'journal') {
+    const inp = document.getElementById('journal-search');
+    if (inp) inp.focus();
+  }
+}
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  window._showInstall = true;
+  if (currentView === 'home') render();
+});
+
+function installPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(() => {
+    deferredPrompt = null;
+    window._showInstall = false;
+  });
+}
+
+function updatePas(val) {
+  journalPas = parseInt(val) || 0;
+  journal[journalDate+'_pas'] = journalPas;
+  saveJournalDay(journalDate);
+  const main = document.getElementById('main');
+  const scrollY = main.scrollTop;
+  main.innerHTML = viewJournal();
+  main.scrollTop = scrollY;
 }
 
 window.goTo = goTo;
@@ -926,17 +1025,24 @@ window.setPas = setPas;
 window.submitForm = submitForm;
 window.renderDots = renderDots;
 window.shiftJournalDate = shiftJournalDate;
+window.updatePas = updatePas;
+  window.updatePas = updatePas;
 window.openQtyModal = openQtyModal;
 window.addAlimentToJournal = addAlimentToJournal;
 window.removeJournalItem = removeJournalItem;
 window.setMoment = setMoment;
 window.renderQtyPreview = renderQtyPreview;
 window.renderAlimentsList = renderAlimentsList;
+window.installPWA = installPWA;
 window.render = render;
 Object.defineProperty(window, 'formState', { get: () => formState, set: v => { formState = v; } });
 Object.defineProperty(window, 'journalSearch', { get: () => journalSearch, set: v => { journalSearch = v; } });
 Object.defineProperty(window, 'pendingQty', { get: () => pendingQty, set: v => { pendingQty = v; } });
 Object.defineProperty(window, 'pendingAliment', { get: () => pendingAliment, set: v => { pendingAliment = v; } });
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW registration skipped:', err));
+}
 
 showLoader('Connexion à la base de données…');
 signInAnonymously(auth)
