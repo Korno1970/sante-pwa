@@ -907,13 +907,13 @@ function viewJournal() {
             oninput="updatePas(this.value)">
           <span style="font-size:12px;color:var(--muted);font-family:sans-serif">pas aujourd'hui</span>
         </div>
-        <div style="font-size:11px;color:var(--muted);font-family:sans-serif;margin-top:4px">
+        <div style="font-size:11px;color:var(--muted);font-family:sans-serif;margin-top:4px" id="pas-bilan">
           +${Math.round(journalPas * 0.04)} kcal brûlées · Budget total : ${KCAL_OBJECTIF + Math.round(journalPas * 0.04)} kcal
         </div>
       </div>
       <div class="bilan-cell" style="grid-column:span 2">
-        <div class="bilan-val ${(KCAL_OBJECTIF + Math.round(journalPas*0.04) - bilan.kcal) >= 0 ? 'ok' : 'over'}">${Math.abs(KCAL_OBJECTIF + Math.round(journalPas*0.04) - bilan.kcal)}</div>
-        <div class="bilan-label">${(KCAL_OBJECTIF + Math.round(journalPas*0.04) - bilan.kcal) >= 0 ? 'kcal restantes' : 'kcal dépassées'}</div>
+        <div class="bilan-val ${(KCAL_OBJECTIF + Math.round(journalPas*0.04) - bilan.kcal) >= 0 ? 'ok' : 'over'}" id="pas-restant">${Math.abs(KCAL_OBJECTIF + Math.round(journalPas*0.04) - bilan.kcal)}</div>
+        <div class="bilan-label" id="pas-restant-label">${(KCAL_OBJECTIF + Math.round(journalPas*0.04) - bilan.kcal) >= 0 ? 'kcal restantes' : 'kcal dépassées'}</div>
       </div>
     </div>
 
@@ -1012,10 +1012,24 @@ function updatePas(val) {
   journalPas = parseInt(val) || 0;
   journal[journalDate+'_pas'] = journalPas;
   saveJournalDay(journalDate);
-  const main = document.getElementById('main');
-  const scrollY = main.scrollTop;
-  main.innerHTML = viewJournal();
-  main.scrollTop = scrollY;
+  // Mise à jour ciblée sans re-render (évite la fermeture du clavier mobile)
+  const bilan = getJournalBilan(journalDate);
+  const kcalBrulees = Math.round(journalPas * 0.04);
+  const budget = KCAL_OBJECTIF + kcalBrulees;
+  const restant = budget - bilan.kcal;
+  const el = document.getElementById('pas-bilan');
+  if (el) {
+    el.innerHTML = '+' + kcalBrulees + ' kcal brûlées · Budget total : ' + budget + ' kcal';
+  }
+  const elRestant = document.getElementById('pas-restant');
+  if (elRestant) {
+    elRestant.textContent = Math.abs(restant);
+    elRestant.className = 'bilan-val ' + (restant >= 0 ? 'ok' : 'over');
+  }
+  const elLabel = document.getElementById('pas-restant-label');
+  if (elLabel) {
+    elLabel.textContent = restant >= 0 ? 'kcal restantes' : 'kcal dépassées';
+  }
 }
 
 window.goTo = goTo;
