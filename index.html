@@ -514,25 +514,34 @@ async function saveEntries() {
 async function loadJournal(dateKey) {
   if (!firebaseReady) {
     journal[dateKey] = safeLocalGet('journal_' + dateKey, []);
+    journal[dateKey+'_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
+    if (dateKey === journalDate) journalPas = journal[dateKey+'_pas'];
     return;
   }
   try {
     const ref = doc(db, 'users', USER_ID, 'journal', dateKey);
     const snap = await getDoc(ref);
     journal[dateKey] = snap.exists() ? (snap.data().items || []) : [];
+    const pas = snap.exists() ? (snap.data().pas || 0) : 0;
+    journal[dateKey+'_pas'] = pas;
+    if (dateKey === journalDate) journalPas = pas;
     safeLocalSet('journal_' + dateKey, journal[dateKey]);
+    safeLocalSet('journal_pas_' + dateKey, pas);
   } catch (e) {
     console.error('Journal load error', e);
     journal[dateKey] = safeLocalGet('journal_' + dateKey, []);
+    journal[dateKey+'_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
+    if (dateKey === journalDate) journalPas = journal[dateKey+'_pas'];
   }
 }
 
 async function saveJournalDay(dateKey) {
   const items = journal[dateKey] || [];
+  const pas = dateKey === journalDate ? journalPas : (journal[dateKey+'_pas'] || 0);
   safeLocalSet('journal_' + dateKey, items);
+  safeLocalSet('journal_pas_' + dateKey, pas);
   if (!firebaseReady) return;
   try {
-    const pas = journalDate === dateKey ? journalPas : (journal[dateKey+'_pas'] || 0);
     await setDoc(doc(db, 'users', USER_ID, 'journal', dateKey), { items, pas, updatedAt: Date.now() });
   } catch (e) {
     console.error('Journal save error', e);
@@ -787,6 +796,9 @@ async function shiftJournalDate(delta) {
   if (!journal[journalDate]) {
     showLoader('Chargement du journal…');
     await loadJournal(journalDate);
+  } else {
+    // Restaurer les pas du jour navigué
+    journalPas = journal[journalDate+'_pas'] || 0;
   }
   render();
 }
