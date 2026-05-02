@@ -173,6 +173,32 @@
   .install-banner p { font-size: 13px; color: rgba(255,255,255,0.8); font-family: sans-serif; line-height: 1.4; }
   .install-banner button { flex: 0 0 auto; background: var(--terra); color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-family: sans-serif; font-weight: 600; cursor: pointer; }
   .install-banner .close { background: transparent; color: rgba(255,255,255,0.5); border: none; font-size: 18px; cursor: pointer; padding: 0; }
+  .ai-btn{width:100%;padding:13px;font-size:15px;font-family:sans-serif;font-weight:600;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .ai-btn-analyse{background:linear-gradient(135deg,#1A3A4A,#2A7F6F);color:#fff;margin-top:10px}
+  .ai-btn-bilan{background:linear-gradient(135deg,#3C3489,#6B5FD6);color:#fff;margin-top:10px}
+  .ai-response{margin:10px 16px 0;background:var(--surface);border-radius:14px;border:1px solid var(--border);overflow:hidden}
+  .ai-response-header{padding:10px 16px 8px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+  .ai-response-title{font-size:13px;font-weight:600;font-family:sans-serif;color:var(--deep)}
+  .ai-response-body{padding:12px 16px;font-size:13px;font-family:sans-serif;color:var(--deep);line-height:1.6;white-space:pre-wrap}
+  .ai-loading{display:flex;align-items:center;gap:8px;padding:14px 16px;font-family:sans-serif;font-size:13px;color:var(--muted)}
+  .ai-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:ai-pulse 1.2s infinite;display:inline-block}
+  .ai-dot:nth-child(2){animation-delay:0.2s}.ai-dot:nth-child(3){animation-delay:0.4s}
+  @keyframes ai-pulse{0%,80%,100%{opacity:0.2}40%{opacity:1}}
+  .ai-saisie-wrap{margin:10px 16px 0}
+  .ai-saisie-input{width:100%;padding:11px 14px;font-size:15px;border:1.5px solid var(--border);border-radius:12px 12px 0 0;background:var(--bg);color:var(--deep);font-family:sans-serif;outline:none;resize:none;min-height:72px;border-bottom:none;box-sizing:border-box}
+  .ai-saisie-submit{width:100%;padding:11px;font-size:14px;font-weight:600;font-family:sans-serif;background:var(--teal);color:#fff;border:none;border-radius:0 0 12px 12px;cursor:pointer}
+  .cam-wrap{margin:10px 16px 0}
+  .cam-btn-row{display:flex;gap:8px}
+  .cam-btn{flex:1;padding:11px;font-size:13px;font-family:sans-serif;font-weight:600;border:1.5px solid var(--border);border-radius:12px;background:var(--surface);color:var(--deep);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+  .cam-btn-primary{background:var(--terra);color:#fff;border-color:var(--terra)}
+  .cam-preview-wrap{margin-top:8px;border-radius:12px;overflow:hidden;border:1.5px solid var(--border);display:none;position:relative}
+  .cam-preview-wrap img{width:100%;display:block;max-height:260px;object-fit:cover}
+  .cam-preview-actions{display:flex;gap:8px;padding:8px}
+  .cam-preview-btn{flex:1;padding:9px;font-size:13px;font-family:sans-serif;font-weight:600;border:none;border-radius:8px;cursor:pointer}
+  .cam-analyse-btn{background:linear-gradient(135deg,#1A3A4A,#2A7F6F);color:#fff}
+  .cam-retake-btn{background:var(--sand);color:var(--deep)}
+  .cam-result{margin-top:8px;background:var(--teal-light);border-radius:10px;padding:10px 12px;font-size:13px;font-family:sans-serif;color:var(--teal);line-height:1.5;display:none}
+
 </style>
 </head>
 <body>
@@ -214,6 +240,8 @@ const DEPART = 94;
 const OBJECTIF = 84;
 const KCAL_OBJECTIF = 1500;
 const PROT_OBJECTIF = 90;
+  const CLAUDE_API_KEY = 'VOTRE_CLE_API_ICI';
+  const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
 
 let firebaseReady = false;
 let entries = [];
@@ -669,7 +697,9 @@ function viewHome() {
       ${firebaseReady ? 'Synchronisé avec Firebase.' : 'Mode local actif.'}
     </div>
     ${window._showInstall ? `<button class="btn-secondary" style="margin-top:12px" onclick="installPWA()">Installer l’app</button>` : ''}
-  </div>`;
+  
+    <div style="margin:10px 0 0"><button class="ai-btn ai-btn-bilan" onclick="bilanHebdo()">📊 Bilan IA de la semaine</button></div>
+    <div class="ai-response" id="ai-response-bilan" style="display:none"><div id="ai-bilan"></div></div></div>`;
 }
 
 function viewSaisie() {
@@ -957,6 +987,23 @@ function viewJournal() {
 
     ${items.length > 0 ? journalHtml : `<div class="empty" style="padding-top:16px">Aucun aliment enregistré.<br>Tape le nom d'un aliment ci-dessus.${journalDate !== new Date().toISOString().slice(0, 10) ? '<br><span style="font-size:12px">Jour passé — édition possible.</span>' : ''}</div>`}
 
+    <div style="margin:10px 16px 0"><button class="ai-btn ai-btn-analyse" onclick="analyseJour()">🤖 Analyse ma journée</button></div>
+    <div class="ai-response" id="ai-response-analyse" style="display:none"><div id="ai-analyse"></div></div>
+    <input type="file" id="cam-file-input" accept="image/*" capture="environment" style="display:none" onchange="onCamFileSelected(this)">
+    <div class="cam-wrap">
+      <div class="cam-btn-row">
+        <button class="cam-btn cam-btn-primary" onclick="openCamera()">📷 Photo du plat</button>
+      </div>
+      <div class="cam-preview-wrap" id="cam-preview-wrap">
+        <img id="cam-preview-img" src="" alt="Photo">
+        <div class="cam-preview-actions">
+          <button class="cam-preview-btn cam-retake-btn" onclick="retakePhoto()">↩ Nouvelle photo</button>
+          <button class="cam-preview-btn cam-analyse-btn" id="cam-analyse-btn" onclick="analysePhoto()">🔍 Analyser</button>
+        </div>
+        <div class="cam-result" id="cam-result"></div>
+      </div>
+    </div>
+    <div class="ai-saisie-wrap"><textarea class="ai-saisie-input" id="ai-saisie-input" rows="3" placeholder="Décris ce que tu as mangé..."></textarea><button class="ai-saisie-submit" id="ai-saisie-btn" onclick="saisieNaturelle()">✨ Ajouter au journal</button></div>
     <div style="height:16px"></div>
     ${modalHtml}
   `;
@@ -1044,14 +1091,294 @@ function updatePas(val) {
   }
 }
 
-window.goTo = goTo;
+
+  // === LEVIERS IA ===
+  let aiCache = {};
+
+  async function callClaude(system, user) {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': CLAUDE_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 600,
+        system: system,
+        messages: [{ role: 'user', content: user }]
+      })
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const d = await res.json();
+    return d.content[0].text;
+  }
+
+  function profileCtx() {
+    return 'Profil: Sylvain, 55 ans, 174cm, 94kg depart, objectif 84kg au 27 juillet 2026. '
+      + 'Regime mediterraneen 1500 kcal/j, 90g proteines/j minimum. Sous Kardegic. '
+      + 'Festin vendredi soir. Objectif 7500 pas/jour.';
+  }
+
+  function journalCtx(dateKey) {
+    const items = getJournalItems(dateKey);
+    const b = getJournalBilan(dateKey);
+    const pas = journal[dateKey + '_pas'] || 0;
+    const budget = KCAL_OBJECTIF + Math.round(pas * 0.04);
+    if (items.length === 0) return 'Journee ' + dateLabel(dateKey) + ': aucun aliment enregistre. Budget: ' + budget + ' kcal, ' + pas + ' pas.';
+    const repas = items.map(function(i) {
+      return i.moment + ': ' + i.nom + ' (' + Math.round(i.kcal * i.qty / 100) + ' kcal, ' + Math.round(i.prot * i.qty / 100) + 'g prot)';
+    }).join(' / ');
+    return 'Journee ' + dateLabel(dateKey) + ': ' + repas + '. Bilan: ' + b.kcal + '/' + budget + ' kcal, ' + b.prot + 'g prot/' + PROT_OBJECTIF + 'g objectif, ' + pas + ' pas.';
+  }
+
+  function setAiEl(id, content) {
+    var el = document.getElementById(id);
+    if (el) el.innerHTML = content;
+  }
+
+  function aiLoading(id, msg) {
+    setAiEl(id, '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>' + msg + '</span></div>');
+  }
+
+  // LEVIER 1 — Analyse du jour
+  async function analyseJour() {
+    var k = 'analyse_' + journalDate;
+    var el = document.getElementById('ai-response-analyse');
+    if (el) el.style.display = 'block';
+    if (aiCache[k]) { setAiEl('ai-analyse', aiCache[k]); return; }
+    aiLoading('ai-analyse', 'Claude analyse ta journee...');
+    try {
+      var system = profileCtx() + ' Tu es coach nutritionnel direct et bienveillant. Reponds en francais en 4-6 phrases, pas de liste, pas de mise en garde medicale.';
+      var user = journalCtx(journalDate) + ' Analyse: ce qui est bien, ce qui manque, une suggestion concrete pour demain.';
+      var txt = await callClaude(system, user);
+      var content = '<div class="ai-response-header"><span>🤖</span><span class="ai-response-title">Analyse Claude</span></div><div class="ai-response-body">' + txt + '</div>';
+      aiCache[k] = content;
+      setAiEl('ai-analyse', content);
+    } catch(e) {
+      setAiEl('ai-analyse', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible. Verifie ta cle API.</div>');
+    }
+  }
+
+  // LEVIER 3 — Saisie naturelle
+  async function saisieNaturelle() {
+    var input = document.getElementById('ai-saisie-input');
+    var btn = document.getElementById('ai-saisie-btn');
+    if (!input || !input.value.trim()) return;
+    var texte = input.value.trim();
+    if (btn) btn.textContent = 'Analyse...';
+    try {
+      var heure = new Date().getHours();
+      var moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
+      var system = 'Tu es assistant nutritionnel. Extrais les aliments et estime les quantites. '
+        + 'Reponds UNIQUEMENT en JSON valide sans markdown ni backticks: '
+        + '{"items":[{"nom":"...","qty":100,"kcal":0,"prot":0,"gluc":0,"lip":0,"moment":"' + moment + '"}]}. '
+        + 'Utilise des valeurs nutritionnelles realistes pour 100g.';
+      var resp = await callClaude(system, texte);
+      var clean = resp.trim();
+      if (clean.indexOf('{') > 0) clean = clean.slice(clean.indexOf('{'));
+      if (clean.lastIndexOf('}') < clean.length - 1) clean = clean.slice(0, clean.lastIndexOf('}') + 1);
+      var parsed = JSON.parse(clean);
+      if (parsed.items && parsed.items.length > 0) {
+        if (!journal[journalDate]) journal[journalDate] = [];
+        parsed.items.forEach(function(item) {
+          journal[journalDate].push({
+            id: Date.now() + Math.random(),
+            nom: item.nom,
+            kcal: item.kcal || 0,
+            prot: item.prot || 0,
+            gluc: item.gluc || 0,
+            lip: item.lip || 0,
+            qty: item.qty || 100,
+            moment: item.moment || moment
+          });
+        });
+        await saveJournalDay(journalDate);
+        input.value = '';
+        if (btn) btn.textContent = 'Ajoute !';
+        setTimeout(function() { if (btn) btn.textContent = 'Ajouter au journal'; }, 1500);
+        var main = document.getElementById('main');
+        var scrollY = main.scrollTop;
+        main.innerHTML = viewJournal();
+        main.scrollTop = scrollY;
+      } else {
+        if (btn) btn.textContent = 'Non reconnu - reessaie';
+        setTimeout(function() { if (btn) btn.textContent = 'Ajouter au journal'; }, 2000);
+      }
+    } catch(e) {
+      if (btn) { btn.textContent = 'Erreur'; setTimeout(function(){ btn.textContent = 'Ajouter au journal'; }, 2000); }
+    }
+  }
+
+  // LEVIER 4 — Bilan hebdo
+  async function bilanHebdo() {
+    var k = 'bilan_' + getWeekKey();
+    var el = document.getElementById('ai-response-bilan');
+    if (el) el.style.display = 'block';
+    if (aiCache[k]) { setAiEl('ai-bilan', aiCache[k]); return; }
+    aiLoading('ai-bilan', 'Claude analyse ta semaine...');
+    try {
+      var days = [];
+      for (var i = 6; i >= 0; i--) {
+        var d = new Date(); d.setDate(d.getDate() - i);
+        var dk = d.toISOString().slice(0, 10);
+        if (!journal[dk]) await loadJournal(dk);
+        var b = getJournalBilan(dk);
+        var pas = journal[dk + '_pas'] || 0;
+        if (b.kcal > 0 || pas > 0) days.push(dateLabel(dk) + ': ' + b.kcal + ' kcal, ' + b.prot + 'g prot, ' + pas + ' pas');
+      }
+      var pesee = entries[0] ? 'Derniere pesee: ' + entries[0].poids + ' kg' : 'Pas de pesee';
+      var system = profileCtx() + ' Coach nutritionnel. Bilan semaine en 5-7 phrases directes. Un seul ajustement prioritaire. Pas de liste, pas de mise en garde medicale. En francais.';
+      var user = pesee + '. Semaine: ' + (days.length > 0 ? days.join(', ') : 'Pas de donnees') + '. Fais le bilan et donne une recommandation concrete pour la semaine prochaine.';
+      var resp = await callClaude(system, user);
+      var content = '<div class="ai-response-header"><span>📊</span><span class="ai-response-title">Bilan hebdomadaire</span></div><div class="ai-response-body">' + resp + '</div>';
+      aiCache[k] = content;
+      setAiEl('ai-bilan', content);
+    } catch(e) {
+      setAiEl('ai-bilan', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible. Verifie ta cle API.</div>');
+    }
+  }
+
+
+
+  
+  // === LEVIER PHOTO — Reconnaissance visuelle ===
+  let camImageB64 = null;
+  let camImageMime = 'image/jpeg';
+
+  function openCamera() {
+    document.getElementById('cam-file-input').click();
+  }
+
+  function onCamFileSelected(input) {
+    var file = input.files[0];
+    if (!file) return;
+    camImageMime = file.type || 'image/jpeg';
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var dataUrl = e.target.result;
+      camImageB64 = dataUrl.split(',')[1];
+      var img = document.getElementById('cam-preview-img');
+      var wrap = document.getElementById('cam-preview-wrap');
+      var result = document.getElementById('cam-result');
+      if (img) img.src = dataUrl;
+      if (wrap) wrap.style.display = 'block';
+      if (result) result.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function retakePhoto() {
+    camImageB64 = null;
+    var wrap = document.getElementById('cam-preview-wrap');
+    var result = document.getElementById('cam-result');
+    if (wrap) wrap.style.display = 'none';
+    if (result) result.style.display = 'none';
+    document.getElementById('cam-file-input').value = '';
+  }
+
+  async function analysePhoto() {
+    if (!camImageB64) return;
+    var btn = document.getElementById('cam-analyse-btn');
+    var result = document.getElementById('cam-result');
+    if (btn) btn.textContent = 'Analyse...';
+    if (result) { result.style.display = 'block'; result.textContent = 'Claude analyse la photo...'; }
+
+    try {
+      var heure = new Date().getHours();
+      var moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
+      var system = 'Tu es un assistant nutritionnel expert. On te montre une photo d un plat ou d aliments. '
+        + 'Identifie les aliments visibles, estime les quantites en grammes de facon realiste. '
+        + 'Reponds UNIQUEMENT en JSON valide sans markdown ni backticks: '
+        + '{"description":"description courte du plat","items":[{"nom":"...","qty":100,"kcal":0,"prot":0,"gluc":0,"lip":0,"moment":"' + moment + '"}]}. '
+        + 'Valeurs nutritionnelles pour 100g. Maximum 6 items. Si tu ne vois pas d aliments, reponds {"description":"Image non reconnue","items":[]}.';
+
+      var res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': CLAUDE_API_KEY,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: CLAUDE_MODEL,
+          max_tokens: 600,
+          system: system,
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'image', source: { type: 'base64', media_type: camImageMime, data: camImageB64 } },
+              { type: 'text', text: 'Identifie les aliments dans cette photo et donne-moi les valeurs nutritionnelles.' }
+            ]
+          }]
+        })
+      });
+
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      var d = await res.json();
+      var txt = d.content[0].text.trim();
+      if (txt.indexOf('{') > 0) txt = txt.slice(txt.indexOf('{'));
+      if (txt.lastIndexOf('}') < txt.length - 1) txt = txt.slice(0, txt.lastIndexOf('}') + 1);
+      var parsed = JSON.parse(txt);
+
+      if (result) {
+        result.style.display = 'block';
+        result.style.background = 'var(--teal-light)';
+        result.style.color = 'var(--teal)';
+        result.textContent = parsed.description || 'Analyse terminée';
+      }
+
+      if (parsed.items && parsed.items.length > 0) {
+        if (!journal[journalDate]) journal[journalDate] = [];
+        parsed.items.forEach(function(item) {
+          journal[journalDate].push({
+            id: Date.now() + Math.random(),
+            nom: item.nom,
+            kcal: item.kcal || 0,
+            prot: item.prot || 0,
+            gluc: item.gluc || 0,
+            lip: item.lip || 0,
+            qty: item.qty || 100,
+            moment: item.moment || moment
+          });
+        });
+        await saveJournalDay(journalDate);
+        if (btn) btn.textContent = 'Ajoute !';
+        setTimeout(function() {
+          retakePhoto();
+          var main = document.getElementById('main');
+          var scrollY = main.scrollTop;
+          main.innerHTML = viewJournal();
+          main.scrollTop = scrollY;
+        }, 1800);
+      } else {
+        if (result) result.textContent = 'Aucun aliment reconnu. Essaie une photo plus nette.';
+        if (btn) btn.textContent = 'Analyser';
+      }
+    } catch(e) {
+      if (result) { result.style.background = 'var(--terra-light)'; result.style.color = 'var(--terra)'; result.textContent = 'Erreur: ' + e.message; }
+      if (btn) btn.textContent = 'Analyser';
+    }
+  }
+
+
+  window.goTo = goTo;
 window.setDay = setDay;
 window.setPas = setPas;
 window.submitForm = submitForm;
 window.renderDots = renderDots;
 window.shiftJournalDate = shiftJournalDate;
 window.updatePas = updatePas;
-  window.updatePas = updatePas;
+  window.analyseJour = analyseJour;
+  window.saisieNaturelle = saisieNaturelle;
+  window.bilanHebdo = bilanHebdo;
+  window.openCamera = openCamera;
+  window.onCamFileSelected = onCamFileSelected;
+  window.retakePhoto = retakePhoto;
+  window.analysePhoto = analysePhoto;
 window.openQtyModal = openQtyModal;
 window.addAlimentToJournal = addAlimentToJournal;
 window.removeJournalItem = removeJournalItem;
