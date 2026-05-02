@@ -175,7 +175,7 @@ input[type=range] { width: 100%; accent-color: var(--teal); }
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { initializeFirestore, doc, setDoc, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initializeFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
 // === FIREBASE ===
@@ -336,17 +336,51 @@ async function saveEntry(e) {
 }
 
 // === JOURNAL (local uniquement) ===
-function loadJournal() {
-  const k = todayKey();
-  journal[k] = lsGet('j_' + k, []);
+function norm(x) {
+  return {
+    id: x.id || Date.now(),
+    n: x.n || x.nom || x.name || '',
+    k: x.k || x.kcal || 0,
+    p: x.p || x.prot || 0,
+    g: x.g || x.gluc || 0,
+    l: x.l || x.lip || 0
+  };
 }
-function saveJournal() {
+
+async function loadJournal() {
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate() - i);
+    const k = d.toISOString().slice(0,10);
+    journal[k] = lsGet('j_' + k, []);
+    if (fbReady) {
+      try {
+        const snap = await getDoc(doc(db, 'users', UID, 'journal', k));
+        if (snap.exists()) {
+          const items = snap.data().items || [];
+          if (items.length > 0) {
+            journal[k] = items;
+            lsSet('j_' + k, items);
+          }
+        }
+      } catch(e) {}
+    }
+  }
+}
+
+async function saveJournal() {
   const k = todayKey();
   lsSet('j_' + k, journal[k] || []);
+  if (!fbReady) return;
+  try {
+    await setDoc(doc(db, 'users', UID, 'journal', k), {
+      items: (journal[k] || []).map(norm),
+      updatedAt: Date.now()
+    });
+  } catch(e) {}
 }
 function todayItems() { return journal[todayKey()] || []; }
 function totals() {
-  return todayItems().reduce((a, x) => ({ k: a.k+x.k, p: a.p+x.p, g: a.g+x.g, l: a.l+x.l }), { k:0, p:0, g:0, l:0 });
+  return todayItems().map(norm).reduce((a, x) => ({ k: a.k+x.k, p: a.p+x.p, g: a.g+x.g, l: a.l+x.l }), { k:0, p:0, g:0, l:0 });
 }
 
 function addFood(i) {
@@ -354,14 +388,12 @@ function addFood(i) {
   const k = todayKey();
   if (!journal[k]) journal[k] = [];
   journal[k].push({ id: Date.now() + Math.random(), ...f });
-  saveJournal();
-  render();
+  saveJournal().then(() => render());
 }
 function removeFood(id) {
   const k = todayKey();
   journal[k] = (journal[k]||[]).filter(x => x.id !== id);
-  saveJournal();
-  render();
+  saveJournal().then(() => render());
 }
 
 // === IA CLAUDE ===
@@ -556,7 +588,7 @@ function vJournal() {
 
   const logRows = items.length
     ? '<div class="log-list">' + items.map(x =>
-        '<div class="log-item"><div><div class="log-name">' + x.n + '</div><div class="log-detail">' + x.k + ' kcal · ' + x.p + 'g prot</div></div>'
+        '<div class="log-item"><div><div class="log-name">' + norm(x).n + '</div><div class="log-detail">' + norm(x).k + ' kcal · ' + norm(x).p + 'g prot</div></div>'
         + '<button class="log-del" onclick="removeFood(' + x.id + ')">x</button></div>'
       ).join('') + '</div>'
     : '<div class="empty">Aucun aliment ajoute aujourd\'hui.</div>';
@@ -627,7 +659,6 @@ Object.defineProperty(window, 'foodQ', { get(){ return foodQ; }, set(v){ foodQ =
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
 $('main').innerHTML = '<div class="empty" style="padding-top:60px"><div style="font-size:32px;margin-bottom:12px">&#9200;</div><div>Connexion...</div></div>';
-loadJournal();
 entries = lsGet('sante_bak', []);
 
 try {
@@ -637,6 +668,7 @@ try {
   fbReady = false;
 }
 await loadEntries();
+await loadJournal();
 render();
 </script>
 </body>
