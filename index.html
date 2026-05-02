@@ -491,9 +491,9 @@ function scrollChatBottom() {
 }
 
 // ═══ PESÉE ═══
-function submitForm() {
+function submitForm(directVal) {
   const inputEl = document.getElementById('input-poids');
-  const rawVal = inputEl ? inputEl.value : form.poids;
+  const rawVal = directVal || (inputEl ? inputEl.value : '') || form.poids;
   const p = parseFloat(String(rawVal).replace(',','.'));
   if (!p || p < 40 || p > 250) { alert('Entre un poids valide, ex: 92.5'); return; }
   const k = weekKey();
@@ -618,7 +618,7 @@ function vPesee() {
     </div>
     <label class="lbl">Note libre</label>
     <textarea rows="3" placeholder="Bonne semaine, faim ok..." oninput="setNote(this.value)">${esc(form.note)}</textarea>
-    <button class="btn btn-green" onclick="submitForm()">Enregistrer la pesée</button>
+    <button class="btn btn-green" onclick="submitForm(document.getElementById('input-poids')?.value||'')">Enregistrer la pesée</button>
   </div><div class="spacer"></div>`;
 }
 
