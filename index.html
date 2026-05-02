@@ -3,270 +3,414 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#0f1117">
+<meta name="theme-color" content="#F7F4EF">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Santé">
-<link rel="manifest" href="./manifest.json">
-<title>Suivi Santé</title>
+<title>Santé · Sylvain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap');
-
 :root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #232736;
-  --border: rgba(255,255,255,0.07);
-  --text: #e8eaf0;
-  --muted: #6b7280;
-  --green: #4ade80;
-  --green-dim: rgba(74,222,128,0.12);
-  --amber: #fbbf24;
-  --amber-dim: rgba(251,191,36,0.1);
-  --red: #f87171;
-  --red-dim: rgba(248,113,113,0.1);
-  --blue: #60a5fa;
-  --blue-dim: rgba(96,165,250,0.1);
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bg:          #F7F4EF;
+  --surface:     #FFFFFF;
+  --surface2:    #EEE9E1;
+  --ink:         #1C1A16;
+  --ink2:        #5C5650;
+  --ink3:        #9C9690;
+  --border:      rgba(28,26,22,0.09);
+  --border2:     rgba(28,26,22,0.16);
+  --accent:      #C4714A;
+  --accent-light:#F5EDE7;
+  --accent-mid:  #D4896A;
+  --sage:        #7A9E8A;
+  --sage-light:  #EAF1EC;
+  --gold:        #C9A84C;
+  --gold-light:  #F5F0E4;
+  --err:         #C05050;
+  --err-light:   #FAEAEA;
+  --r:           16px;
+  --r-sm:        10px;
+  --safe-top:    env(safe-area-inset-top, 0px);
+  --safe-bot:    env(safe-area-inset-bottom, 0px);
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--ink); font-family: 'DM Sans', sans-serif; -webkit-font-smoothing: antialiased; }
 
 #app {
-  max-width: 480px; margin: 0 auto;
+  max-width: 430px; margin: 0 auto;
   height: 100vh; height: 100dvh;
-  display: flex; flex-direction: column;
-  overflow: hidden;
+  display: flex; flex-direction: column; overflow: hidden;
+  position: relative;
 }
 
-/* HEADER */
+/* ── HEADER ── */
 .header {
-  padding: calc(14px + var(--safe-top)) 20px 14px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
   flex-shrink: 0;
-  display: flex; align-items: center; justify-content: space-between;
+  padding: calc(16px + var(--safe-top)) 22px 14px;
+  background: var(--bg);
+  display: flex; align-items: flex-end; justify-content: space-between;
+  position: relative; z-index: 10;
 }
-.header-left h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
-.header-left p { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'DM Mono', monospace; font-weight: 300; }
-.header-badge {
-  font-size: 11px; font-family: 'DM Mono', monospace;
-  background: var(--green-dim); color: var(--green);
-  padding: 4px 10px; border-radius: 20px; font-weight: 400;
+.header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-weight: 500; letter-spacing: -0.5px;
+  line-height: 1; color: var(--ink);
+  transition: opacity 0.2s;
 }
-.header-badge.offline { background: var(--amber-dim); color: var(--amber); }
+.header-sub { font-size: 11px; color: var(--ink3); margin-top: 4px; font-weight: 300; }
+.status-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--sage); box-shadow: 0 0 0 3px var(--sage-light);
+  transition: all 0.3s;
+}
+.status-dot.offline { background: var(--gold); box-shadow: 0 0 0 3px var(--gold-light); }
 
-/* SCROLL */
-.scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+/* ── SCROLL VIEWPORT ── */
+.scroll-viewport {
+  flex: 1; overflow: hidden; position: relative;
+}
 
-/* NAV */
+/* ── SLIDE TRANSITION ── */
+.view-slider {
+  display: flex; height: 100%;
+  transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+.view-pane {
+  flex: 0 0 100%; height: 100%;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+
+/* ── NAV ── */
 nav {
   flex-shrink: 0;
   display: flex; background: var(--surface);
   border-top: 1px solid var(--border);
-  padding-bottom: var(--safe-bottom);
+  padding-bottom: var(--safe-bot);
+  position: relative; z-index: 10;
 }
 nav button {
   flex: 1; background: none; border: none; cursor: pointer;
-  padding: 12px 4px 10px;
+  padding: 10px 2px 8px;
   display: flex; flex-direction: column; align-items: center; gap: 4px;
-  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600;
-  color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase;
-  transition: color 0.15s;
+  font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 500;
+  letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink3);
+  transition: color 0.2s;
 }
-nav button.active { color: var(--green); }
-nav button .ico { font-size: 18px; line-height: 1; }
+nav button.active { color: var(--accent); }
+.nav-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+.nav-pip {
+  width: 3px; height: 3px; border-radius: 50%;
+  background: var(--accent); opacity: 0;
+  transition: opacity 0.2s, transform 0.2s;
+}
+nav button.active .nav-pip { opacity: 1; transform: scale(1.2); }
 
-/* CARDS */
+/* ── HERO STRIP ── */
+.hero-strip {
+  background: var(--ink); margin: 14px 16px 0; border-radius: var(--r);
+  padding: 22px 22px 20px;
+  display: flex; align-items: center; justify-content: space-between;
+  overflow: hidden; position: relative;
+}
+.hero-strip::after {
+  content: ''; position: absolute;
+  top: -50px; right: -50px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(196,113,74,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-weight {
+  font-family: 'Playfair Display', serif;
+  font-size: 56px; font-weight: 400; letter-spacing: -2px; color: #fff; line-height: 1;
+}
+.hero-weight span { font-size: 20px; color: rgba(255,255,255,0.4); font-weight: 300; }
+.hero-meta { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 8px; font-weight: 300; }
+.hero-delta {
+  display: inline-block; margin-top: 10px; font-size: 12px; font-weight: 500;
+  padding: 4px 12px; border-radius: 20px;
+  background: rgba(122,158,138,0.25); color: #9ED4B4;
+}
+.hero-delta.bad { background: rgba(192,80,80,0.2); color: #F4A0A0; }
+
+/* ── CARD ── */
 .card {
-  background: var(--surface); border-radius: 16px;
-  margin: 14px 14px 0; padding: 18px;
+  background: var(--surface); border-radius: var(--r);
+  margin: 12px 16px 0; padding: 20px;
   border: 1px solid var(--border);
 }
 .card-label {
-  font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 400;
-  color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em;
-  margin-bottom: 10px;
+  font-size: 10px; font-weight: 500; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink3); margin-bottom: 16px;
 }
-.spacer { height: 14px; }
+.spacer { height: 20px; }
 
-/* RING */
-.ring-wrap { display: flex; align-items: center; gap: 20px; }
-.poids-big { font-size: 42px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
-.poids-unit { font-size: 16px; color: var(--muted); font-weight: 600; }
-.poids-delta { font-size: 12px; font-family: 'DM Mono', monospace; margin-top: 6px; }
-.poids-delta.good { color: var(--green); }
-.poids-delta.bad { color: var(--red); }
-.poids-delta.neutral { color: var(--muted); }
-
-/* STATS GRID */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 14px 0; }
-.stat-card { background: var(--surface); border-radius: 12px; padding: 14px; border: 1px solid var(--border); }
-.stat-val { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
-.stat-label { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 4px; }
-
-/* BILAN BAR */
-.bilan-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 14px 0; }
-.bilan-cell { background: var(--surface); border-radius: 10px; padding: 10px 6px; text-align: center; border: 1px solid var(--border); }
-.bilan-val { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
-.bilan-label { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 3px; letter-spacing: 0.05em; }
-.bilan-val.ok { color: var(--green); }
-.bilan-val.over { color: var(--red); }
-
-/* ALERT BOX */
-.alert { margin: 10px 14px 0; border-radius: 12px; padding: 12px 14px; font-size: 12px; font-family: 'DM Mono', monospace; line-height: 1.5; }
-.alert.green { background: var(--green-dim); color: var(--green); }
-.alert.amber { background: var(--amber-dim); color: var(--amber); }
-.alert.red { background: var(--red-dim); color: var(--red); }
-
-/* FORM */
-label.lbl { display: block; font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
-input[type=number], input[type=text], textarea {
-  width: 100%; padding: 12px 14px; font-size: 16px;
-  border: 1px solid var(--border); border-radius: 10px;
-  background: var(--surface2); color: var(--text);
-  font-family: 'Syne', sans-serif; outline: none; margin-bottom: 14px;
-  -webkit-appearance: none;
+/* ── MACROS ── */
+.macro-row { display: flex; gap: 8px; margin: 12px 16px 0; }
+.macro-pill {
+  flex: 1; background: var(--surface); border-radius: var(--r-sm);
+  padding: 12px 8px; text-align: center; border: 1px solid var(--border);
 }
-input[type=number]:focus, input[type=text]:focus, textarea:focus {
-  border-color: rgba(74,222,128,0.4);
+.macro-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 500; color: var(--ink); line-height: 1;
 }
-textarea { resize: none; line-height: 1.5; }
-input[type=range] { width: 100%; accent-color: var(--green); margin-bottom: 0; }
-.slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
-.dots { display: flex; gap: 5px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
-.dot.on { background: var(--green); }
-.dot.deep { background: var(--blue); }
+.macro-val.ok   { color: var(--sage); }
+.macro-val.over { color: var(--err); }
+.macro-sub { font-size: 9px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink3); margin-top: 4px; }
 
-.pas-row { display: flex; gap: 8px; margin-bottom: 14px; }
-.pas-btn { flex: 1; padding: 10px 4px; font-size: 11px; font-family: 'DM Mono', monospace; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; }
-.pas-btn.low  { border-color: var(--red);   background: var(--red-dim);   color: var(--red);   font-weight: 500; }
-.pas-btn.mid  { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); font-weight: 500; }
-.pas-btn.high { border-color: var(--green); background: var(--green-dim); color: var(--green); font-weight: 500; }
+/* ── ALERT ── */
+.alert { margin: 10px 16px 0; border-radius: var(--r-sm); padding: 11px 16px; font-size: 12px; line-height: 1.6; }
+.alert.ok      { background: var(--sage-light);  color: #3A6A52; border: 1px solid rgba(122,158,138,0.3); }
+.alert.err     { background: var(--err-light);   color: var(--err); border: 1px solid rgba(192,80,80,0.2); }
+.alert.neutral { background: var(--surface2);    color: var(--ink2); border: 1px solid var(--border); }
 
-/* BUTTONS */
-.btn { width: 100%; padding: 14px; font-size: 14px; font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: 0.05em; border: none; border-radius: 12px; cursor: pointer; margin-top: 8px; transition: opacity 0.15s; text-transform: uppercase; }
-.btn:active { opacity: 0.75; }
-.btn-green { background: var(--green); color: #0f1117; }
-.btn-ghost { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
-.btn-blue  { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
+/* ── TIMELINE ── */
+.timeline { padding: 4px 16px 0; }
+.tl-item { display: flex; gap: 12px; }
+.tl-line { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+.tl-dot-wrap { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+.tl-connector { width: 1px; flex: 1; min-height: 10px; background: var(--border2); margin: 2px 0; }
+.tl-body {
+  flex: 1; background: var(--surface); border-radius: var(--r-sm);
+  padding: 12px 14px; border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin-bottom: 6px;
+}
+.tl-name   { font-size: 13px; font-weight: 400; color: var(--ink); }
+.tl-detail { font-size: 11px; color: var(--ink3); margin-top: 2px; font-weight: 300; }
+.tl-del    { background: none; border: none; cursor: pointer; color: var(--ink3); padding: 4px 6px; border-radius: 6px; font-size: 14px; transition: color 0.15s; }
+.tl-del:hover { color: var(--err); }
 
-/* HISTORIQUE */
-.hist-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
-.hist-item:last-child { border-bottom: none; }
-.hist-top { display: flex; justify-content: space-between; align-items: flex-start; }
-.hist-date { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); }
-.hist-poids { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-top: 2px; }
-.chip { font-size: 11px; font-family: 'DM Mono', monospace; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
-.chip-green { background: var(--green-dim); color: var(--green); }
-.chip-red   { background: var(--red-dim);   color: var(--red); }
-.chip-gray  { background: var(--surface2);  color: var(--muted); }
-.hist-meta { display: flex; gap: 10px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
-.hist-note { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 6px; font-style: italic; line-height: 1.5; }
-
-/* PLAN REPAS */
-.day-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 0 14px; margin-top: 14px; scrollbar-width: none; }
+/* ── REPAS ── */
+.day-tabs { display: flex; gap: 7px; overflow-x: auto; padding: 14px 16px 0; scrollbar-width: none; }
 .day-tabs::-webkit-scrollbar { display: none; }
-.day-tab { flex: 0 0 auto; padding: 7px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-family: 'Syne', sans-serif; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
-.day-tab.active { background: var(--green-dim); color: var(--green); border-color: rgba(74,222,128,0.3); }
-.meal-card { background: var(--surface); border-radius: 14px; margin: 8px 14px 0; border: 1px solid var(--border); padding: 14px 16px; }
-.meal-time { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
-.meal-name { font-size: 15px; font-weight: 700; margin: 4px 0 3px; }
-.meal-kcal { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--green); }
-.meal-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 4px; }
+.day-tab {
+  flex: 0 0 auto; padding: 7px 16px; border-radius: 20px;
+  border: 1px solid var(--border2); background: transparent;
+  color: var(--ink2); font-size: 12px; font-family: 'DM Sans', sans-serif;
+  font-weight: 400; cursor: pointer; white-space: nowrap; transition: all 0.15s;
+}
+.day-tab.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 
-/* JOURNAL */
-.log-item { background: var(--surface); border-radius: 10px; padding: 11px 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
-.log-name { font-size: 13px; font-weight: 600; }
-.log-detail { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 3px; }
-.log-del { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 0 0 0 6px; flex-shrink: 0; line-height: 1; }
+.meal-card { background: var(--surface); border-radius: var(--r); margin: 10px 16px 0; border: 1px solid var(--border); overflow: hidden; }
+.meal-illus { display: flex; align-items: center; justify-content: center; padding: 28px 0 18px; background: var(--bg); position: relative; }
+.meal-illus-label {
+  position: absolute; bottom: 10px; left: 0; right: 0; text-align: center;
+  font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); font-weight: 500;
+}
+.meal-info { padding: 16px 18px 18px; }
+.meal-moment { font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink3); }
+.meal-name { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 500; color: var(--ink); margin: 5px 0 3px; line-height: 1.2; }
+.meal-kcal { font-size: 11px; font-weight: 500; color: var(--accent); letter-spacing: 0.04em; }
+.meal-desc { font-size: 12px; color: var(--ink3); line-height: 1.65; margin-top: 7px; font-weight: 300; }
 
-/* IA */
-.ai-box { margin: 10px 14px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-.ai-head { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 10px; font-family: 'DM Mono', monospace; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-.ai-head::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
-.ai-body { padding: 14px; font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; font-family: 'DM Mono', monospace; font-weight: 300; }
-.ai-loading { color: var(--muted); }
+/* ── FORMS ── */
+.field-label { display: block; font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); margin-bottom: 8px; }
+input[type=text], input[type=number], textarea {
+  width: 100%; padding: 13px 15px; font-size: 16px;
+  font-family: 'DM Sans', sans-serif; font-weight: 400;
+  border: 1px solid var(--border2); border-radius: var(--r-sm);
+  background: var(--bg); color: var(--ink);
+  outline: none; margin-bottom: 18px;
+  -webkit-appearance: none; appearance: none; transition: border-color 0.15s, background 0.15s;
+}
+input:focus, textarea:focus { border-color: var(--accent-mid); background: var(--surface); }
+textarea { resize: none; line-height: 1.6; }
 
-/* CHAT */
-.chat-wrap { display: flex; flex-direction: column; gap: 0; padding: 0 14px; }
+.slider-wrap { margin-bottom: 18px; }
+.slider-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.slider-lbl { font-size: 12px; color: var(--ink2); }
+.slider-val { font-family: 'Playfair Display', serif; font-size: 18px; color: var(--ink); }
+input[type=range] {
+  width: 100%; -webkit-appearance: none; appearance: none;
+  height: 3px; border-radius: 2px; outline: none; cursor: pointer; border: none; padding: 0; margin: 0;
+  background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct,50%), var(--surface2) var(--pct,50%), var(--surface2) 100%);
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--accent);
+  box-shadow: 0 2px 6px rgba(196,113,74,0.3);
+}
+input[type=range]::-moz-range-thumb { width: 20px; height: 20px; border-radius: 50%; background: var(--surface); border: 2px solid var(--accent); box-shadow: none; }
+
+.pas-row { display: flex; gap: 7px; margin-bottom: 18px; }
+.pas-btn { flex: 1; padding: 11px 4px; font-size: 11px; font-weight: 500; font-family: 'DM Sans', sans-serif; border-radius: var(--r-sm); border: 1px solid var(--border2); background: transparent; color: var(--ink3); cursor: pointer; transition: all 0.15s; }
+.pas-btn.low  { border-color: var(--err);  background: var(--err-light);  color: var(--err); }
+.pas-btn.mid  { border-color: var(--gold); background: var(--gold-light); color: var(--gold); }
+.pas-btn.high { border-color: var(--sage); background: var(--sage-light); color: var(--sage); }
+
+/* ── BUTTONS ── */
+.btn { width: 100%; padding: 15px; font-size: 12px; font-family: 'DM Sans', sans-serif; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; border: none; border-radius: var(--r-sm); cursor: pointer; margin-top: 6px; transition: opacity 0.15s, transform 0.1s; }
+.btn:active { opacity: 0.8; transform: scale(0.99); }
+.btn-primary { background: var(--ink); color: var(--bg); }
+.btn-subtle  { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(196,113,74,0.2); }
+
+/* ── BALANCE ── */
+.balance-scene { display: flex; flex-direction: column; align-items: center; padding: 24px 0 16px; }
+.weight-input-big {
+  font-family: 'Playfair Display', serif; font-size: 56px; font-weight: 400;
+  letter-spacing: -2px; color: var(--ink); text-align: center;
+  width: 100%; border: none; background: transparent; outline: none;
+  -webkit-appearance: none; appearance: none; padding: 0; margin-top: 16px;
+}
+.weight-input-big::placeholder { color: var(--surface2); }
+.weight-unit-label { font-size: 12px; color: var(--ink3); letter-spacing: 0.06em; text-align: center; margin-top: 2px; text-transform: uppercase; }
+
+/* ── BILAN ── */
+.hist-item { padding: 18px 0; border-bottom: 1px solid var(--border); }
+.hist-item:last-child { border-bottom: none; }
+.hist-date { font-size: 11px; color: var(--ink3); font-weight: 300; }
+.hist-poids { font-family: 'Playfair Display', serif; font-size: 38px; font-weight: 400; letter-spacing: -1px; color: var(--ink); margin-top: 2px; }
+.chip { font-size: 11px; font-weight: 500; padding: 4px 12px; border-radius: 20px; }
+.chip-ok   { background: var(--sage-light); color: #3A6A52; border: 1px solid rgba(122,158,138,0.3); }
+.chip-err  { background: var(--err-light);  color: var(--err); border: 1px solid rgba(192,80,80,0.2); }
+.chip-gray { background: var(--surface2);   color: var(--ink3); border: 1px solid var(--border2); }
+.hist-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+.hist-note { font-size: 11px; color: var(--ink3); margin-top: 8px; font-style: italic; line-height: 1.65; font-weight: 300; }
+.dots { display: flex; gap: 4px; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: var(--surface2); border: 1px solid var(--border2); }
+.dot.on   { background: var(--accent); border-color: var(--accent); }
+.dot.blue { background: #7A9EC4; border-color: #7A9EC4; }
+
+/* ── CHAT ── */
+.chat-wrap { display: flex; flex-direction: column; padding: 16px 16px 0; }
 .chat-msg { margin-bottom: 10px; }
-.chat-msg.user .bubble {
-  background: var(--green-dim); color: var(--green);
-  border-radius: 14px 14px 4px 14px; padding: 10px 13px;
-  font-size: 13px; font-family: 'DM Mono', monospace; font-weight: 400;
-  line-height: 1.5; margin-left: 30px;
-}
-.chat-msg.ai .bubble {
-  background: var(--surface2); color: var(--text);
-  border-radius: 4px 14px 14px 14px; padding: 10px 13px;
-  font-size: 13px; font-family: 'DM Mono', monospace; font-weight: 300;
-  line-height: 1.6; margin-right: 30px; white-space: pre-wrap;
-}
-.chat-msg.ai.loading .bubble { color: var(--muted); }
-.chat-input-wrap {
-  position: sticky; bottom: 0;
-  background: var(--bg); border-top: 1px solid var(--border);
-  padding: 10px 14px; display: flex; gap: 8px; align-items: flex-end;
-}
-.chat-input {
-  flex: 1; padding: 10px 13px; font-size: 14px;
-  border: 1px solid var(--border); border-radius: 12px;
-  background: var(--surface); color: var(--text);
-  font-family: 'DM Mono', monospace; outline: none;
-  resize: none; max-height: 100px; line-height: 1.4;
-  margin-bottom: 0;
-}
-.chat-input:focus { border-color: rgba(74,222,128,0.4); }
-.chat-send {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: var(--green); color: #0f1117;
-  border: none; cursor: pointer; font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; font-weight: 700;
-}
+.chat-msg.user .bubble { background: var(--ink); color: #F7F4EF; border-radius: 16px 16px 4px 16px; padding: 12px 16px; font-size: 13px; line-height: 1.65; margin-left: 36px; font-weight: 300; }
+.chat-msg.ai .bubble { background: var(--surface); color: var(--ink2); border: 1px solid var(--border); border-radius: 4px 16px 16px 16px; padding: 12px 16px; font-size: 13px; line-height: 1.75; margin-right: 36px; font-weight: 300; white-space: pre-wrap; }
+.chat-msg.ai.loading .bubble { color: var(--ink3); }
+.chat-input-wrap { position: sticky; bottom: 0; background: var(--bg); border-top: 1px solid var(--border); padding: 10px 16px; display: flex; gap: 8px; align-items: flex-end; }
+.chat-input { flex: 1; padding: 12px 15px; font-size: 14px; font-family: 'DM Sans', sans-serif; font-weight: 300; border: 1px solid var(--border2); border-radius: 12px; background: var(--surface); color: var(--ink); outline: none; resize: none; max-height: 100px; line-height: 1.5; margin-bottom: 0; transition: border-color 0.15s; }
+.chat-input:focus { border-color: var(--accent-mid); }
+.chat-send { width: 42px; height: 42px; border-radius: 12px; background: var(--ink); color: var(--bg); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+.chat-send:hover { background: var(--accent); }
 
-.empty { text-align: center; padding: 40px 20px; font-family: 'DM Mono', monospace; color: var(--muted); font-size: 13px; line-height: 1.6; }
+/* ── AI BOX ── */
+.ai-box { margin: 12px 16px 0; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); overflow: hidden; }
+.ai-head { padding: 11px 16px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 7px; }
+.ai-pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1.4s infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.65);} }
+.ai-body { padding: 16px; font-size: 13px; line-height: 1.8; color: var(--ink2); white-space: pre-wrap; font-weight: 300; }
+
+.saisie-card { background: var(--surface); border-radius: var(--r); margin: 12px 16px 0; border: 1px solid var(--border); overflow: hidden; }
+.saisie-head { padding: 14px 18px 12px; border-bottom: 1px solid var(--border); font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink3); }
+.saisie-body { padding: 16px 18px 18px; }
+.empty { text-align: center; padding: 48px 24px; color: var(--ink3); font-size: 13px; line-height: 1.8; font-weight: 300; }
+
+/* ── COMPACT MODE ── */
+.compact .hero-weight { font-size: 42px; }
+.compact .header-title { font-size: 22px; }
+.compact .card { padding: 14px; }
+.compact .macro-val { font-size: 17px; }
+.compact .meal-illus { padding: 18px 0 12px; }
+.compact .balance-scene { padding: 14px 0 10px; }
+.compact .weight-input-big { font-size: 44px; }
 </style>
 </head>
 <body>
 <div id="app">
   <div class="header">
-    <div class="header-left">
-      <h1 id="pg-title">Suivi Santé</h1>
-      <p id="pg-sub">94 → 84 kg · 27 juillet 2026</p>
+    <div>
+      <div class="header-title" id="pg-title">Journal</div>
+      <div class="header-sub" id="pg-sub">94 → 84 kg · 27 juillet 2026</div>
     </div>
-    <div class="header-badge offline" id="fb-status">local</div>
+    <div class="status-dot offline" id="fb-dot"></div>
   </div>
-  <div class="scroll" id="main"></div>
+
+  <div class="scroll-viewport">
+    <div class="view-slider" id="view-slider">
+      <!-- 5 panes: journal coach repas pesee bilan -->
+      <div class="view-pane" id="pane-journal"></div>
+      <div class="view-pane" id="pane-coach"></div>
+      <div class="view-pane" id="pane-repas"></div>
+      <div class="view-pane" id="pane-pesee"></div>
+      <div class="view-pane" id="pane-bilan"></div>
+    </div>
+  </div>
+
   <nav id="nav">
-    <button class="active" onclick="goTo('journal')" id="nav-journal">
-      <span class="ico">📋</span>Journal
+    <button class="active" onclick="goTo(0)" id="nav-0">
+      <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/></svg></span>
+      <span class="nav-pip"></span>Journal
     </button>
-    <button onclick="goTo('coach')" id="nav-coach">
-      <span class="ico">🤖</span>Coach IA
+    <button onclick="goTo(1)" id="nav-1">
+      <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+      <span class="nav-pip"></span>Coach
     </button>
-    <button onclick="goTo('repas')" id="nav-repas">
-      <span class="ico">🍽</span>Repas
+    <button onclick="goTo(2)" id="nav-2">
+      <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6h3.5"/><path d="M16 22v-5"/></svg></span>
+      <span class="nav-pip"></span>Repas
     </button>
-    <button onclick="goTo('pesee')" id="nav-pesee">
-      <span class="ico">⚖️</span>Pesée
+    <button onclick="goTo(3)" id="nav-3">
+      <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 3"/></svg></span>
+      <span class="nav-pip"></span>Pesée
     </button>
-    <button onclick="goTo('historique')" id="nav-historique">
-      <span class="ico">📈</span>Bilan
+    <button onclick="goTo(4)" id="nav-4">
+      <span class="nav-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+      <span class="nav-pip"></span>Bilan
     </button>
   </nav>
 </div>
 
+<!-- Tweaks -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+
+<script type="text/babel">
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "depart": 94,
+  "objectif": 84,
+  "kcalObj": 1500,
+  "protObj": 90,
+  "dateTarget": "27 juillet 2026",
+  "compact": false
+}/*EDITMODE-END*/;
+
+function TweaksApp() {
+  const { tweaks: rawTweaks, setTweak } = useTweaks(TWEAK_DEFAULTS);
+  const tweaks = rawTweaks || TWEAK_DEFAULTS;
+  if (!tweaks) return null;
+
+  React.useEffect(() => {
+    window.__tweaks = tweaks;
+    window.dispatchEvent(new CustomEvent('tweaks-changed', { detail: tweaks }));
+  }, [tweaks]);
+
+  return (
+    <TweaksPanel>
+      <TweakSection label="Programme">
+        <TweakNumber label="Poids de départ (kg)" value={tweaks.depart} min={50} max={150} onChange={v => setTweak('depart', v)} />
+        <TweakNumber label="Objectif (kg)" value={tweaks.objectif} min={40} max={130} onChange={v => setTweak('objectif', v)} />
+        <TweakText label="Date cible" value={tweaks.dateTarget} onChange={v => setTweak('dateTarget', v)} />
+      </TweakSection>
+      <TweakSection label="Nutrition">
+        <TweakNumber label="Calories objectif" value={tweaks.kcalObj} min={1000} max={2500} step={50} onChange={v => setTweak('kcalObj', v)} />
+        <TweakNumber label="Protéines objectif (g)" value={tweaks.protObj} min={50} max={180} onChange={v => setTweak('protObj', v)} />
+      </TweakSection>
+      <TweakSection label="Affichage">
+        <TweakToggle label="Mode compact" value={tweaks.compact} onChange={v => setTweak('compact', v)} />
+      </TweakSection>
+    </TweaksPanel>
+  );
+}
+
+const tweaksRoot = document.createElement('div');
+document.body.appendChild(tweaksRoot);
+ReactDOM.createRoot(tweaksRoot).render(<TweaksApp />);
+</script>
+
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { initializeFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { initializeFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { getAuth, signInAnonymously }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-// ═══ FIREBASE ═══
 const fbApp = initializeApp({
   apiKey: "AIzaSyBMtwIOSSSTIkNLh5nIDXmEH4WD-5jdGIM",
   authDomain: "pwa---sante.firebaseapp.com",
@@ -277,558 +421,745 @@ const fbApp = initializeApp({
 });
 const db = initializeFirestore(fbApp, { experimentalForceLongPolling: true, useFetchStreams: false });
 const auth = getAuth(fbApp);
-
-// ═══ CONSTANTES ═══
 const UID = 'sylvain';
-const DEPART = 94, OBJECTIF = 84;
-const KCAL_OBJ = 1500, PROT_OBJ = 90;
 
-// ═══ ÉTAT ═══
-let fb = false;
-let entries = [];
-let view = 'journal';
-let dayIdx = 0;
-let journal = {};
-let chatHistory = [];
+/* ── TWEAKS LIVE ── */
+function getTweaks() { return window.__tweaks || { depart:94, objectif:84, kcalObj:1500, protObj:90, dateTarget:'27 juillet 2026', compact:false }; }
+window.addEventListener('tweaks-changed', () => render());
+
+/* ── STATE ── */
+let fb = false, entries = [], currentView = 0, dayIdx = 0;
+let journal = {}, chatHistory = [], journalAi = '', chatLoading = false;
 let form = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
-let journalAi = '';
-let chatLoading = false;
 
-// ═══ PLAN REPAS ═══
+const VIEWS = ['journal','coach','repas','pesee','bilan'];
+
+/* ── PLAN REPAS ── */
 const DAYS = [
-  { nom: 'Lundi–Jeudi', meals: [
-    { t: 'Matin',  n: 'Skyr + flocons + fruits rouges', k: 320, d: 'Protéiné, rassasiant, fibres.' },
-    { t: 'Midi',   n: 'Poulet / poisson + quinoa + légumes', k: 520, d: 'Base méditerranéenne solide.' },
-    { t: 'Soir',   n: 'Saumon + haricots verts + patate douce', k: 520, d: 'Oméga-3, légumes, féculents modérés.' }
+  { nom: 'Lundi – Jeudi', meals: [
+    { t:'Matin',  n:'Skyr, flocons & fruits rouges',            k:320, d:'Protéiné, fibres, rassasiant pour bien démarrer.',           type:'bowl'    },
+    { t:'Midi',   n:'Poulet ou poisson, quinoa & légumes',      k:520, d:'Assiette méditerranéenne complète. Protéines et verdure.',    type:'plate'   },
+    { t:'Soir',   n:'Saumon, haricots verts & patate douce',    k:520, d:'Oméga-3, légumes croquants, féculents modérés.',              type:'salmon'  }
   ]},
   { nom: 'Vendredi', meals: [
-    { t: 'Matin', n: 'Omelette + fruit', k: 300, d: 'Léger pour garder de la marge.' },
-    { t: 'Midi',  n: 'Salade protéinée complète', k: 450, d: 'Volumineux sans excès.' },
-    { t: 'Soir',  n: 'Festin libre assumé', k: 900, d: 'Sans culpabilité. Reprendre le plan samedi.' }
+    { t:'Matin',  n:'Omelette & fruit de saison',               k:300, d:'Léger pour garder de la marge le soir.',                    type:'eggs'    },
+    { t:'Midi',   n:'Grande salade protéinée',                  k:450, d:'Volumineux, rassasiant, sans excès calorique.',              type:'salad'   },
+    { t:'Soir',   n:'Festin libre — sans culpabilité',          k:900, d:'Plaisir assumé. Reprendre le rythme dès samedi matin.',      type:'special' }
   ]},
   { nom: 'Week-end', meals: [
-    { t: 'Matin', n: 'Yaourt grec + noix + pomme', k: 340, d: 'Simple et stable.' },
-    { t: 'Midi',  n: 'Poisson + riz complet + crudités', k: 530, d: 'Assiette complète méditerranéenne.' },
-    { t: 'Soir',  n: 'Soupe + oeufs + tartine seigle', k: 400, d: 'Léger et satisfaisant.' }
+    { t:'Matin',  n:'Yaourt grec, noix & pomme',                k:340, d:'Simple, stable, adapté au week-end détendu.',               type:'bowl'    },
+    { t:'Midi',   n:'Poisson, riz complet & crudités',          k:530, d:'Assiette complète, légère et équilibrée.',                  type:'plate'   },
+    { t:'Soir',   n:'Soupe, œufs & tartine de seigle',          k:400, d:'Léger et satisfaisant. Parfait pour clôturer.',             type:'soup'    }
   ]}
 ];
 
-// ═══ UTILS ═══
-const $ = id => document.getElementById(id);
-const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function lsGet(k, fb) { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; } catch(e) { return fb; } }
-function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+/* ════════════════════════════════════════
+   ILLUSTRATIONS SVG RICHES
+════════════════════════════════════════ */
 
-function todayKey() {
-  const d = new Date(); d.setHours(12,0,0,0);
-  return d.toISOString().slice(0,10);
-}
-function weekKey() {
-  const d = new Date(); d.setHours(12,0,0,0);
-  const diff = d.getDay() === 0 ? -6 : 1 - d.getDay();
-  d.setDate(d.getDate() + diff);
-  return d.toISOString().slice(0,10);
-}
-function weekLabel(k) {
-  return new Date(k + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-}
-function daysLeft() {
-  return Math.max(0, Math.ceil((new Date('2026-07-27T12:00:00') - new Date()) / 86400000));
-}
-function pasLbl(v) { return v==='low'?'< 5 000 pas':v==='mid'?'5–10k pas':'> 10 000 pas'; }
-function pasClr(v) { return v==='low'?'var(--red)':v==='mid'?'var(--amber)':'var(--green)'; }
-
-function dots(n, cls) {
-  return '<div class="dots">' + Array.from({length:5},(_,i)=>'<span class="dot'+(i<n?' '+(cls||'on'):'')+'"></span>').join('') + '</div>';
-}
-
-function ring(pct) {
-  const r=48, c=2*Math.PI*r, dash=c*pct/100;
-  return `<svg width="110" height="110" viewBox="0 0 110 110">
-    <circle cx="55" cy="55" r="${r}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="9"/>
-    <circle cx="55" cy="55" r="${r}" fill="none" stroke="#4ade80" stroke-width="9"
-      stroke-linecap="round" stroke-dasharray="${dash} ${c-dash}" transform="rotate(-90 55 55)"/>
-    <text x="55" y="51" text-anchor="middle" font-size="22" font-family="Syne,sans-serif" font-weight="800" fill="#e8eaf0">${pct}</text>
-    <text x="55" y="68" text-anchor="middle" font-size="10" font-family="DM Mono,monospace" fill="#6b7280">%</text>
+function svgBowl() {
+  return `<svg width="120" height="96" viewBox="0 0 120 96" fill="none">
+    <!-- bol blanc -->
+    <ellipse cx="60" cy="36" rx="40" ry="12" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <path d="M20 36 Q18 68 60 70 Q102 68 100 36" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <!-- contenu : skyr blanc -->
+    <ellipse cx="60" cy="34" rx="33" ry="8" fill="#F9F7F4"/>
+    <!-- flocons d'avoine (petits rectangles beiges) -->
+    <rect x="44" y="31" width="6" height="3" rx="1.5" fill="#C9A84C" opacity="0.55" transform="rotate(-10 44 31)"/>
+    <rect x="56" y="29" width="5" height="2.5" rx="1.2" fill="#C9A84C" opacity="0.45" transform="rotate(5 56 29)"/>
+    <rect x="65" y="32" width="6" height="2.5" rx="1.2" fill="#C9A84C" opacity="0.5" transform="rotate(-5 65 32)"/>
+    <rect x="50" y="34" width="4" height="2" rx="1" fill="#C9A84C" opacity="0.4"/>
+    <rect x="70" y="30" width="5" height="2.5" rx="1.2" fill="#C9A84C" opacity="0.35" transform="rotate(8 70 30)"/>
+    <!-- fruits rouges -->
+    <circle cx="48" cy="30" r="5" fill="#C4714A" opacity="0.85"/>
+    <circle cx="48" cy="30" r="5" fill="url(#berryGrad)" opacity="0.6"/>
+    <circle cx="61" cy="28" r="4.5" fill="#A85540" opacity="0.75"/>
+    <circle cx="72" cy="31" r="4" fill="#C4714A" opacity="0.7"/>
+    <circle cx="54" cy="33" r="3.5" fill="#8B3A3A" opacity="0.6"/>
+    <!-- petites feuilles -->
+    <path d="M48 25 Q50 23 52 25" stroke="#7A9E8A" stroke-width="1" fill="none"/>
+    <path d="M61 23.5 Q63 22 64 24" stroke="#7A9E8A" stroke-width="1" fill="none"/>
+    <!-- pied du bol -->
+    <ellipse cx="60" cy="70" rx="26" ry="5" fill="#E2DDD6" opacity="0.5"/>
+    <rect x="54" y="68" width="12" height="4" rx="2" fill="#E2DDD6"/>
+    <rect x="50" y="71" width="20" height="3" rx="1.5" fill="#E2DDD6"/>
+    <!-- ombre -->
+    <ellipse cx="60" cy="76" rx="24" ry="4" fill="rgba(28,26,22,0.06)"/>
+    <defs>
+      <radialGradient id="berryGrad" cx="40%" cy="35%">
+        <stop offset="0%" stop-color="white" stop-opacity="0.4"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+    </defs>
   </svg>`;
 }
 
-// ═══ FIREBASE DATA ═══
-async function loadEntries() {
-  if (!fb) { entries = lsGet('pesees', []); return; }
-  try {
-    const snap = await getDocs(query(collection(db,'users',UID,'pesees'), orderBy('key','desc')));
-    entries = snap.docs.map(d => d.data());
-    lsSet('pesees', entries);
-  } catch(e) { entries = lsGet('pesees', []); }
+function svgPlate() {
+  return `<svg width="130" height="96" viewBox="0 0 130 96" fill="none">
+    <!-- assiette -->
+    <ellipse cx="65" cy="54" rx="48" ry="13" fill="#E2DDD6" opacity="0.5"/>
+    <ellipse cx="65" cy="50" rx="48" ry="13" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <!-- rebord assiette -->
+    <ellipse cx="65" cy="49" rx="41" ry="10" fill="white" stroke="#EEE9E1" stroke-width="1"/>
+    <!-- zone quinoa (gauche, beige doré) -->
+    <ellipse cx="52" cy="47" rx="15" ry="8" fill="#C9A84C" opacity="0.25"/>
+    <!-- petits grains quinoa -->
+    <circle cx="47" cy="45" r="1.5" fill="#C9A84C" opacity="0.5"/>
+    <circle cx="51" cy="43" r="1.2" fill="#C9A84C" opacity="0.4"/>
+    <circle cx="55" cy="45" r="1.5" fill="#C9A84C" opacity="0.45"/>
+    <circle cx="49" cy="48" r="1.3" fill="#C9A84C" opacity="0.5"/>
+    <circle cx="53" cy="50" r="1.2" fill="#C9A84C" opacity="0.35"/>
+    <!-- protéine centre (poulet/poisson, brun clair) -->
+    <ellipse cx="66" cy="47" rx="11" ry="7" fill="#C4714A" opacity="0.3"/>
+    <ellipse cx="66" cy="47" rx="8" ry="5" fill="#C4714A" opacity="0.4"/>
+    <!-- légumes droite (vert) -->
+    <ellipse cx="80" cy="48" rx="11" ry="7" fill="#7A9E8A" opacity="0.35"/>
+    <circle cx="77" cy="46" r="3" fill="#7A9E8A" opacity="0.5"/>
+    <circle cx="82" cy="47" r="2.5" fill="#5A8A6A" opacity="0.5"/>
+    <circle cx="80" cy="50" r="2" fill="#7A9E8A" opacity="0.45"/>
+    <!-- ombre -->
+    <ellipse cx="65" cy="64" rx="32" ry="5" fill="rgba(28,26,22,0.06)"/>
+  </svg>`;
 }
 
-async function saveEntry(e) {
-  lsSet('pesees', entries);
-  if (!fb) return;
-  try { await setDoc(doc(db,'users',UID,'pesees',e.key), e); } catch(_) {}
+function svgSalmon() {
+  return `<svg width="130" height="96" viewBox="0 0 130 96" fill="none">
+    <!-- assiette -->
+    <ellipse cx="65" cy="54" rx="48" ry="13" fill="#E2DDD6" opacity="0.5"/>
+    <ellipse cx="65" cy="50" rx="48" ry="13" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <ellipse cx="65" cy="49" rx="41" ry="10" fill="white" stroke="#EEE9E1" stroke-width="1"/>
+    <!-- patate douce (orange, fond) -->
+    <ellipse cx="75" cy="50" rx="16" ry="8" fill="#D4896A" opacity="0.35"/>
+    <!-- pavé de saumon (rose orangé) -->
+    <path d="M46 43 Q58 40 66 44 Q62 52 48 52 Z" fill="#E8956A" opacity="0.7"/>
+    <path d="M46 43 Q58 40 66 44" stroke="#C4714A" stroke-width="1" fill="none" opacity="0.5"/>
+    <!-- stries saumon -->
+    <line x1="50" y1="44" x2="54" y2="50" stroke="white" stroke-width="0.8" opacity="0.5"/>
+    <line x1="55" y1="42" x2="58" y2="50" stroke="white" stroke-width="0.8" opacity="0.4"/>
+    <line x1="60" y1="42" x2="62" y2="49" stroke="white" stroke-width="0.8" opacity="0.3"/>
+    <!-- haricots verts -->
+    <path d="M54 53 Q65 48 76 51" stroke="#7A9E8A" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.8"/>
+    <path d="M52 55 Q63 50 74 53" stroke="#5A8A6A" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7"/>
+    <path d="M56 57 Q67 52 78 55" stroke="#7A9E8A" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
+    <!-- quartier de citron -->
+    <path d="M80 42 Q84 38 88 42 Q84 48 80 42 Z" fill="#F5E88A" opacity="0.7"/>
+    <!-- ombre -->
+    <ellipse cx="65" cy="64" rx="32" ry="5" fill="rgba(28,26,22,0.06)"/>
+  </svg>`;
 }
 
-async function loadJournal() {
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-i);
-    const k = d.toISOString().slice(0,10);
-    journal[k] = lsGet('j_'+k, []);
-    if (!fb) continue;
-    try {
-      const snap = await getDoc(doc(db,'users',UID,'journal',k));
-      if (snap.exists()) {
-        const items = snap.data().items || [];
-        if (items.length > 0) { journal[k] = items; lsSet('j_'+k, items); }
-      }
-    } catch(e) {}
+function svgEggs() {
+  return `<svg width="130" height="96" viewBox="0 0 130 96" fill="none">
+    <!-- poêle -->
+    <ellipse cx="66" cy="52" rx="38" ry="11" fill="#E2DDD6" opacity="0.4"/>
+    <ellipse cx="66" cy="48" rx="38" ry="11" fill="#D4CEC5" stroke="#C8C2B8" stroke-width="1.5"/>
+    <!-- zone cuisson -->
+    <ellipse cx="66" cy="47" rx="30" ry="8" fill="#C8C2B8" opacity="0.4"/>
+    <!-- blanc d'œuf 1 -->
+    <ellipse cx="56" cy="46" rx="13" ry="7" fill="white" opacity="0.95"/>
+    <!-- jaune 1 -->
+    <circle cx="56" cy="45" r="5" fill="#F5C842" opacity="0.9"/>
+    <circle cx="54" cy="43" r="2" fill="#FFDE6A" opacity="0.5"/>
+    <!-- blanc 2 -->
+    <ellipse cx="76" cy="47" rx="12" ry="7" fill="white" opacity="0.9"/>
+    <!-- jaune 2 -->
+    <circle cx="76" cy="46" r="5" fill="#F5C842" opacity="0.9"/>
+    <circle cx="74" cy="44" r="2" fill="#FFDE6A" opacity="0.5"/>
+    <!-- manche poêle -->
+    <rect x="104" y="46" width="18" height="5" rx="2.5" fill="#D4CEC5"/>
+    <!-- ombre -->
+    <ellipse cx="66" cy="61" rx="30" ry="4.5" fill="rgba(28,26,22,0.06)"/>
+    <!-- fruit à côté -->
+    <circle cx="30" cy="38" r="12" fill="#C4714A" opacity="0.2"/>
+    <circle cx="30" cy="38" r="10" fill="#C4714A" opacity="0.3"/>
+    <path d="M30 26 Q32 22 30 20" stroke="#7A9E8A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function svgSalad() {
+  return `<svg width="130" height="96" viewBox="0 0 130 96" fill="none">
+    <!-- bol salade -->
+    <ellipse cx="65" cy="36" rx="42" ry="11" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <path d="M23 36 Q21 70 65 72 Q109 70 107 36" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <!-- feuilles de salade (vert) -->
+    <ellipse cx="65" cy="34" rx="35" ry="8" fill="#7A9E8A" opacity="0.2"/>
+    <path d="M35 32 Q45 26 55 32 Q48 38 35 32" fill="#7A9E8A" opacity="0.5"/>
+    <path d="M55 30 Q65 24 75 30 Q68 36 55 30" fill="#5A8A6A" opacity="0.45"/>
+    <path d="M72 32 Q82 26 92 32 Q85 38 72 32" fill="#7A9E8A" opacity="0.5"/>
+    <path d="M42 35 Q52 30 60 35 Q54 40 42 35" fill="#7A9E8A" opacity="0.4"/>
+    <!-- tomates cerises -->
+    <circle cx="50" cy="31" r="5" fill="#C4714A" opacity="0.8"/>
+    <circle cx="50" cy="31" r="5" fill="url(#tomatoShine)" opacity="0.5"/>
+    <circle cx="78" cy="30" r="4.5" fill="#A84040" opacity="0.75"/>
+    <circle cx="66" cy="33" r="4" fill="#C4714A" opacity="0.7"/>
+    <!-- poulet grillé -->
+    <ellipse cx="62" cy="37" rx="10" ry="5" fill="#C9A84C" opacity="0.5"/>
+    <!-- feta (blanc) -->
+    <rect x="74" y="33" width="8" height="5" rx="1.5" fill="white" stroke="#E2DDD6" stroke-width="0.8"/>
+    <rect x="82" y="35" width="6" height="4" rx="1.5" fill="white" stroke="#E2DDD6" stroke-width="0.8"/>
+    <!-- ombre -->
+    <ellipse cx="65" cy="74" rx="28" ry="4.5" fill="rgba(28,26,22,0.06)"/>
+    <defs>
+      <radialGradient id="tomatoShine" cx="35%" cy="30%">
+        <stop offset="0%" stop-color="white" stop-opacity="0.6"/>
+        <stop offset="100%" stop-color="transparent"/>
+      </radialGradient>
+    </defs>
+  </svg>`;
+}
+
+function svgSoup() {
+  return `<svg width="120" height="96" viewBox="0 0 120 96" fill="none">
+    <!-- bol à soupe avec anses -->
+    <ellipse cx="60" cy="36" rx="36" ry="10" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <path d="M24 36 Q22 62 60 64 Q98 62 96 36" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <!-- soupe (dorée) -->
+    <ellipse cx="60" cy="34" rx="30" ry="7" fill="#C9A84C" opacity="0.2"/>
+    <!-- légumes dans la soupe -->
+    <circle cx="48" cy="33" r="3.5" fill="#C4714A" opacity="0.4"/>
+    <circle cx="58" cy="32" r="3" fill="#7A9E8A" opacity="0.5"/>
+    <circle cx="68" cy="34" r="3.5" fill="#C9A84C" opacity="0.45"/>
+    <circle cx="54" cy="36" r="2.5" fill="#C4714A" opacity="0.35"/>
+    <circle cx="66" cy="30" r="2" fill="#7A9E8A" opacity="0.4"/>
+    <!-- vapeur -->
+    <path d="M44 22 C43 18 45 16 44 12" stroke="#E2DDD6" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <path d="M60 20 C59 16 61 14 60 10" stroke="#E2DDD6" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <path d="M76 22 C75 18 77 16 76 12" stroke="#E2DDD6" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+    <!-- anses -->
+    <path d="M24 42 C14 42 14 54 24 54" stroke="#E2DDD6" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M96 42 C106 42 106 54 96 54" stroke="#E2DDD6" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- soucoupe -->
+    <ellipse cx="60" cy="65" rx="32" ry="6" fill="white" stroke="#E2DDD6" stroke-width="1"/>
+    <!-- ombre -->
+    <ellipse cx="60" cy="72" rx="28" ry="4" fill="rgba(28,26,22,0.06)"/>
+  </svg>`;
+}
+
+function svgSpecial() {
+  return `<svg width="130" height="96" viewBox="0 0 130 96" fill="none">
+    <!-- halo festif -->
+    <circle cx="65" cy="46" r="34" fill="#C4714A" opacity="0.06"/>
+    <circle cx="65" cy="46" r="24" fill="#C4714A" opacity="0.07"/>
+    <!-- assiette principale -->
+    <ellipse cx="65" cy="54" rx="40" ry="11" fill="#E2DDD6" opacity="0.4"/>
+    <ellipse cx="65" cy="50" rx="40" ry="11" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <ellipse cx="65" cy="49" rx="33" ry="8" fill="#F9F7F4" stroke="#EEE9E1" stroke-width="0.8"/>
+    <!-- contenu festif (vague d'un met élaboré) -->
+    <ellipse cx="60" cy="48" rx="16" ry="6" fill="#C4714A" opacity="0.2"/>
+    <ellipse cx="74" cy="49" rx="10" ry="5" fill="#C9A84C" opacity="0.25"/>
+    <!-- verre de vin à droite -->
+    <path d="M102 22 L116 22 L112 40 L106 40 Z" fill="white" stroke="#E2DDD6" stroke-width="1.2"/>
+    <path d="M102 22 C102 32 116 32 116 22" fill="#C4714A" opacity="0.3"/>
+    <line x1="109" y1="40" x2="109" y2="52" stroke="#E2DDD6" stroke-width="1.5"/>
+    <ellipse cx="109" cy="52" rx="7" ry="2" fill="white" stroke="#E2DDD6" stroke-width="1.2"/>
+    <!-- étoiles / paillettes -->
+    <circle cx="20" cy="28" r="2.5" fill="#C9A84C" opacity="0.7"/>
+    <circle cx="30" cy="18" r="1.8" fill="#C4714A" opacity="0.5"/>
+    <circle cx="14" cy="42" r="1.5" fill="#7A9E8A" opacity="0.6"/>
+    <circle cx="118" cy="38" r="2" fill="#C9A84C" opacity="0.5"/>
+    <circle cx="24" cy="55" r="1.5" fill="#C4714A" opacity="0.4"/>
+    <!-- points dorés décoratifs -->
+    <path d="M20 28 L18 26 M20 28 L22 26 M20 28 L20 25" stroke="#C9A84C" stroke-width="1" stroke-linecap="round" opacity="0.6"/>
+    <!-- ombre -->
+    <ellipse cx="65" cy="63" rx="30" ry="4.5" fill="rgba(28,26,22,0.06)"/>
+  </svg>`;
+}
+
+/* ── BALANCE SVG AVEC CADRAN ── */
+function svgBalanceDial(weight) {
+  const w = parseFloat(String(weight||'').replace(',','.'));
+  const hasW = !isNaN(w) && w > 0;
+  // aiguille : 0° = objectif, dévie vers droite si > objectif
+  const deviation = hasW ? Math.max(-80, Math.min(80, (w - 84) * 6)) : 0;
+  const needleAngle = deviation; // en degrés, 0 = vertical
+  // rotation aiguille depuis centre du cadran
+  const cx = 90, cy = 64, r = 44;
+  // aiguille
+  const rad = (needleAngle - 90) * Math.PI / 180;
+  const nx = cx + (r - 10) * Math.cos(rad);
+  const ny = cy + (r - 10) * Math.sin(rad);
+
+  // graduations du cadran (bas = 60kg, haut = 110kg)
+  const ticks = [];
+  for (let kg = 60; kg <= 110; kg += 5) {
+    const pct = (kg - 60) / (110 - 60); // 0 à 1
+    const angle = -150 + pct * 300; // de -150° à +150°
+    const aRad = (angle - 90) * Math.PI / 180;
+    const isObj = kg === 84;
+    const isMajor = kg % 10 === 0;
+    const inner = isObj ? r - 14 : isMajor ? r - 12 : r - 8;
+    const outer = r - 3;
+    const x1 = cx + inner * Math.cos(aRad);
+    const y1 = cy + inner * Math.sin(aRad);
+    const x2 = cx + outer * Math.cos(aRad);
+    const y2 = cy + outer * Math.sin(aRad);
+    const lx = cx + (r + 8) * Math.cos(aRad);
+    const ly = cy + (r + 8) * Math.sin(aRad);
+    ticks.push({ x1,y1,x2,y2,lx,ly, kg, isObj, isMajor });
   }
+
+  // zone verte (objectif atteint) : 60kg à 87kg
+  const startAngle = -150; // 60kg
+  const endAngle = -150 + ((87-60)/(110-60))*300; // ~87kg
+  const sa = (startAngle - 90)*Math.PI/180;
+  const ea = (endAngle - 90)*Math.PI/180;
+  const arcR = r - 2;
+  const arcX1 = cx + arcR * Math.cos(sa), arcY1 = cy + arcR * Math.sin(sa);
+  const arcX2 = cx + arcR * Math.cos(ea), arcY2 = cy + arcR * Math.sin(ea);
+  const large = (endAngle - startAngle) > 180 ? 1 : 0;
+
+  return `<svg width="180" height="120" viewBox="0 0 180 120" fill="none">
+    <!-- fond balance -->
+    <rect x="20" y="88" width="140" height="22" rx="11" fill="#E2DDD6"/>
+    <rect x="28" y="82" width="124" height="14" rx="7" fill="#EEE9E1"/>
+    <!-- pied central -->
+    <rect x="85" y="100" width="10" height="16" rx="4" fill="#D4CEC5"/>
+    <!-- cadran -->
+    <circle cx="${cx}" cy="${cy}" r="${r+14}" fill="white" stroke="#E2DDD6" stroke-width="1.5"/>
+    <circle cx="${cx}" cy="${cy}" r="${r+14}" fill="none" stroke="#EEE9E1" stroke-width="1"/>
+    <!-- zone verte objectif -->
+    <path d="M ${arcX1} ${arcY1} A ${arcR} ${arcR} 0 ${large} 1 ${arcX2} ${arcY2}"
+      stroke="#7A9E8A" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.25"/>
+    <!-- graduations -->
+    ${ticks.map(t => `
+      <line x1="${t.x1.toFixed(1)}" y1="${t.y1.toFixed(1)}" x2="${t.x2.toFixed(1)}" y2="${t.y2.toFixed(1)}"
+        stroke="${t.isObj ? '#7A9E8A' : t.isMajor ? '#9C9690' : '#C8C2B8'}"
+        stroke-width="${t.isObj ? 2 : t.isMajor ? 1.5 : 1}"/>
+      ${t.isMajor ? `<text x="${t.lx.toFixed(1)}" y="${(t.ly+3).toFixed(1)}"
+        text-anchor="middle" font-size="7" fill="${t.isObj ? '#7A9E8A' : '#9C9690'}"
+        font-family="DM Sans,sans-serif" font-weight="${t.isObj?'600':'400'}">${t.kg}</text>` : ''}
+    `).join('')}
+    <!-- aiguille -->
+    <line x1="${cx}" y1="${cy}" x2="${nx.toFixed(1)}" y2="${ny.toFixed(1)}"
+      stroke="${hasW && w <= 87 ? '#7A9E8A' : '#C4714A'}" stroke-width="2.5" stroke-linecap="round"
+      style="transform-origin:${cx}px ${cy}px;transition:all 0.7s cubic-bezier(0.34,1.56,0.64,1)"/>
+    <!-- pivot -->
+    <circle cx="${cx}" cy="${cy}" r="5" fill="${hasW && w <= 87 ? '#7A9E8A' : '#C4714A'}" stroke="white" stroke-width="2"
+      style="transition:fill 0.4s"/>
+    <!-- picto balance (plateau) sous le cadran -->
+    <ellipse cx="${cx}" cy="96" rx="20" ry="4" fill="#D4CEC5"/>
+  </svg>`;
 }
 
-async function saveJournal() {
-  const k = todayKey();
-  lsSet('j_'+k, journal[k]||[]);
-  if (!fb) return;
-  try {
-    await setDoc(doc(db,'users',UID,'journal',k), {
-      items: (journal[k]||[]).map(x => ({
-        id: x.id, nom: x.nom||'', kcal: x.kcal||0,
-        prot: x.prot||0, gluc: x.gluc||0, lip: x.lip||0,
-        qty: x.qty||100, moment: x.moment||''
-      })),
-      updatedAt: Date.now()
-    });
-  } catch(e) {}
+/* ── COURBE ── */
+function svgCurve(data) {
+  if (!data || data.length < 2) return '';
+  const pts = [...data].reverse();
+  const weights = pts.map(e => e.poids);
+  const tw = getTweaks();
+  const minW = Math.min(...weights, tw.objectif) - 1.5;
+  const maxW = Math.max(...weights, tw.depart) + 1.5;
+  const W = 320, H = 100, PAD = 14;
+  const x = i => PAD + (i / (pts.length-1)) * (W - PAD*2);
+  const y = w => H - PAD - ((w-minW)/(maxW-minW)) * (H-PAD*2);
+  const pathD = pts.map((e,i) => `${i===0?'M':'L'} ${x(i).toFixed(1)} ${y(e.poids).toFixed(1)}`).join(' ');
+  const areaD = `${pathD} L ${x(pts.length-1).toFixed(1)} ${H} L ${x(0).toFixed(1)} ${H} Z`;
+  const yObj = y(tw.objectif);
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" fill="none" style="width:100%;height:auto;display:block">
+    <defs>
+      <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#C4714A" stop-opacity="0.15"/>
+        <stop offset="100%" stop-color="#C4714A" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaD}" fill="url(#areaGrad)"/>
+    <line x1="${PAD}" y1="${yObj.toFixed(1)}" x2="${W-PAD}" y2="${yObj.toFixed(1)}"
+      stroke="#7A9E8A" stroke-width="1" stroke-dasharray="4 3" opacity="0.7"/>
+    <text x="${W-PAD-2}" y="${(yObj-4).toFixed(1)}" font-size="8" fill="#7A9E8A" text-anchor="end" font-family="DM Sans,sans-serif">${tw.objectif} kg</text>
+    <path d="${pathD}" stroke="#C4714A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    ${pts.map((e,i)=>`<circle cx="${x(i).toFixed(1)}" cy="${y(e.poids).toFixed(1)}" r="4" fill="white" stroke="#C4714A" stroke-width="2"/>`).join('')}
+    <text x="${x(pts.length-1).toFixed(1)}" y="${(y(pts[pts.length-1].poids)-9).toFixed(1)}"
+      font-size="9" fill="#5C5650" text-anchor="middle" font-family="DM Sans,sans-serif" font-weight="500">
+      ${pts[pts.length-1].poids.toFixed(1)} kg
+    </text>
+  </svg>`;
 }
 
-// ═══ JOURNAL ═══
-function todayItems() { return journal[todayKey()] || []; }
-function totals() {
-  return todayItems().reduce((a,x) => ({
-    k: a.k+(x.kcal||x.k||0),
-    p: a.p+(x.prot||x.p||0),
-    g: a.g+(x.gluc||x.g||0),
-    l: a.l+(x.lip||x.l||0)
-  }), {k:0,p:0,g:0,l:0});
+/* ── UTILS ── */
+const $ = id => document.getElementById(id);
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function lsGet(k,f){try{const r=localStorage.getItem(k);return r?JSON.parse(r):f;}catch(e){return f;}}
+function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function todayKey(){const d=new Date();d.setHours(12,0,0,0);return d.toISOString().slice(0,10);}
+function weekKey(){const d=new Date();d.setHours(12,0,0,0);const diff=d.getDay()===0?-6:1-d.getDay();d.setDate(d.getDate()+diff);return d.toISOString().slice(0,10);}
+function weekLabel(k){return new Date(k+'T12:00:00').toLocaleDateString('fr-FR',{day:'numeric',month:'long',year:'numeric'});}
+function daysLeft(){
+  const tw = getTweaks();
+  const parts = tw.dateTarget.split(' ');
+  const months = {janvier:0,février:1,mars:2,avril:3,mai:4,juin:5,juillet:6,août:7,septembre:8,octobre:9,novembre:10,décembre:11};
+  const d = parts.length===3 ? new Date(parseInt(parts[2]), months[parts[1].toLowerCase()]||6, parseInt(parts[0])) : new Date('2026-07-27');
+  return Math.max(0, Math.ceil((d - new Date()) / 86400000));
 }
-function getName(x) { return x.nom||x.n||x.name||''; }
-function getKcal(x) { return x.kcal||x.k||0; }
-function getProt(x) { return x.prot||x.p||0; }
+function pasLbl(v){return v==='low'?'< 5 000 pas':v==='mid'?'5 – 10 000 pas':'> 10 000 pas';}
+function pasClr(v){return v==='low'?'var(--err)':v==='mid'?'var(--gold)':'var(--sage)';}
+function dots(n,t){return '<div class="dots">'+Array.from({length:5},(_,i)=>`<span class="dot${i<n?(t==='blue'?' blue':' on'):''}"></span>`).join('')+'</div>';}
 
-function addJournalEntry(text) {
-  const k = todayKey();
-  if (!journal[k]) journal[k] = [];
-  journal[k].push({ id: Date.now(), nom: text.trim(), kcal: 0, prot: 0, gluc: 0, lip: 0, qty: 0, moment: '' });
-  saveJournal();
-}
+/* ── FIREBASE ── */
+async function loadEntries(){if(!fb){entries=lsGet('pesees',[]);return;}try{const snap=await getDocs(query(collection(db,'users',UID,'pesees'),orderBy('key','desc')));entries=snap.docs.map(d=>d.data());lsSet('pesees',entries);}catch(e){entries=lsGet('pesees',[]);}}
+async function saveEntry(e){lsSet('pesees',entries);if(!fb)return;try{await setDoc(doc(db,'users',UID,'pesees',e.key),e);}catch(_){}}
+async function loadJournal(){for(let i=0;i<7;i++){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()-i);const k=d.toISOString().slice(0,10);journal[k]=lsGet('j_'+k,[]);if(!fb)continue;try{const snap=await getDoc(doc(db,'users',UID,'journal',k));if(snap.exists()){const items=snap.data().items||[];if(items.length>0){journal[k]=items;lsSet('j_'+k,items);}}}catch(e){}}}
+async function saveJournal(){const k=todayKey();lsSet('j_'+k,journal[k]||[]);if(!fb)return;try{await setDoc(doc(db,'users',UID,'journal',k),{items:(journal[k]||[]).map(x=>({id:x.id,nom:x.nom||'',kcal:x.kcal||0,prot:x.prot||0,gluc:x.gluc||0,lip:x.lip||0,qty:x.qty||100,moment:x.moment||''})),updatedAt:Date.now()});}catch(e){}}
 
-function removeFood(id) {
-  const k = todayKey();
-  journal[k] = (journal[k]||[]).filter(x => x.id !== id);
-  saveJournal().then(() => render());
-}
+function todayItems(){return journal[todayKey()]||[];}
+function totals(){return todayItems().reduce((a,x)=>({k:a.k+(x.kcal||0),p:a.p+(x.prot||0),g:a.g+(x.gluc||0),l:a.l+(x.lip||0)}),{k:0,p:0,g:0,l:0});}
+function getName(x){return x.nom||x.n||x.name||'';}
+function getKcal(x){return x.kcal||x.k||0;}
+function getProt(x){return x.prot||x.p||0;}
+function addJournalEntry(t){const k=todayKey();if(!journal[k])journal[k]=[];journal[k].push({id:Date.now(),nom:t.trim(),kcal:0,prot:0,gluc:0,lip:0});saveJournal();}
+function removeFood(id){const k=todayKey();journal[k]=(journal[k]||[]).filter(x=>x.id!==id);saveJournal().then(()=>renderView(currentView));}
 
-// ═══ IA CLAUDE ═══
-async function askClaude(msgs) {
-  const res = await fetch('/api/claude', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 800,
-      system: `Tu es le coach santé de Sylvain. Profil : 55 ans, 174cm, départ 94kg, objectif 84kg au 27 juillet 2026. Régime méditerranéen-protéiné : 1400-1600 kcal/j, 90g protéines minimum. Sous Kardégic. Festin le vendredi soir. Actif : 5000 à 10000 pas/jour. Réponds en français, ton direct et bienveillant, concis (8 lignes max sauf si demande détaillée). Pas de mise en garde médicale répétée.`,
-      messages: msgs
-    })
-  });
-  const d = await res.json();
-  if (!res.ok) throw new Error(d.error || 'Erreur API');
-  return d.content.find(x => x.type==='text')?.text || '';
+/* ── CLAUDE ── */
+async function askClaude(msgs){
+  const tw=getTweaks();
+  const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,system:`Tu es le coach santé de Sylvain. Profil : 55 ans, 174 cm, départ ${tw.depart} kg, objectif ${tw.objectif} kg. Régime méditerranéen-protéiné : ${tw.kcalObj} kcal/j, ${tw.protObj}g protéines minimum. Sous Kardégic. Festin le vendredi soir. Actif : 5 000 à 10 000 pas/jour. Réponds en français, ton direct et bienveillant, concis (8 lignes max sauf si demande détaillée). Pas de mise en garde médicale répétée.`,messages:msgs})});
+  const d=await res.json();if(!res.ok)throw new Error(d.error||'Erreur API');
+  return d.content.find(x=>x.type==='text')?.text||'';
 }
 
-async function analyseJournal() {
-  const items = todayItems();
-  if (!items.length) { alert('Ajoute d\'abord des repas dans le journal.'); return; }
-  journalAi = 'Analyse en cours...';
-  render();
-  const t = totals();
-  const liste = items.map(x => getName(x) + (getKcal(x) ? ' (' + getKcal(x) + ' kcal)' : '')).join(', ');
-  try {
-    journalAi = await askClaude([{ role: 'user', content:
-      `Analyse mon journal du jour.\nAliments : ${liste}\nTotaux : ${t.k} kcal, ${t.p}g prot, ${t.g}g gluc, ${t.l}g lip.\nObjectifs : ${KCAL_OBJ} kcal, ${PROT_OBJ}g prot.\nDonne : qualité globale, point fort, point à corriger, un ajustement concret.`
-    }]);
-  } catch(err) { journalAi = 'Erreur : ' + err.message; }
-  render();
+async function analyseJournal(){
+  const items=todayItems();if(!items.length){alert('Ajoute d\'abord des repas.');return;}
+  journalAi='Analyse en cours…';renderView(0);
+  const t=totals();const tw=getTweaks();
+  const liste=items.map(x=>getName(x)+(getKcal(x)?` (${getKcal(x)} kcal)`:'')).join(', ');
+  try{journalAi=await askClaude([{role:'user',content:`Analyse mon journal.\nAliments : ${liste}\nTotaux : ${t.k} kcal, ${t.p}g prot.\nObjectifs : ${tw.kcalObj} kcal, ${tw.protObj}g prot.\nDonne : qualité globale, point fort, point à améliorer, un ajustement concret.`}]);}
+  catch(err){journalAi='Erreur : '+err.message;}
+  renderView(0);
 }
 
-async function sendChat(text) {
-  if (!text.trim() || chatLoading) return;
-  chatHistory.push({ role: 'user', content: text.trim() });
-  chatLoading = true;
-  render();
-  scrollChatBottom();
-  const t = totals();
-  const items = todayItems();
-  const context = items.length
-    ? `\n[Contexte : journal du jour = ${items.map(x=>getName(x)).join(', ')} — ${t.k} kcal, ${t.p}g prot]`
-    : '';
-  const msgs = chatHistory.map((m,i) => i === 0 && items.length
-    ? { role: m.role, content: m.content + context }
-    : m
-  );
-  try {
-    const reply = await askClaude(msgs);
-    chatHistory.push({ role: 'assistant', content: reply });
-  } catch(err) {
-    chatHistory.push({ role: 'assistant', content: 'Erreur : ' + err.message });
-  }
-  chatLoading = false;
-  render();
-  scrollChatBottom();
+async function sendChat(text){
+  if(!text.trim()||chatLoading)return;
+  chatHistory.push({role:'user',content:text.trim()});
+  chatLoading=true;renderView(1);scrollChatBottom();
+  const t=totals();const items=todayItems();
+  const ctx=items.length?`\n[Journal : ${items.map(x=>getName(x)).join(', ')} — ${t.k} kcal, ${t.p}g prot]`:'';
+  const msgs=chatHistory.map((m,i)=>i===0&&items.length?{role:m.role,content:m.content+ctx}:m);
+  try{const r=await askClaude(msgs);chatHistory.push({role:'assistant',content:r});}
+  catch(err){chatHistory.push({role:'assistant',content:'Erreur : '+err.message});}
+  chatLoading=false;renderView(1);scrollChatBottom();
 }
 
-function scrollChatBottom() {
-  setTimeout(() => { $('main').scrollTop = $('main').scrollHeight; }, 50);
-}
+function scrollChatBottom(){setTimeout(()=>{const p=$('pane-coach');if(p)p.scrollTop=p.scrollHeight;},60);}
 
-// ═══ PESÉE ═══
-function normalizeWeightInput(value) {
-  return String(value ?? '').trim().replace(/\s+/g, '').replace(',', '.');
-}
+function normalizeWeightInput(value){return String(value??'').trim().replace(/\s+/g,'').replace(',','.');}
+function parseW(value){const s=normalizeWeightInput(value);if(!s||!/^\d+(?:\.\d+)?$/.test(s))return NaN;return Number(s);}
+function formatWeightKg(value){const n=parseW(value);return Number.isFinite(n)?n.toFixed(1).replace('.',','):'';}
 
-function parseWeightKg(value) {
-  const normalized = normalizeWeightInput(value);
-  if (!normalized || !/^\d+(?:\.\d+)?$/.test(normalized)) return NaN;
-  return Number(normalized);
-}
 
-function formatWeightKg(value) {
-  const n = parseWeightKg(value);
-  return Number.isFinite(n) ? n.toFixed(1).replace('.', ',') : '';
-}
-
-function submitForm() {
-  const inputEl = document.getElementById('input-poids');
-  const rawVal = inputEl ? inputEl.value : form.poids;
-  const p = parseWeightKg(rawVal);
-
-  if (!Number.isFinite(p) || p < 40 || p > 250) {
-    alert('Saisis un poids valide en kilos, par exemple 84,2 ou 84.2');
-    return;
-  }
-
-  const k = weekKey();
-  entries = [
-    { key: k, poids: p, moral: form.moral, plan: form.plan, pas: form.pas, note: form.note.trim() },
-    ...entries.filter(e => e.key !== k)
-  ].sort((a,b) => b.key.localeCompare(a.key));
+function submitForm(){
+  const el=$('input-poids');
+  const p=parseW(el?el.value:form.poids);
+  if(!isFinite(p)||p<40||p>250){alert('Saisis un poids valide, ex. : 84,2');return;}
+  const tw=getTweaks();
+  const k=weekKey();
+  entries=[{key:k,poids:p,moral:form.moral,plan:form.plan,pas:form.pas,note:form.note.trim()},...entries.filter(e=>e.key!==k)].sort((a,b)=>b.key.localeCompare(a.key));
   saveEntry(entries[0]);
-  form = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
-  goTo('historique');
+  form={poids:'',moral:3,plan:3,pas:'mid',note:''};
+  goTo(4);
 }
 
-// ═══ VUES ═══
-function vJournal() {
-  const t = totals();
-  const items = todayItems();
-  const kcalOk = t.k <= KCAL_OBJ;
-  const protOk = t.p >= PROT_OBJ;
+/* ════ VUES ════ */
 
-  const bilanBar = `<div class="bilan-grid">
-    <div class="bilan-cell"><div class="bilan-val ${kcalOk?'ok':'over'}">${t.k}</div><div class="bilan-label">kcal</div></div>
-    <div class="bilan-cell"><div class="bilan-val ${protOk?'ok':'over'}">${t.p}g</div><div class="bilan-label">prot</div></div>
-    <div class="bilan-cell"><div class="bilan-val">${t.g}g</div><div class="bilan-label">gluc</div></div>
-    <div class="bilan-cell"><div class="bilan-val">${t.l}g</div><div class="bilan-label">lip</div></div>
-  </div>`;
+function vJournal(){
+  const t=totals();const items=todayItems();const tw=getTweaks();
+  const kcalOk=t.k<=tw.kcalObj;const protOk=t.p>=tw.protObj;
+  const lastEntry=entries[0];
 
-  const alertMsg = t.k === 0
-    ? '<div class="alert green">Objectif : ' + KCAL_OBJ + ' kcal · ' + PROT_OBJ + 'g protéines</div>'
-    : t.k > KCAL_OBJ
-    ? '<div class="alert red">+' + (t.k - KCAL_OBJ) + ' kcal au-dessus de l\'objectif</div>'
-    : '<div class="alert green">' + (KCAL_OBJ - t.k) + ' kcal restantes</div>';
-
-  const saisie = `<div class="card" style="margin-top:14px">
-    <div class="card-label">Saisie du repas</div>
-    <textarea id="journal-input" rows="3" placeholder="Décris ce que tu as mangé... ex: bol de quinoa avec saumon grillé et épinards" style="margin-bottom:8px"></textarea>
-    <button class="btn btn-green" onclick="handleJournalAdd()">Ajouter au journal</button>
-  </div>`;
-
-  const logHtml = items.length
-    ? '<div style="margin:10px 14px 0">' + items.map(x =>
-        `<div class="log-item">
-          <div>
-            <div class="log-name">${esc(getName(x))}</div>
-            <div class="log-detail">${getKcal(x)?getKcal(x)+' kcal · ':''} ${getProt(x)?getProt(x)+'g prot':''}</div>
-          </div>
-          <button class="log-del" onclick="removeFood(${x.id})">×</button>
-        </div>`
-      ).join('') + '</div>'
-    : '<div class="empty">Aucun repas enregistré aujourd\'hui.<br>Décris ce que tu as mangé ci-dessus.</div>';
-
-  const aiSection = journalAi
-    ? `<div class="ai-box"><div class="ai-head">Analyse du jour</div><div class="ai-body${journalAi==='Analyse en cours...'?' ai-loading':''}">${esc(journalAi)}</div></div>`
-    : '';
-
-  const aiBtn = items.length
-    ? '<div style="margin:10px 14px 0"><button class="btn btn-blue" onclick="analyseJournal()">Analyser ma journée avec l\'IA</button></div>'
-    : '';
-
-  return bilanBar + alertMsg + saisie + logHtml + aiBtn + aiSection + '<div class="spacer"></div>';
-}
-
-function vCoach() {
-  const msgs = chatHistory.map((m,i) => {
-    const isLast = i === chatHistory.length - 1;
-    const loading = isLast && chatLoading && m.role === 'user';
-    const cls = m.role === 'user' ? 'user' : ('ai' + (loading ? ' loading' : ''));
-    return `<div class="chat-msg ${cls}"><div class="bubble">${esc(m.content)}${loading ? '<br><br>...' : ''}</div></div>`;
-  }).join('');
-
-  const empty = !chatHistory.length
-    ? `<div class="empty" style="padding-top:30px">
-        Pose-moi une question sur ton régime,<br>tes repas, tes progrès...<br><br>
-        <span style="font-size:24px">🤖</span>
+  const hero=lastEntry
+    ? `<div class="hero-strip">
+        <div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:6px">Poids actuel</div>
+          <div class="hero-weight">${lastEntry.poids.toFixed(1)}<span> kg</span></div>
+          <div class="hero-meta">${tw.objectif} kg objectif · ${daysLeft()} jours</div>
+          ${entries.length>1
+            ? `<div class="hero-delta${(entries[1].poids-lastEntry.poids)<0?'':' bad'}">${(entries[1].poids-lastEntry.poids)>0?'+':'−'}${Math.abs(entries[1].poids-lastEntry.poids).toFixed(1)} kg cette semaine</div>`
+            : ''}
+        </div>
       </div>`
-    : '';
+    : `<div class="hero-strip">
+        <div>
+          <div style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:6px">Programme</div>
+          <div class="hero-weight">${tw.depart}<span> → ${tw.objectif} kg</span></div>
+          <div class="hero-meta">${daysLeft()} jours restants · ${tw.dateTarget}</div>
+        </div>
+      </div>`;
 
-  return `<div style="padding-top:14px">
-    <div class="chat-wrap">${empty}${msgs}</div>
-    <div class="chat-input-wrap" id="chat-input-wrap">
-      <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ta question..."></textarea>
-      <button class="chat-send" onclick="handleChat()">↑</button>
+  const macros=`<div class="macro-row">
+    <div class="macro-pill"><div class="macro-val ${t.k===0?'':(kcalOk?'ok':'over')}">${t.k}</div><div class="macro-sub">kcal</div></div>
+    <div class="macro-pill"><div class="macro-val ${t.p===0?'':(protOk?'ok':'over')}">${t.p}g</div><div class="macro-sub">Prot.</div></div>
+    <div class="macro-pill"><div class="macro-val">${t.g}g</div><div class="macro-sub">Gluc.</div></div>
+    <div class="macro-pill"><div class="macro-val">${t.l}g</div><div class="macro-sub">Lip.</div></div>
+  </div>`;
+
+  const alertHtml=t.k===0
+    ?`<div class="alert neutral">Objectif : ${tw.kcalObj} kcal · ${tw.protObj}g protéines</div>`
+    :t.k>tw.kcalObj
+    ?`<div class="alert err">+${t.k-tw.kcalObj} kcal au-dessus de l'objectif</div>`
+    :`<div class="alert ok">${tw.kcalObj-t.k} kcal restantes aujourd'hui</div>`;
+
+  const timeline=items.length
+    ?`<div class="timeline">${items.map((x,i)=>`
+      <div class="tl-item">
+        <div class="tl-line">
+          <div class="tl-dot-wrap" style="background:var(--accent-light)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          ${i<items.length-1?'<div class="tl-connector"></div>':''}
+        </div>
+        <div class="tl-body">
+          <div>
+            <div class="tl-name">${esc(getName(x))}</div>
+            ${getKcal(x)||getProt(x)?`<div class="tl-detail">${getKcal(x)?getKcal(x)+' kcal':''}${getKcal(x)&&getProt(x)?' · ':''}${getProt(x)?getProt(x)+'g prot.':''}</div>`:''}
+          </div>
+          <button class="tl-del" onclick="removeFood(${x.id})">×</button>
+        </div>
+      </div>`).join('')}</div>`
+    :`<div class="empty" style="padding:28px 0">Aucun repas enregistré pour aujourd'hui.</div>`;
+
+  const saisie=`<div class="saisie-card">
+    <div class="saisie-head">Ajouter un repas</div>
+    <div class="saisie-body">
+      <textarea id="journal-input" rows="3" placeholder="Décris ce que tu as mangé… ex. bol de quinoa, saumon grillé, épinards sautés" style="margin-bottom:8px"></textarea>
+      <button class="btn btn-primary" onclick="handleJournalAdd()">Enregistrer</button>
     </div>
   </div>`;
+
+  const aiBtn=items.length?`<div style="margin:12px 16px 0"><button class="btn btn-subtle" onclick="analyseJournal()">Analyser avec le coach IA</button></div>`:'';
+  const aiSection=journalAi?`<div class="ai-box"><div class="ai-head"><span class="ai-pulse"></span>Analyse du jour</div><div class="ai-body">${esc(journalAi)}</div></div>`:'';
+
+  return hero+macros+alertHtml+saisie+timeline+aiBtn+aiSection+'<div class="spacer"></div>';
 }
 
-function vRepas() {
-  const d = DAYS[dayIdx];
-  const tabs = DAYS.map((x,i) =>
-    `<button class="day-tab${i===dayIdx?' active':''}" onclick="setDay(${i})">${x.nom}</button>`
-  ).join('');
-  const meals = d.meals.map(m =>
-    `<div class="meal-card">
-      <div class="meal-time">${m.t}</div>
+function vCoach(){
+  const msgs=chatHistory.map((m,i)=>{
+    const loading=i===chatHistory.length-1&&chatLoading&&m.role==='user';
+    return `<div class="chat-msg ${m.role==='user'?'user':('ai'+(loading?' loading':''))}"><div class="bubble">${esc(m.content)}${loading?'\n\n…':''}</div></div>`;
+  }).join('');
+  const empty=!chatHistory.length?`<div class="empty" style="padding-top:48px"><div style="font-family:Playfair Display,serif;font-size:34px;font-weight:400;color:var(--ink3);font-style:italic;margin-bottom:12px">Bonjour.</div>Pose-moi une question sur<br>ton régime ou tes progrès.</div>`:'';
+  return `<div style="padding-top:4px"><div class="chat-wrap">${empty}${msgs}</div>
+    <div class="chat-input-wrap"><textarea class="chat-input" id="chat-input" rows="1" placeholder="Pose une question…"></textarea>
+    <button class="chat-send" onclick="handleChat()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button></div></div>`;
+}
+
+function vRepas(){
+  const d=DAYS[dayIdx];
+  const tabs=DAYS.map((x,i)=>`<button class="day-tab${i===dayIdx?' active':''}" onclick="setDay(${i})">${x.nom}</button>`).join('');
+  const kcalTotal=d.meals.reduce((a,m)=>a+m.k,0);
+  const illus={bowl:svgBowl,plate:svgPlate,salmon:svgSalmon,eggs:svgEggs,salad:svgSalad,soup:svgSoup,special:svgSpecial};
+  const meals=d.meals.map(m=>`<div class="meal-card">
+    <div class="meal-illus">${(illus[m.type]||svgPlate)()}</div>
+    <div class="meal-info">
+      <div class="meal-moment">${m.t}</div>
       <div class="meal-name">${m.n}</div>
       <div class="meal-kcal">${m.k} kcal</div>
       <div class="meal-desc">${m.d}</div>
-    </div>`
-  ).join('');
-  return `<div class="day-tabs">${tabs}</div>${meals}<div class="spacer"></div>`;
+    </div>
+  </div>`).join('');
+  return `<div class="day-tabs">${tabs}</div>
+    <div style="padding:8px 16px 0;text-align:right;font-size:11px;color:var(--ink3);font-weight:300">${kcalTotal} kcal · journée complète</div>
+    ${meals}<div class="spacer"></div>`;
 }
 
-function vPesee() {
-  return `<div class="card">
-    <div class="card-label">Pesée · ${weekLabel(weekKey())}</div>
-    <label class="lbl">Poids de la pesée (kg)</label>
-    <input type="text" id="input-poids placeholder="Ex. : 84,2 ou 84.2" inputmode="decimal" value="${esc(form.poids)}" oninput="setPoids(this.value)">
-    <label class="lbl">Moral</label>
-    <div class="slider-row">
-      <input type="range" min="1" max="5" step="1" value="${form.moral}" oninput="form.moral=+this.value;updateDots()">
-      <div id="dots-moral">${dots(form.moral,'on')}</div>
+function vPesee(){
+  const tw=getTweaks();
+  const pct=Math.round((form.moral-1)/4*100);
+  const pctP=Math.round((form.plan-1)/4*100);
+  return `<div>
+    <div class="balance-scene">
+      <div id="balance-container">${svgBalanceDial(form.poids)}</div>
+      <input type="text" inputmode="decimal" autocomplete="off" id="input-poids"
+        class="weight-input-big" placeholder="—"
+        value="${esc(form.poids)}"
+        oninput="setPoids(this.value);refreshBalance(this.value)">
+      <div class="weight-unit-label">kilogrammes · objectif ${tw.objectif} kg</div>
     </div>
-    <label class="lbl">Tenue du plan</label>
-    <div class="slider-row">
-      <input type="range" min="1" max="5" step="1" value="${form.plan}" oninput="form.plan=+this.value;updateDots()">
-      <div id="dots-plan">${dots(form.plan,'deep')}</div>
-    </div>
-    <label class="lbl">Activité</label>
-    <div class="pas-row">
-      <button class="pas-btn${form.pas==='low'?' low':''}" onclick="setPas('low')">< 5 000</button>
-      <button class="pas-btn${form.pas==='mid'?' mid':''}" onclick="setPas('mid')">5–10k</button>
-      <button class="pas-btn${form.pas==='high'?' high':''}" onclick="setPas('high')">> 10 000</button>
-    </div>
-    <label class="lbl">Note libre</label>
-    <textarea rows="3" placeholder="Bonne semaine, faim ok..." oninput="setNote(this.value)">${esc(form.note)}</textarea>
-    <button class="btn btn-green" onclick="submitForm()">Enregistrer la pesée</button>
-  </div><div class="spacer"></div>`;
-}
-
-function vHistorique() {
-  if (!entries.length) return '<div class="empty">Aucune pesée enregistrée.<br>Va dans Pesée pour commencer.</div>';
-  const e0 = entries[0], prev = entries[1];
-  const pct = Math.max(0, Math.min(100, Math.round((DEPART - e0.poids) / (DEPART - OBJECTIF) * 100)));
-  const delta = prev ? e0.poids - prev.poids : null;
-  const avg = entries.length < 2 ? 0 : (() => {
-    const o = entries[entries.length-1], n = entries[0];
-    const d = (new Date(n.key) - new Date(o.key)) / 86400000;
-    return d > 0 ? +((o.poids - n.poids) / d * 7).toFixed(2) : 0;
-  })();
-
-  const deltaHtml = delta === null
-    ? '<div class="poids-delta neutral">Première mesure</div>'
-    : delta < 0 ? '<div class="poids-delta good">−' + Math.abs(delta).toFixed(1) + ' kg cette semaine</div>'
-    : delta > 0 ? '<div class="poids-delta bad">+' + delta.toFixed(1) + ' kg cette semaine</div>'
-    : '<div class="poids-delta neutral">Stable</div>';
-
-  const summary = `<div class="card">
-    <div class="card-label">Progression</div>
-    <div class="ring-wrap">
-      <div>${ring(pct)}</div>
-      <div>
-        <div class="poids-big">${e0.poids.toFixed(1)} <span class="poids-unit">kg</span></div>
-        ${deltaHtml}
+    <div class="card">
+      <div class="card-label">Pesée · ${weekLabel(weekKey())}</div>
+      <label class="field-label">Moral</label>
+      <div class="slider-wrap">
+        <div class="slider-head"><span class="slider-lbl">Comment tu te sens ?</span><span class="slider-val" id="val-moral">${form.moral} / 5</span></div>
+        <input type="range" min="1" max="5" step="1" value="${form.moral}" style="--pct:${pct}%"
+          oninput="form.moral=+this.value;this.style.setProperty('--pct',(+this.value-1)/4*100+'%');document.getElementById('val-moral').textContent=this.value+' / 5'">
       </div>
+      <label class="field-label">Tenue du plan</label>
+      <div class="slider-wrap">
+        <div class="slider-head"><span class="slider-lbl">Respect du régime cette semaine</span><span class="slider-val" id="val-plan">${form.plan} / 5</span></div>
+        <input type="range" min="1" max="5" step="1" value="${form.plan}" style="--pct:${pctP}%"
+          oninput="form.plan=+this.value;this.style.setProperty('--pct',(+this.value-1)/4*100+'%');document.getElementById('val-plan').textContent=this.value+' / 5'">
+      </div>
+      <label class="field-label">Activité physique</label>
+      <div class="pas-row">
+        <button class="pas-btn${form.pas==='low'?' low':''}" onclick="setPas('low')">< 5 000</button>
+        <button class="pas-btn${form.pas==='mid'?' mid':''}" onclick="setPas('mid')">5 – 10k</button>
+        <button class="pas-btn${form.pas==='high'?' high':''}" onclick="setPas('high')">> 10 000</button>
+      </div>
+      <label class="field-label">Note libre</label>
+      <textarea rows="3" placeholder="Comment s'est passée la semaine ?" oninput="setNote(this.value)">${esc(form.note)}</textarea>
+      <button class="btn btn-primary" onclick="submitForm()">Enregistrer la pesée</button>
     </div>
-  </div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-val">${daysLeft()}</div><div class="stat-label">jours restants</div></div>
-    <div class="stat-card"><div class="stat-val">${avg > 0 ? avg : '—'}</div><div class="stat-label">kg / semaine</div></div>
+    <div class="spacer"></div>
   </div>`;
+}
 
-  const rows = entries.map((e,i) => {
-    const p = entries[i+1];
-    const d = p ? p.poids - e.poids : null;
-    const chip = d === null
-      ? '<span class="chip chip-gray">départ</span>'
-      : d > 0 ? '<span class="chip chip-green">−' + d.toFixed(1) + ' kg</span>'
-      : '<span class="chip chip-red">+' + Math.abs(d).toFixed(1) + ' kg</span>';
+function vBilan(){
+  const tw=getTweaks();
+  if(!entries.length)return `<div class="empty">Aucune pesée enregistrée.<br>Rends-toi dans l'onglet Pesée pour commencer.</div>`;
+  const e0=entries[0],prev=entries[1];
+  const perdu=+(tw.depart-e0.poids).toFixed(1);
+  const reste=+(e0.poids-tw.objectif).toFixed(1);
+  const pct=Math.max(0,Math.min(100,Math.round((tw.depart-e0.poids)/(tw.depart-tw.objectif)*100)));
+  const delta=prev?+(e0.poids-prev.poids).toFixed(1):null;
+  const avg=entries.length<2?null:(()=>{const o=entries[entries.length-1],n=entries[0];const d=(new Date(n.key)-new Date(o.key))/86400000;return d>0?+((o.poids-n.poids)/d*7).toFixed(2):null;})();
+
+  const rows=entries.map((e,i)=>{
+    const p=entries[i+1];
+    const d=p?+(p.poids-e.poids).toFixed(1):null;
+    const chip=d===null?'<span class="chip chip-gray">Départ</span>'
+      :d>0?`<span class="chip chip-ok">−${d} kg</span>`
+      :`<span class="chip chip-err">+${Math.abs(d)} kg</span>`;
     return `<div class="hist-item">
-      <div class="hist-top">
-        <div><div class="hist-date">${weekLabel(e.key)}</div><div class="hist-poids">${e.poids.toFixed(1)} kg</div></div>
-        ${chip}
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="hist-date">${weekLabel(e.key)}</div>
+          <div class="hist-poids">${e.poids.toFixed(1)} <span style="font-size:16px;color:var(--ink3);font-weight:300;font-family:DM Sans,sans-serif">kg</span></div>
+        </div>${chip}
       </div>
-      <div class="hist-meta">
-        ${dots(e.moral,'on')} ${dots(e.plan,'deep')}
-        <span style="font-size:11px;font-family:DM Mono,monospace;color:${pasClr(e.pas)}">${pasLbl(e.pas)}</span>
+      <div class="hist-meta">${dots(e.moral,'on')} ${dots(e.plan,'blue')}
+        <span style="font-size:11px;color:${pasClr(e.pas)}">${pasLbl(e.pas)}</span>
       </div>
-      ${e.note ? '<div class="hist-note">"' + esc(e.note) + '"</div>' : ''}
+      ${e.note?`<div class="hist-note">"${esc(e.note)}"</div>`:''}
     </div>`;
   }).join('');
 
-  return summary + '<div class="card" style="margin-top:14px"><div class="card-label">Historique des pesées</div>' + rows + '</div><div class="spacer"></div>';
+  return `<div class="hero-strip" style="margin:14px 16px 0">
+    <div>
+      <div style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:6px">Aujourd'hui</div>
+      <div class="hero-weight">${e0.poids.toFixed(1)}<span> kg</span></div>
+      <div class="hero-meta">${delta!==null?(delta<0?`−${Math.abs(delta)} kg cette semaine`:`+${delta} kg cette semaine`):'Première mesure'}</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:10px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:6px">Perdu</div>
+      <div class="hero-weight" style="font-size:40px">${perdu}<span> kg</span></div>
+      <div class="hero-meta">encore ${reste} kg</div>
+    </div>
+  </div>
+  ${entries.length>1?`<div class="card"><div class="card-label">Courbe de poids</div>${svgCurve(entries)}</div>`:''}
+  <div class="card">
+    <div class="card-label">Progression</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:11px;color:var(--ink3);font-weight:300">${tw.depart} kg</span>
+      <span style="font-size:12px;font-weight:500;color:var(--ink)">${pct}%</span>
+      <span style="font-size:11px;color:var(--sage);font-weight:300">${tw.objectif} kg</span>
+    </div>
+    <div style="height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-bottom:16px">
+      <div style="height:100%;width:${pct}%;background:linear-gradient(to right,var(--accent),var(--accent-mid));border-radius:4px;transition:width 0.6s ease"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="background:var(--surface2);border-radius:var(--r-sm);padding:14px;text-align:center">
+        <div style="font-family:Playfair Display,serif;font-size:28px;font-weight:400;color:var(--ink)">${daysLeft()}</div>
+        <div style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3);margin-top:4px">Jours restants</div>
+      </div>
+      <div style="background:var(--surface2);border-radius:var(--r-sm);padding:14px;text-align:center">
+        <div style="font-family:Playfair Display,serif;font-size:28px;font-weight:400;color:var(--ink)">${avg!==null?avg:'—'}</div>
+        <div style="font-size:10px;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink3);margin-top:4px">kg / semaine</div>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px"><div class="card-label">Historique</div>${rows}</div>
+  <div class="spacer"></div>`;
 }
 
-// ═══ RENDER ═══
-const TITLES = {
-  journal: 'Journal du jour',
-  coach: 'Coach IA',
-  repas: 'Plan repas',
-  pesee: 'Pesée hebdo',
-  historique: 'Mon bilan'
-};
+/* ── RENDER ── */
+const VIEW_LABELS = ['Journal','Coach IA','Plan repas','Pesée','Mon bilan'];
+const VIEW_SUBS   = ['repas · humeur · IA', 'questions & conseils', 'semaine type', 'pesée hebdo', 'progression'];
+
+function renderView(idx) {
+  const pane = $(`pane-${VIEWS[idx]}`);
+  if (!pane) return;
+  const tw = getTweaks();
+  if (tw.compact) document.getElementById('app').classList.add('compact');
+  else document.getElementById('app').classList.remove('compact');
+  const V = [vJournal, vCoach, vRepas, vPesee, vBilan];
+  pane.innerHTML = (V[idx] || vJournal)();
+}
 
 function render() {
-  $('pg-title').textContent = TITLES[view] || 'Santé';
-  $('pg-sub').textContent = view === 'historique'
-    ? '94 → 84 kg · ' + daysLeft() + ' jours'
-    : '94 → 84 kg · 27 juillet 2026';
-
-  const V = { journal: vJournal, coach: vCoach, repas: vRepas, pesee: vPesee, historique: vHistorique };
-  $('main').innerHTML = V[view]();
+  $('pg-title').textContent = VIEW_LABELS[currentView] || 'Santé';
+  $('pg-sub').textContent   = VIEW_SUBS[currentView] || '';
+  for (let i = 0; i < 5; i++) renderView(i);
+  // position slider
+  $('view-slider').style.transform = `translateX(-${currentView * 100}%)`;
 }
 
-// ═══ NAVIGATION ═══
-function goTo(v) {
-  view = v; journalAi = '';
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  $('nav-' + v)?.classList.add('active');
-  render();
-  if (v === 'coach') scrollChatBottom();
+/* ── NAVIGATION ── */
+function goTo(idx) {
+  const prev = currentView;
+  currentView = idx;
+  // re-render destination pane
+  renderView(idx);
+  // slide
+  $('view-slider').style.transform = `translateX(-${idx * 100}%)`;
+  // update header
+  $('pg-title').textContent = VIEW_LABELS[idx];
+  $('pg-sub').textContent   = VIEW_SUBS[idx];
+  // nav highlight
+  document.querySelectorAll('nav button').forEach((b,i) => b.classList.toggle('active', i===idx));
+  // scroll top new pane
+  const pane = $(`pane-${VIEWS[idx]}`);
+  if (pane) pane.scrollTop = 0;
+  if (idx === 1) scrollChatBottom();
+  journalAi = '';
 }
 
-function setDay(i) { dayIdx = i; render(); }
-function setPas(v) { form.pas = v; render(); }
-function updateDots() {
-  const m = $('dots-moral'), p = $('dots-plan');
-  if (m) m.innerHTML = dots(form.moral,'on');
-  if (p) p.innerHTML = dots(form.plan,'deep');
+function setDay(i) { dayIdx=i; renderView(2); }
+function setPas(v)  { form.pas=v; renderView(3); }
+
+function refreshBalance(val) {
+  const c = $('balance-container');
+  if (c) c.innerHTML = svgBalanceDial(val);
 }
 
-// ═══ HANDLERS ═══
-function handleJournalAdd() {
-  const el = $('journal-input');
-  if (!el || !el.value.trim()) return;
-  const text = el.value.trim();
-  addJournalEntry(text);
-  el.value = '';
-  // Demander à l'IA d'identifier les calories si possible
-  enrichWithAI(text);
+/* ── HANDLERS ── */
+function handleJournalAdd(){
+  const el=$('journal-input');if(!el||!el.value.trim())return;
+  const text=el.value.trim();addJournalEntry(text);el.value='';enrichWithAI(text);
+}
+async function enrichWithAI(text){
+  renderView(0);
+  try{
+    const reply=await askClaude([{role:'user',content:`Estime les macros pour : "${text}". Réponds UNIQUEMENT en JSON sans markdown : {"kcal":0,"prot":0,"gluc":0,"lip":0}.`}]);
+    const macros=JSON.parse(reply.replace(/```json|```/g,'').trim());
+    const k=todayKey();
+    if(journal[k]?.length>0){const last=journal[k][journal[k].length-1];last.kcal=macros.kcal||0;last.prot=macros.prot||0;last.gluc=macros.gluc||0;last.lip=macros.lip||0;await saveJournal();}
+  }catch(e){}
+  renderView(0);
 }
 
-async function enrichWithAI(text) {
-  // Met à jour l'affichage du journal immédiatement
-  render();
-  // Demande à Claude d'estimer les macros
-  try {
-    const reply = await askClaude([{ role: 'user', content:
-      `Estime les macros pour : "${text}". Réponds UNIQUEMENT en JSON sans markdown : {"kcal":0,"prot":0,"gluc":0,"lip":0}. Valeurs pour la portion décrite.`
-    }]);
-    const clean = reply.replace(/```json|```/g,'').trim();
-    const macros = JSON.parse(clean);
-    const k = todayKey();
-    if (journal[k] && journal[k].length > 0) {
-      const last = journal[k][journal[k].length - 1];
-      last.kcal = macros.kcal || 0;
-      last.prot = macros.prot || 0;
-      last.gluc = macros.gluc || 0;
-      last.lip  = macros.lip  || 0;
-      await saveJournal();
-    }
-  } catch(e) {}
-  render();
+function handleChat(){
+  const el=$('chat-input');if(!el)return;
+  const text=el.value.trim();if(!text)return;
+  el.value='';el.style.height='auto';sendChat(text);
 }
+function setPoids(v){form.poids=v;}
+function setNote(v){form.note=v;}
 
-function handleChat() {
-  const el = $('chat-input');
-  if (!el) return;
-  const text = el.value.trim();
-  if (!text) return;
-  el.value = '';
-  el.style.height = 'auto';
-  sendChat(text);
-}
+Object.assign(window,{goTo,setDay,setPas,submitForm,removeFood,analyseJournal,handleJournalAdd,handleChat,setPoids,setNote,refreshBalance,$});
+Object.defineProperty(window,'form',{get(){return form;},set(v){form=v;}});
 
-// ═══ EXPOSE ═══
-function setPoids(v){ form.poids = v; }
-function setNote(v){ form.note = v; }
-function setMoral(v){ form.moral = +v; updateDots(); }
-function setPlan(v){ form.plan = +v; updateDots(); }
-window.goTo = goTo;
-window.setDay = setDay;
-window.setPas = setPas;
-window.submitForm = submitForm;
-window.removeFood = removeFood;
-window.analyseJournal = analyseJournal;
-window.handleJournalAdd = handleJournalAdd;
-window.handleChat = handleChat;
-window.updateDots = updateDots;
-window.setPoids = setPoids;
-window.setNote = setNote;
-window.setMoral = setMoral;
-window.setPlan = setPlan;
-Object.defineProperty(window, 'form', { get(){ return form; }, set(v){ form = v; } });
-
-// Enter dans le chat
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey && document.activeElement?.id === 'chat-input') {
-    e.preventDefault();
-    handleChat();
-  }
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&!e.shiftKey&&document.activeElement?.id==='chat-input'){e.preventDefault();handleChat();}
+});
+document.addEventListener('input',e=>{
+  if(e.target?.id==='chat-input'){e.target.style.height='auto';e.target.style.height=Math.min(e.target.scrollHeight,100)+'px';}
 });
 
-// Auto-resize textarea chat
-document.addEventListener('input', e => {
-  if (e.target?.id === 'chat-input') {
-    e.target.style.height = 'auto';
-    e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px';
-  }
-});
+/* ── BOOT ── */
+if('serviceWorker' in navigator)navigator.serviceWorker.register('./sw.js').catch(()=>{});
 
-// ═══ BOOT ═══
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+// Show loading
+$('pane-journal').innerHTML=`<div class="empty" style="padding-top:80px"><div style="font-family:Playfair Display,serif;font-size:48px;font-weight:300;color:var(--surface2)">…</div></div>`;
 
-$('main').innerHTML = '<div class="empty" style="padding-top:60px"><div style="font-size:40px">⏳</div><br>Connexion...</div>';
-
-try {
-  await signInAnonymously(auth);
-  fb = true;
-  $('fb-status').textContent = 'Firebase';
-  $('fb-status').classList.remove('offline');
-} catch(e) {
-  fb = false;
-}
-
-await loadEntries();
-await loadJournal();
+try{await signInAnonymously(auth);fb=true;$('fb-dot').classList.remove('offline');}catch(e){fb=false;}
+await loadEntries();await loadJournal();
 render();
 </script>
 </body>
