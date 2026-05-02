@@ -1,286 +1,805 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#1A3A4A">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Santé">
-  <link rel="manifest" href="./manifest.json">
-  <title>Suivi Santé</title>
-  <style>
-    :root{--bg:#F7F4EE;--surface:#FFFFFF;--deep:#1A3A4A;--teal:#2A7F6F;--teal-light:#E8F5F2;--terra:#C4622D;--terra-light:#FAF0EA;--sand:#E8E0D0;--muted:#6B7A82;--border:rgba(26,58,74,0.12);--safe-bottom:env(safe-area-inset-bottom,0px)}
-    *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-    html,body{height:100%;background:var(--bg);font-family:Georgia,serif;color:var(--deep)}
-    body{overflow:hidden}
-    #app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
-    .header{background:var(--deep);color:#fff;padding:20px 20px 16px;padding-top:calc(20px + env(safe-area-inset-top,0px))}
-    .header h1{font-size:20px;font-weight:700;letter-spacing:-.5px}
-    .header p{font-size:12px;opacity:.75;margin-top:3px;font-family:sans-serif}
-    .scroll-zone{flex:1;overflow-y:auto;padding-bottom:calc(100px + var(--safe-bottom))}
-    nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:10px 0;padding-bottom:calc(10px + var(--safe-bottom));z-index:100}
-    nav button{background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:10px;font-family:sans-serif;color:var(--muted);padding:4px 10px}
-    nav button.active{color:var(--teal);font-weight:700}
-    nav button .ico{font-size:20px;line-height:1}
-    .card{background:var(--surface);border-radius:16px;margin:16px 16px 0;padding:18px 20px;border:1px solid var(--border)}
-    .card-title{font-size:11px;font-family:sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 16px 0}
-    .mini-card{background:var(--surface);border-radius:14px;padding:14px 16px;border:1px solid var(--border)}
-    .mini-val{font-size:24px;font-weight:700}.mini-label{font-size:11px;font-family:sans-serif;color:var(--muted);margin-top:3px}
-    .ring-wrap{display:flex;align-items:center;gap:20px}.big-num{font-size:36px;font-weight:700;line-height:1}
-    .unit{font-size:14px;color:var(--muted);font-family:sans-serif;font-weight:400}
-    .delta{font-size:13px;font-family:sans-serif;margin-top:6px;font-weight:600}.delta.good{color:var(--teal)}.delta.bad{color:var(--terra)}.delta.neutral{color:var(--muted);font-weight:400}
-    label.field-label{display:block;font-size:11px;font-family:sans-serif;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-    input[type=number],textarea,input[type=text]{width:100%;padding:11px 14px;font-size:16px;border:1.5px solid var(--border);border-radius:10px;background:var(--bg);color:var(--deep);font-family:sans-serif;outline:none;margin-bottom:16px}
-    input[type=range]{width:100%;accent-color:var(--teal)}
-    .slider-row{display:flex;align-items:center;gap:12px;margin-bottom:16px}.dots{display:inline-flex;gap:5px}.dot{width:9px;height:9px;border-radius:50%;background:var(--sand);display:inline-block}.dot.on{background:var(--teal)}.dot.on-deep{background:var(--deep)}
-    .pas-row{display:flex;gap:8px;margin-bottom:16px}.pas-btn{flex:1;padding:10px 4px;font-size:12px;font-family:sans-serif;border-radius:8px;border:1.5px solid var(--border);background:transparent;color:var(--muted);cursor:pointer}
-    .pas-btn.active-low{border-color:#C4622D;background:#C4622D18;color:#C4622D;font-weight:700}.pas-btn.active-mid{border-color:#D4A72C;background:#D4A72C18;color:#D4A72C;font-weight:700}.pas-btn.active-high{border-color:#2A7F6F;background:#2A7F6F18;color:#2A7F6F;font-weight:700}
-    .btn-primary{width:100%;padding:14px;font-size:16px;background:var(--deep);color:#fff;border:none;border-radius:12px;cursor:pointer;font-family:sans-serif;font-weight:600}
-    .btn-secondary{width:100%;padding:12px;font-size:15px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:12px;cursor:pointer;font-family:sans-serif;margin-top:8px}
-    .btn-primary.terra{background:var(--terra)}.btn-primary.teal{background:var(--teal)}
-    .empty{text-align:center;padding:32px 20px;font-family:sans-serif;color:var(--muted);font-size:14px;line-height:1.6}
-    .hist-row{padding:14px 0;border-bottom:1px solid var(--border)}.hist-row:last-child{border-bottom:none}.hist-header{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-    .hist-date{font-size:12px;color:var(--muted);font-family:sans-serif}.hist-poids{font-size:22px;font-weight:700;margin-top:2px}
-    .pill{font-size:13px;font-weight:700;padding:3px 11px;border-radius:20px;display:inline-block}.pill.green{background:var(--teal-light);color:var(--teal)}.pill.red{background:var(--terra-light);color:var(--terra)}.pill.gray{background:var(--sand);color:var(--muted)}
-    .hist-meta{display:flex;gap:14px;margin-top:8px;align-items:center;font-family:sans-serif;flex-wrap:wrap}.hist-note{font-size:12px;color:var(--muted);font-style:italic;margin-top:6px;font-family:sans-serif;line-height:1.5}
-    .day-tabs{display:flex;gap:6px;overflow-x:auto;padding:0 16px;margin-top:16px;scrollbar-width:none}.day-tabs::-webkit-scrollbar{display:none}
-    .day-tab{flex:0 0 auto;padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;font-family:sans-serif;cursor:pointer;white-space:nowrap}.day-tab.active{background:var(--deep);color:#fff;border-color:var(--deep);font-weight:600}
-    .meal-card{background:var(--surface);border-radius:14px;margin:10px 16px 0;border:1px solid var(--border);padding:14px 16px}.meal-time{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-family:sans-serif}.meal-name{font-size:16px;font-weight:700;color:var(--deep);margin:4px 0}.meal-detail{font-size:13px;color:var(--muted);font-family:sans-serif;line-height:1.55}
-    .bilan-bar{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin:12px 16px 0}.bilan-cell{background:var(--surface);border-radius:12px;padding:10px 8px;text-align:center;border:1px solid var(--border)}.bilan-val{font-size:18px;font-weight:700;color:var(--deep);line-height:1}.bilan-label{font-size:10px;color:var(--muted);font-family:sans-serif;margin-top:3px}
-    .search-wrap{margin:12px 16px 0}.aliments-list{margin:6px 16px 0;background:var(--surface);border-radius:12px;border:1px solid var(--border);overflow:hidden;max-height:260px;overflow-y:auto}
-    .aliment-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);gap:10px}.aliment-row:last-child{border-bottom:none}.aliment-name{font-size:14px;color:var(--deep);font-family:sans-serif;font-weight:500}.aliment-macros{font-size:11px;color:var(--muted);font-family:sans-serif;margin-top:2px}.aliment-add{background:var(--teal);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-family:sans-serif;font-weight:600;cursor:pointer;flex:0 0 auto}
-    .journal-list{margin:10px 16px 0;display:flex;flex-direction:column;gap:6px}.journal-item{background:var(--surface);border-radius:12px;padding:10px 14px;border:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:10px}.journal-item-name{font-size:14px;font-weight:500;color:var(--deep);font-family:sans-serif}.journal-item-detail{font-size:11px;color:var(--muted);font-family:sans-serif;margin-top:2px}.journal-delete{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;padding-left:8px}
-    .status-box{margin:12px 16px 0;background:var(--teal-light);color:var(--teal);border-radius:12px;padding:12px 14px;font-size:12px;font-family:sans-serif;line-height:1.5}.warn-box{background:var(--terra-light);color:var(--terra)}
-    .ai-box{margin:12px 16px 0;background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}.ai-head{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;font-family:sans-serif;font-weight:700;color:var(--deep)}
-    .ai-body{padding:14px;font-size:13px;font-family:sans-serif;line-height:1.6;color:var(--deep);white-space:pre-wrap;max-height:260px;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}.ai-loading{color:var(--muted)}.ai-actions{margin:12px 16px 0;display:grid;gap:8px}.subtle{font-size:12px;color:var(--muted);font-family:sans-serif;line-height:1.5}
-    .week-card{background:var(--surface);border-radius:14px;margin:12px 16px 0;border:1px solid var(--border);overflow:hidden}.week-row{padding:12px 14px;border-bottom:1px solid var(--border)}.week-row:last-child{border-bottom:none}.week-top{display:flex;justify-content:space-between;align-items:center;gap:10px}.week-day{font-size:13px;font-family:sans-serif;font-weight:700;color:var(--deep)}.week-kcal{font-size:12px;font-family:sans-serif;color:var(--muted)}.week-foods{margin-top:6px;font-size:12px;font-family:sans-serif;color:var(--muted);line-height:1.5}.week-macros{margin-top:5px;font-size:11px;font-family:sans-serif;color:var(--muted)}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1117">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Santé">
+<link rel="manifest" href="./manifest.json">
+<title>Suivi Santé</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&display=swap');
+
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #232736;
+  --border: rgba(255,255,255,0.07);
+  --text: #e8eaf0;
+  --muted: #6b7280;
+  --green: #4ade80;
+  --green-dim: rgba(74,222,128,0.12);
+  --amber: #fbbf24;
+  --amber-dim: rgba(251,191,36,0.1);
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.1);
+  --blue: #60a5fa;
+  --blue-dim: rgba(96,165,250,0.1);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'Syne', sans-serif; }
+
+#app {
+  max-width: 480px; margin: 0 auto;
+  height: 100vh; height: 100dvh;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+
+/* HEADER */
+.header {
+  padding: calc(14px + var(--safe-top)) 20px 14px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.header-left h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+.header-left p { font-size: 11px; color: var(--muted); margin-top: 2px; font-family: 'DM Mono', monospace; font-weight: 300; }
+.header-badge {
+  font-size: 11px; font-family: 'DM Mono', monospace;
+  background: var(--green-dim); color: var(--green);
+  padding: 4px 10px; border-radius: 20px; font-weight: 400;
+}
+.header-badge.offline { background: var(--amber-dim); color: var(--amber); }
+
+/* SCROLL */
+.scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+
+/* NAV */
+nav {
+  flex-shrink: 0;
+  display: flex; background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: var(--safe-bottom);
+}
+nav button {
+  flex: 1; background: none; border: none; cursor: pointer;
+  padding: 12px 4px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-family: 'Syne', sans-serif; font-size: 10px; font-weight: 600;
+  color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase;
+  transition: color 0.15s;
+}
+nav button.active { color: var(--green); }
+nav button .ico { font-size: 18px; line-height: 1; }
+
+/* CARDS */
+.card {
+  background: var(--surface); border-radius: 16px;
+  margin: 14px 14px 0; padding: 18px;
+  border: 1px solid var(--border);
+}
+.card-label {
+  font-size: 10px; font-family: 'DM Mono', monospace; font-weight: 400;
+  color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em;
+  margin-bottom: 10px;
+}
+.spacer { height: 14px; }
+
+/* RING */
+.ring-wrap { display: flex; align-items: center; gap: 20px; }
+.poids-big { font-size: 42px; font-weight: 800; letter-spacing: -2px; line-height: 1; }
+.poids-unit { font-size: 16px; color: var(--muted); font-weight: 600; }
+.poids-delta { font-size: 12px; font-family: 'DM Mono', monospace; margin-top: 6px; }
+.poids-delta.good { color: var(--green); }
+.poids-delta.bad { color: var(--red); }
+.poids-delta.neutral { color: var(--muted); }
+
+/* STATS GRID */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 14px 0; }
+.stat-card { background: var(--surface); border-radius: 12px; padding: 14px; border: 1px solid var(--border); }
+.stat-val { font-size: 24px; font-weight: 800; letter-spacing: -1px; }
+.stat-label { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 4px; }
+
+/* BILAN BAR */
+.bilan-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 14px 0; }
+.bilan-cell { background: var(--surface); border-radius: 10px; padding: 10px 6px; text-align: center; border: 1px solid var(--border); }
+.bilan-val { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+.bilan-label { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 3px; letter-spacing: 0.05em; }
+.bilan-val.ok { color: var(--green); }
+.bilan-val.over { color: var(--red); }
+
+/* ALERT BOX */
+.alert { margin: 10px 14px 0; border-radius: 12px; padding: 12px 14px; font-size: 12px; font-family: 'DM Mono', monospace; line-height: 1.5; }
+.alert.green { background: var(--green-dim); color: var(--green); }
+.alert.amber { background: var(--amber-dim); color: var(--amber); }
+.alert.red { background: var(--red-dim); color: var(--red); }
+
+/* FORM */
+label.lbl { display: block; font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; }
+input[type=number], input[type=text], textarea {
+  width: 100%; padding: 12px 14px; font-size: 16px;
+  border: 1px solid var(--border); border-radius: 10px;
+  background: var(--surface2); color: var(--text);
+  font-family: 'Syne', sans-serif; outline: none; margin-bottom: 14px;
+  -webkit-appearance: none;
+}
+input[type=number]:focus, input[type=text]:focus, textarea:focus {
+  border-color: rgba(74,222,128,0.4);
+}
+textarea { resize: none; line-height: 1.5; }
+input[type=range] { width: 100%; accent-color: var(--green); margin-bottom: 0; }
+.slider-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.dots { display: flex; gap: 5px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+.dot.on { background: var(--green); }
+.dot.deep { background: var(--blue); }
+
+.pas-row { display: flex; gap: 8px; margin-bottom: 14px; }
+.pas-btn { flex: 1; padding: 10px 4px; font-size: 11px; font-family: 'DM Mono', monospace; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.15s; }
+.pas-btn.low  { border-color: var(--red);   background: var(--red-dim);   color: var(--red);   font-weight: 500; }
+.pas-btn.mid  { border-color: var(--amber); background: var(--amber-dim); color: var(--amber); font-weight: 500; }
+.pas-btn.high { border-color: var(--green); background: var(--green-dim); color: var(--green); font-weight: 500; }
+
+/* BUTTONS */
+.btn { width: 100%; padding: 14px; font-size: 14px; font-family: 'Syne', sans-serif; font-weight: 700; letter-spacing: 0.05em; border: none; border-radius: 12px; cursor: pointer; margin-top: 8px; transition: opacity 0.15s; text-transform: uppercase; }
+.btn:active { opacity: 0.75; }
+.btn-green { background: var(--green); color: #0f1117; }
+.btn-ghost { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+.btn-blue  { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(96,165,250,0.2); }
+
+/* HISTORIQUE */
+.hist-item { padding: 14px 0; border-bottom: 1px solid var(--border); }
+.hist-item:last-child { border-bottom: none; }
+.hist-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.hist-date { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); }
+.hist-poids { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-top: 2px; }
+.chip { font-size: 11px; font-family: 'DM Mono', monospace; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+.chip-green { background: var(--green-dim); color: var(--green); }
+.chip-red   { background: var(--red-dim);   color: var(--red); }
+.chip-gray  { background: var(--surface2);  color: var(--muted); }
+.hist-meta { display: flex; gap: 10px; margin-top: 8px; align-items: center; flex-wrap: wrap; }
+.hist-note { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 6px; font-style: italic; line-height: 1.5; }
+
+/* PLAN REPAS */
+.day-tabs { display: flex; gap: 6px; overflow-x: auto; padding: 0 14px; margin-top: 14px; scrollbar-width: none; }
+.day-tabs::-webkit-scrollbar { display: none; }
+.day-tab { flex: 0 0 auto; padding: 7px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-family: 'Syne', sans-serif; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+.day-tab.active { background: var(--green-dim); color: var(--green); border-color: rgba(74,222,128,0.3); }
+.meal-card { background: var(--surface); border-radius: 14px; margin: 8px 14px 0; border: 1px solid var(--border); padding: 14px 16px; }
+.meal-time { font-size: 9px; font-family: 'DM Mono', monospace; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; }
+.meal-name { font-size: 15px; font-weight: 700; margin: 4px 0 3px; }
+.meal-kcal { font-size: 11px; font-family: 'DM Mono', monospace; color: var(--green); }
+.meal-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 4px; }
+
+/* JOURNAL */
+.log-item { background: var(--surface); border-radius: 10px; padding: 11px 14px; border: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+.log-name { font-size: 13px; font-weight: 600; }
+.log-detail { font-size: 10px; font-family: 'DM Mono', monospace; color: var(--muted); margin-top: 3px; }
+.log-del { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 0 0 0 6px; flex-shrink: 0; line-height: 1; }
+
+/* IA */
+.ai-box { margin: 10px 14px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.ai-head { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 10px; font-family: 'DM Mono', monospace; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+.ai-head::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
+.ai-body { padding: 14px; font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; font-family: 'DM Mono', monospace; font-weight: 300; }
+.ai-loading { color: var(--muted); }
+
+/* CHAT */
+.chat-wrap { display: flex; flex-direction: column; gap: 0; padding: 0 14px; }
+.chat-msg { margin-bottom: 10px; }
+.chat-msg.user .bubble {
+  background: var(--green-dim); color: var(--green);
+  border-radius: 14px 14px 4px 14px; padding: 10px 13px;
+  font-size: 13px; font-family: 'DM Mono', monospace; font-weight: 400;
+  line-height: 1.5; margin-left: 30px;
+}
+.chat-msg.ai .bubble {
+  background: var(--surface2); color: var(--text);
+  border-radius: 4px 14px 14px 14px; padding: 10px 13px;
+  font-size: 13px; font-family: 'DM Mono', monospace; font-weight: 300;
+  line-height: 1.6; margin-right: 30px; white-space: pre-wrap;
+}
+.chat-msg.ai.loading .bubble { color: var(--muted); }
+.chat-input-wrap {
+  position: sticky; bottom: 0;
+  background: var(--bg); border-top: 1px solid var(--border);
+  padding: 10px 14px; display: flex; gap: 8px; align-items: flex-end;
+}
+.chat-input {
+  flex: 1; padding: 10px 13px; font-size: 14px;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--surface); color: var(--text);
+  font-family: 'DM Mono', monospace; outline: none;
+  resize: none; max-height: 100px; line-height: 1.4;
+  margin-bottom: 0;
+}
+.chat-input:focus { border-color: rgba(74,222,128,0.4); }
+.chat-send {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: var(--green); color: #0f1117;
+  border: none; cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-weight: 700;
+}
+
+.empty { text-align: center; padding: 40px 20px; font-family: 'DM Mono', monospace; color: var(--muted); font-size: 13px; line-height: 1.6; }
+</style>
 </head>
 <body>
 <div id="app">
   <div class="header">
-    <h1 id="page-title">Mon suivi santé</h1>
-    <p id="page-sub">Objectif 84 kg · 27 juillet 2026</p>
+    <div class="header-left">
+      <h1 id="pg-title">Suivi Santé</h1>
+      <p id="pg-sub">94 → 84 kg · 27 juillet 2026</p>
+    </div>
+    <div class="header-badge offline" id="fb-status">local</div>
   </div>
-  <div class="scroll-zone" id="main"></div>
-  <nav>
-    <button class="active" onclick="goTo('home')" id="nav-home"><span class="ico">⌂</span>Accueil</button>
-    <button onclick="goTo('saisie')" id="nav-saisie"><span class="ico">＋</span>Pesée</button>
-    <button onclick="goTo('historique')" id="nav-historique"><span class="ico">≡</span>Historique</button>
-    <button onclick="goTo('repas')" id="nav-repas"><span class="ico">🍽</span>Repas</button>
-    <button onclick="goTo('journal')" id="nav-journal"><span class="ico">📋</span>Journal</button>
+  <div class="scroll" id="main"></div>
+  <nav id="nav">
+    <button class="active" onclick="goTo('journal')" id="nav-journal">
+      <span class="ico">📋</span>Journal
+    </button>
+    <button onclick="goTo('coach')" id="nav-coach">
+      <span class="ico">🤖</span>Coach IA
+    </button>
+    <button onclick="goTo('repas')" id="nav-repas">
+      <span class="ico">🍽</span>Repas
+    </button>
+    <button onclick="goTo('pesee')" id="nav-pesee">
+      <span class="ico">⚖️</span>Pesée
+    </button>
+    <button onclick="goTo('historique')" id="nav-historique">
+      <span class="ico">📈</span>Bilan
+    </button>
   </nav>
 </div>
 
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { initializeFirestore, doc, setDoc, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+import { initializeFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-const firebaseConfig = {
+// ═══ FIREBASE ═══
+const fbApp = initializeApp({
   apiKey: "AIzaSyBMtwIOSSSTIkNLh5nIDXmEH4WD-5jdGIM",
   authDomain: "pwa---sante.firebaseapp.com",
   projectId: "pwa---sante",
   storageBucket: "pwa---sante.firebasestorage.app",
   messagingSenderId: "99523195154",
   appId: "1:99523195154:web:760668e987669a5e1303cb"
-};
-
-const fbApp = initializeApp(firebaseConfig);
+});
 const db = initializeFirestore(fbApp, { experimentalForceLongPolling: true, useFetchStreams: false });
 const auth = getAuth(fbApp);
 
-const USER_ID = 'sylvain';
-const DEPART = 94;
-const OBJECTIF = 84;
-const KCAL_OBJECTIF = 1500;
-const PROT_OBJECTIF = 90;
+// ═══ CONSTANTES ═══
+const UID = 'sylvain';
+const DEPART = 94, OBJECTIF = 84;
+const KCAL_OBJ = 1500, PROT_OBJ = 90;
 
-let firebaseReady = false;
-let dbReady = false;
+// ═══ ÉTAT ═══
+let fb = false;
 let entries = [];
-let currentView = 'home';
-let currentDay = 0;
+let view = 'journal';
+let dayIdx = 0;
 let journal = {};
-let formState = { poids:'', moral:3, plan:3, pas:'mid', note:'' };
-let homeAi = '';
-let saisieAi = '';
+let chatHistory = [];
+let form = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
 let journalAi = '';
-let foodSearch = '';
+let chatLoading = false;
 
+// ═══ PLAN REPAS ═══
 const DAYS = [
-  { nom:'Lundi à jeudi', meals:[{ time:'Matin', name:'Skyr + flocons + fruits rouges', kcal:320, desc:'Petit-déjeuner protéiné et rassasiant.' },{ time:'Midi', name:'Poulet, quinoa, légumes', kcal:520, desc:'Repas simple et équilibré.' },{ time:'Soir', name:'Saumon, haricots verts, patate douce', kcal:560, desc:'Dîner méditerranéen stable.' }] },
-  { nom:'Vendredi festin', meals:[{ time:'Matin', name:'Omelette + fruit', kcal:300, desc:'Léger pour garder de la marge.' },{ time:'Midi', name:'Salade complète protéinée', kcal:450, desc:'Volumineux sans excès.' },{ time:'Soir', name:'Repas plaisir maîtrisé', kcal:900, desc:'Moment libre et assumé.' }] },
-  { nom:'Week-end', meals:[{ time:'Matin', name:'Yaourt grec + noix + pomme', kcal:340, desc:'Simple et stable.' },{ time:'Midi', name:'Poisson + riz + crudités', kcal:530, desc:'Assiette complète.' },{ time:'Soir', name:'Soupe + œufs + tartine', kcal:430, desc:'Repas plus léger.' }] }
+  { nom: 'Lundi–Jeudi', meals: [
+    { t: 'Matin',  n: 'Skyr + flocons + fruits rouges', k: 320, d: 'Protéiné, rassasiant, fibres.' },
+    { t: 'Midi',   n: 'Poulet / poisson + quinoa + légumes', k: 520, d: 'Base méditerranéenne solide.' },
+    { t: 'Soir',   n: 'Saumon + haricots verts + patate douce', k: 520, d: 'Oméga-3, légumes, féculents modérés.' }
+  ]},
+  { nom: 'Vendredi', meals: [
+    { t: 'Matin', n: 'Omelette + fruit', k: 300, d: 'Léger pour garder de la marge.' },
+    { t: 'Midi',  n: 'Salade protéinée complète', k: 450, d: 'Volumineux sans excès.' },
+    { t: 'Soir',  n: 'Festin libre assumé', k: 900, d: 'Sans culpabilité. Reprendre le plan samedi.' }
+  ]},
+  { nom: 'Week-end', meals: [
+    { t: 'Matin', n: 'Yaourt grec + noix + pomme', k: 340, d: 'Simple et stable.' },
+    { t: 'Midi',  n: 'Poisson + riz complet + crudités', k: 530, d: 'Assiette complète méditerranéenne.' },
+    { t: 'Soir',  n: 'Soupe + oeufs + tartine seigle', k: 400, d: 'Léger et satisfaisant.' }
+  ]}
 ];
 
-const ALIMENTS = [
-  { nom:'Saumon', kcal:208, prot:20, gluc:0, lip:13 },{ nom:'Cabillaud', kcal:82, prot:18, gluc:0, lip:1 },{ nom:'Poulet', kcal:110, prot:23, gluc:0, lip:2 },{ nom:'Dinde', kcal:104, prot:22, gluc:0, lip:1 },{ nom:'Steak haché 5%', kcal:135, prot:21, gluc:0, lip:5 },{ nom:'Œuf', kcal:78, prot:6, gluc:0, lip:5 },{ nom:'Skyr', kcal:75, prot:11, gluc:5, lip:0 },{ nom:'Fromage blanc 0%', kcal:44, prot:8, gluc:4, lip:0 },{ nom:'Quinoa cuit', kcal:120, prot:4, gluc:22, lip:2 },{ nom:'Riz complet cuit', kcal:124, prot:3, gluc:25, lip:1 },{ nom:'Patate douce', kcal:86, prot:2, gluc:20, lip:0 },{ nom:'Pommes de terre', kcal:80, prot:2, gluc:17, lip:0 },{ nom:'Brocoli', kcal:34, prot:3, gluc:7, lip:0 },{ nom:'Haricots verts', kcal:31, prot:2, gluc:7, lip:0 },{ nom:'Tomates', kcal:18, prot:1, gluc:4, lip:0 },{ nom:'Avocat', kcal:160, prot:2, gluc:9, lip:15 },{ nom:'Banane', kcal:105, prot:1, gluc:27, lip:0 },{ nom:'Pomme', kcal:78, prot:0, gluc:21, lip:0 },{ nom:'Fruits rouges', kcal:50, prot:1, gluc:12, lip:0 },{ nom:'Amandes', kcal:174, prot:6, gluc:5, lip:15 },{ nom:'Huile d’olive (1 càs)', kcal:90, prot:0, gluc:0, lip:10 }
-];
+// ═══ UTILS ═══
+const $ = id => document.getElementById(id);
+const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function lsGet(k, fb) { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; } catch(e) { return fb; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
 
-const main = document.getElementById('main');
-const pageTitle = document.getElementById('page-title');
-const pageSub = document.getElementById('page-sub');
+function todayKey() {
+  const d = new Date(); d.setHours(12,0,0,0);
+  return d.toISOString().slice(0,10);
+}
+function weekKey() {
+  const d = new Date(); d.setHours(12,0,0,0);
+  const diff = d.getDay() === 0 ? -6 : 1 - d.getDay();
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().slice(0,10);
+}
+function weekLabel(k) {
+  return new Date(k + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+function daysLeft() {
+  return Math.max(0, Math.ceil((new Date('2026-07-27T12:00:00') - new Date()) / 86400000));
+}
+function pasLbl(v) { return v==='low'?'< 5 000 pas':v==='mid'?'5–10k pas':'> 10 000 pas'; }
+function pasClr(v) { return v==='low'?'var(--red)':v==='mid'?'var(--amber)':'var(--green)'; }
 
-function safeLocalGet(key, fallback){ try{ const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }catch(e){ return fallback; } }
-function safeLocalSet(key, value){ try{ localStorage.setItem(key, JSON.stringify(value)); }catch(e){} }
-function escapeHtml(str=''){ return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
-function showLoader(msg){ main.innerHTML = '<div class="empty" style="padding-top:60px"><div style="font-size:32px;margin-bottom:12px">⏳</div><div>'+escapeHtml(msg)+'</div></div>'; }
-function getWeekKey(date = new Date()){ const d = new Date(date); d.setHours(12,0,0,0); const day = d.getDay(); const diff = day === 0 ? -6 : 1 - day; d.setDate(d.getDate() + diff); return d.toISOString().slice(0,10); }
-function getWeekLabel(key){ const d = new Date(key + 'T12:00:00'); return d.toLocaleDateString('fr-FR',{ day:'numeric', month:'long', year:'numeric' }); }
-function getDayKey(offset = 0){ const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate() - offset); return d.toISOString().slice(0,10); }
-function getDayLabel(key){ const d = new Date(key + 'T12:00:00'); return d.toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' }); }
-function daysLeft(){ const target = new Date('2026-07-27T12:00:00'); const now = new Date(); return Math.max(0, Math.ceil((target - now) / 86400000)); }
-function dots(val, total=5, cls='on'){ return '<div class="dots">' + Array.from({length:total}, (_,i)=>'<span class="dot '+(i<val?cls:'')+'"></span>').join('') + '</div>'; }
-function pasLabel(v){ return v === 'low' ? '< 5 000 pas' : v === 'mid' ? '5–10k pas' : '> 10 000 pas'; }
-function pasColor(v){ return v === 'low' ? '#C4622D' : v === 'mid' ? '#D4A72C' : '#2A7F6F'; }
+function dots(n, cls) {
+  return '<div class="dots">' + Array.from({length:5},(_,i)=>'<span class="dot'+(i<n?' '+(cls||'on'):'')+'"></span>').join('') + '</div>';
+}
 
-async function loadEntries(){
-  if(!firebaseReady){ entries = safeLocalGet('sante_backup', []); dbReady = false; return; }
-  try{
-    const ref = collection(db, 'users', USER_ID, 'pesees');
-    const q = query(ref, orderBy('key', 'desc'));
-    const snap = await getDocs(q);
+function ring(pct) {
+  const r=48, c=2*Math.PI*r, dash=c*pct/100;
+  return `<svg width="110" height="110" viewBox="0 0 110 110">
+    <circle cx="55" cy="55" r="${r}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="9"/>
+    <circle cx="55" cy="55" r="${r}" fill="none" stroke="#4ade80" stroke-width="9"
+      stroke-linecap="round" stroke-dasharray="${dash} ${c-dash}" transform="rotate(-90 55 55)"/>
+    <text x="55" y="51" text-anchor="middle" font-size="22" font-family="Syne,sans-serif" font-weight="800" fill="#e8eaf0">${pct}</text>
+    <text x="55" y="68" text-anchor="middle" font-size="10" font-family="DM Mono,monospace" fill="#6b7280">%</text>
+  </svg>`;
+}
+
+// ═══ FIREBASE DATA ═══
+async function loadEntries() {
+  if (!fb) { entries = lsGet('pesees', []); return; }
+  try {
+    const snap = await getDocs(query(collection(db,'users',UID,'pesees'), orderBy('key','desc')));
     entries = snap.docs.map(d => d.data());
-    safeLocalSet('sante_backup', entries);
-    dbReady = true;
-  }catch(e){
-    console.error('Firestore load error', e);
-    entries = safeLocalGet('sante_backup', []);
-    dbReady = false;
+    lsSet('pesees', entries);
+  } catch(e) { entries = lsGet('pesees', []); }
+}
+
+async function saveEntry(e) {
+  lsSet('pesees', entries);
+  if (!fb) return;
+  try { await setDoc(doc(db,'users',UID,'pesees',e.key), e); } catch(_) {}
+}
+
+async function loadJournal() {
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-i);
+    const k = d.toISOString().slice(0,10);
+    journal[k] = lsGet('j_'+k, []);
+    if (!fb) continue;
+    try {
+      const snap = await getDoc(doc(db,'users',UID,'journal',k));
+      if (snap.exists()) {
+        const items = snap.data().items || [];
+        if (items.length > 0) { journal[k] = items; lsSet('j_'+k, items); }
+      }
+    } catch(e) {}
   }
 }
 
-async function saveLatestEntry(){
-  const entry = entries[0];
-  if(!entry) return;
-  safeLocalSet('sante_backup', entries);
-  if(!firebaseReady) return;
-  try{ await setDoc(doc(db, 'users', USER_ID, 'pesees', entry.key), entry); }catch(e){ console.error('Firestore save error', e); }
+async function saveJournal() {
+  const k = todayKey();
+  lsSet('j_'+k, journal[k]||[]);
+  if (!fb) return;
+  try {
+    await setDoc(doc(db,'users',UID,'journal',k), {
+      items: (journal[k]||[]).map(x => ({
+        id: x.id, nom: x.nom||'', kcal: x.kcal||0,
+        prot: x.prot||0, gluc: x.gluc||0, lip: x.lip||0,
+        qty: x.qty||100, moment: x.moment||''
+      })),
+      updatedAt: Date.now()
+    });
+  } catch(e) {}
 }
 
-function currentWeight(){ return entries.length ? entries[0].poids.toFixed(1) : '—'; }
-function deltaWeight(){ if(entries.length < 2) return null; return +(entries[0].poids - entries[1].poids).toFixed(1); }
-function avgPerWeek(){ if(entries.length < 2) return 0; const oldest = entries[entries.length - 1]; const newest = entries[0]; const days = (new Date(newest.key) - new Date(oldest.key)) / 86400000; if(days <= 0) return 0; return +(((oldest.poids - newest.poids) / days) * 7).toFixed(2); }
-function progressPct(){ if(!entries.length) return 0; const done = DEPART - entries[0].poids; const total = DEPART - OBJECTIF; return Math.max(0, Math.min(100, Math.round((done / total) * 100))); }
-function ringSvg(){ const pct = progressPct(); const r = 52; const c = 2 * Math.PI * r; const dash = c * pct / 100; return `<svg width="130" height="130" viewBox="0 0 130 130" aria-hidden="true"><circle cx="65" cy="65" r="${r}" fill="none" stroke="#E8E0D0" stroke-width="10"/><circle cx="65" cy="65" r="${r}" fill="none" stroke="#2A7F6F" stroke-width="10" stroke-linecap="round" stroke-dasharray="${dash} ${c-dash}" transform="rotate(-90 65 65)"/><text x="65" y="62" text-anchor="middle" font-size="30" font-family="Georgia" font-weight="700" fill="#1A3A4A">${pct}</text><text x="65" y="82" text-anchor="middle" font-size="12" font-family="sans-serif" fill="#6B7A82">%</text></svg>`; }
-function normalizePoids(value){ const n = parseFloat(String(value).replace(',', '.').trim()); return Number.isFinite(n) ? n : null; }
-function getJournalDayKey(){ return getDayKey(0); }
-function getJournalItems(){ const k = getJournalDayKey(); return journal[k] || []; }
-function getJournalItemsByDay(key){ return journal[key] || []; }
-function saveJournalDay(key){ safeLocalSet('journal_' + key, journal[key] || []); }
-function loadJournalHistory(){ for(let i = 0; i < 7; i++){ const k = getDayKey(i); journal[k] = safeLocalGet('journal_' + k, []); } }
-function addFood(idx){ const item = ALIMENTS[idx]; const k = getJournalDayKey(); if(!journal[k]) journal[k] = []; journal[k].push({ id: Date.now() + Math.random(), ...item }); saveJournalDay(k); render(); }
-function removeFood(id){ const k = getJournalDayKey(); if(!journal[k]) return; journal[k] = journal[k].filter(i => i.id !== id); saveJournalDay(k); render(); }
-function dayTotals(key){ return getJournalItemsByDay(key).reduce((acc, item)=>{ acc.kcal += item.kcal; acc.prot += item.prot; acc.gluc += item.gluc; acc.lip += item.lip; return acc; }, { kcal:0, prot:0, gluc:0, lip:0 }); }
-function journalTotals(){ return dayTotals(getJournalDayKey()); }
+// ═══ JOURNAL ═══
+function todayItems() { return journal[todayKey()] || []; }
+function totals() {
+  return todayItems().reduce((a,x) => ({
+    k: a.k+(x.kcal||x.k||0),
+    p: a.p+(x.prot||x.p||0),
+    g: a.g+(x.gluc||x.g||0),
+    l: a.l+(x.lip||x.l||0)
+  }), {k:0,p:0,g:0,l:0});
+}
+function getName(x) { return x.nom||x.n||x.name||''; }
+function getKcal(x) { return x.kcal||x.k||0; }
+function getProt(x) { return x.prot||x.p||0; }
 
-async function callClaude(prompt){
+function addJournalEntry(text) {
+  const k = todayKey();
+  if (!journal[k]) journal[k] = [];
+  journal[k].push({ id: Date.now(), nom: text.trim(), kcal: 0, prot: 0, gluc: 0, lip: 0, qty: 0, moment: '' });
+  saveJournal();
+}
+
+function removeFood(id) {
+  const k = todayKey();
+  journal[k] = (journal[k]||[]).filter(x => x.id !== id);
+  saveJournal().then(() => render());
+}
+
+// ═══ IA CLAUDE ═══
+async function askClaude(msgs) {
   const res = await fetch('/api/claude', {
-    method:'POST',
-    headers:{ 'Content-Type':'application/json' },
-    body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:700, messages:[{ role:'user', content: prompt }] })
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 800,
+      system: `Tu es le coach santé de Sylvain. Profil : 55 ans, 174cm, départ 94kg, objectif 84kg au 27 juillet 2026. Régime méditerranéen-protéiné : 1400-1600 kcal/j, 90g protéines minimum. Sous Kardégic. Festin le vendredi soir. Actif : 5000 à 10000 pas/jour. Réponds en français, ton direct et bienveillant, concis (8 lignes max sauf si demande détaillée). Pas de mise en garde médicale répétée.`,
+      messages: msgs
+    })
   });
-  const data = await res.json();
-  if(!res.ok) throw new Error(data?.error || 'Erreur IA');
-  return data?.content?.find?.(x => x.type === 'text')?.text || data?.content?.[0]?.text || 'Pas de réponse.';
+  const d = await res.json();
+  if (!res.ok) throw new Error(d.error || 'Erreur API');
+  return d.content.find(x => x.type==='text')?.text || '';
 }
 
-async function analyseSaisieIA(){
-  const poids = normalizePoids(formState.poids);
-  if(poids === null){ alert('Entre d’abord un poids pour lancer l’analyse IA.'); return; }
-  saisieAi = 'Analyse en cours…'; render();
-  const prompt = `Tu es un coach santé pragmatique. Réponds en français, ton clair, utile, bienveillant, sans jargon. Analyse cette pesée hebdomadaire en 8 lignes maximum.\n\nDonnées :\n- poids: ${poids} kg\n- moral: ${formState.moral}/5\n- tenue du plan: ${formState.plan}/5\n- activité: ${pasLabel(formState.pas)}\n- note: ${formState.note || 'aucune'}\n- objectif: ${OBJECTIF} kg\n- départ: ${DEPART} kg\n\nDonne :\n1. une lecture rapide,\n2. le point positif principal,\n3. le risque ou le point de vigilance,\n4. un seul conseil concret pour les 7 prochains jours.`;
-  try{ saisieAi = await callClaude(prompt); }catch(e){ saisieAi = 'Erreur IA : ' + e.message; }
+async function analyseJournal() {
+  const items = todayItems();
+  if (!items.length) { alert('Ajoute d\'abord des repas dans le journal.'); return; }
+  journalAi = 'Analyse en cours...';
+  render();
+  const t = totals();
+  const liste = items.map(x => getName(x) + (getKcal(x) ? ' (' + getKcal(x) + ' kcal)' : '')).join(', ');
+  try {
+    journalAi = await askClaude([{ role: 'user', content:
+      `Analyse mon journal du jour.\nAliments : ${liste}\nTotaux : ${t.k} kcal, ${t.p}g prot, ${t.g}g gluc, ${t.l}g lip.\nObjectifs : ${KCAL_OBJ} kcal, ${PROT_OBJ}g prot.\nDonne : qualité globale, point fort, point à corriger, un ajustement concret.`
+    }]);
+  } catch(err) { journalAi = 'Erreur : ' + err.message; }
   render();
 }
 
-async function analyseHomeIA(){
-  if(!entries.length){ alert('Ajoute au moins une pesée.'); return; }
-  homeAi = 'Analyse en cours…'; render();
-  const latest = entries[0]; const prev = entries[1]; const diff = prev ? (latest.poids - prev.poids).toFixed(1) : '0.0';
-  const prompt = `Tu es un coach santé simple et utile. Réponds en français, en 10 lignes maximum. Fais un mini bilan hebdomadaire.\n\nDonnées:\n- poids actuel: ${latest.poids} kg\n- variation vs précédente: ${diff} kg\n- moral: ${latest.moral}/5\n- tenue du plan: ${latest.plan}/5\n- activité: ${pasLabel(latest.pas)}\n- note: ${latest.note || 'aucune'}\n- moyenne par semaine: ${avgPerWeek()} kg/semaine\n- progression totale: ${progressPct()}%\n- objectif final: ${OBJECTIF} kg\n\nDonne:\n1. interprétation,\n2. vigilance éventuelle,\n3. action prioritaire pour la semaine.`;
-  try{ homeAi = await callClaude(prompt); }catch(e){ homeAi = 'Erreur IA : ' + e.message; }
+async function sendChat(text) {
+  if (!text.trim() || chatLoading) return;
+  chatHistory.push({ role: 'user', content: text.trim() });
+  chatLoading = true;
+  render();
+  scrollChatBottom();
+  const t = totals();
+  const items = todayItems();
+  const context = items.length
+    ? `\n[Contexte : journal du jour = ${items.map(x=>getName(x)).join(', ')} — ${t.k} kcal, ${t.p}g prot]`
+    : '';
+  const msgs = chatHistory.map((m,i) => i === 0 && items.length
+    ? { role: m.role, content: m.content + context }
+    : m
+  );
+  try {
+    const reply = await askClaude(msgs);
+    chatHistory.push({ role: 'assistant', content: reply });
+  } catch(err) {
+    chatHistory.push({ role: 'assistant', content: 'Erreur : ' + err.message });
+  }
+  chatLoading = false;
+  render();
+  scrollChatBottom();
+}
+
+function scrollChatBottom() {
+  setTimeout(() => { $('main').scrollTop = $('main').scrollHeight; }, 50);
+}
+
+// ═══ PESÉE ═══
+function submitForm() {
+  const p = parseFloat(String(form.poids).replace(',','.'));
+  if (!p || p < 40 || p > 250) { alert('Entre un poids valide, ex: 92.5'); return; }
+  const k = weekKey();
+  entries = [
+    { key: k, poids: p, moral: form.moral, plan: form.plan, pas: form.pas, note: form.note.trim() },
+    ...entries.filter(e => e.key !== k)
+  ].sort((a,b) => b.key.localeCompare(a.key));
+  saveEntry(entries[0]);
+  form = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
+  goTo('historique');
+}
+
+// ═══ VUES ═══
+function vJournal() {
+  const t = totals();
+  const items = todayItems();
+  const kcalOk = t.k <= KCAL_OBJ;
+  const protOk = t.p >= PROT_OBJ;
+
+  const bilanBar = `<div class="bilan-grid">
+    <div class="bilan-cell"><div class="bilan-val ${kcalOk?'ok':'over'}">${t.k}</div><div class="bilan-label">kcal</div></div>
+    <div class="bilan-cell"><div class="bilan-val ${protOk?'ok':'over'}">${t.p}g</div><div class="bilan-label">prot</div></div>
+    <div class="bilan-cell"><div class="bilan-val">${t.g}g</div><div class="bilan-label">gluc</div></div>
+    <div class="bilan-cell"><div class="bilan-val">${t.l}g</div><div class="bilan-label">lip</div></div>
+  </div>`;
+
+  const alertMsg = t.k === 0
+    ? '<div class="alert green">Objectif : ' + KCAL_OBJ + ' kcal · ' + PROT_OBJ + 'g protéines</div>'
+    : t.k > KCAL_OBJ
+    ? '<div class="alert red">+' + (t.k - KCAL_OBJ) + ' kcal au-dessus de l\'objectif</div>'
+    : '<div class="alert green">' + (KCAL_OBJ - t.k) + ' kcal restantes</div>';
+
+  const saisie = `<div class="card" style="margin-top:14px">
+    <div class="card-label">Saisie du repas</div>
+    <textarea id="journal-input" rows="3" placeholder="Décris ce que tu as mangé... ex: bol de quinoa avec saumon grillé et épinards" style="margin-bottom:8px"></textarea>
+    <button class="btn btn-green" onclick="handleJournalAdd()">Ajouter au journal</button>
+  </div>`;
+
+  const logHtml = items.length
+    ? '<div style="margin:10px 14px 0">' + items.map(x =>
+        `<div class="log-item">
+          <div>
+            <div class="log-name">${esc(getName(x))}</div>
+            <div class="log-detail">${getKcal(x)?getKcal(x)+' kcal · ':''} ${getProt(x)?getProt(x)+'g prot':''}</div>
+          </div>
+          <button class="log-del" onclick="removeFood(${x.id})">×</button>
+        </div>`
+      ).join('') + '</div>'
+    : '<div class="empty">Aucun repas enregistré aujourd\'hui.<br>Décris ce que tu as mangé ci-dessus.</div>';
+
+  const aiSection = journalAi
+    ? `<div class="ai-box"><div class="ai-head">Analyse du jour</div><div class="ai-body${journalAi==='Analyse en cours...'?' ai-loading':''}">${esc(journalAi)}</div></div>`
+    : '';
+
+  const aiBtn = items.length
+    ? '<div style="margin:10px 14px 0"><button class="btn btn-blue" onclick="analyseJournal()">Analyser ma journée avec l\'IA</button></div>'
+    : '';
+
+  return bilanBar + alertMsg + saisie + logHtml + aiBtn + aiSection + '<div class="spacer"></div>';
+}
+
+function vCoach() {
+  const msgs = chatHistory.map((m,i) => {
+    const isLast = i === chatHistory.length - 1;
+    const loading = isLast && chatLoading && m.role === 'user';
+    const cls = m.role === 'user' ? 'user' : ('ai' + (loading ? ' loading' : ''));
+    return `<div class="chat-msg ${cls}"><div class="bubble">${esc(m.content)}${loading ? '<br><br>...' : ''}</div></div>`;
+  }).join('');
+
+  const empty = !chatHistory.length
+    ? `<div class="empty" style="padding-top:30px">
+        Pose-moi une question sur ton régime,<br>tes repas, tes progrès...<br><br>
+        <span style="font-size:24px">🤖</span>
+      </div>`
+    : '';
+
+  return `<div style="padding-top:14px">
+    <div class="chat-wrap">${empty}${msgs}</div>
+    <div class="chat-input-wrap" id="chat-input-wrap">
+      <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ta question..."></textarea>
+      <button class="chat-send" onclick="handleChat()">↑</button>
+    </div>
+  </div>`;
+}
+
+function vRepas() {
+  const d = DAYS[dayIdx];
+  const tabs = DAYS.map((x,i) =>
+    `<button class="day-tab${i===dayIdx?' active':''}" onclick="setDay(${i})">${x.nom}</button>`
+  ).join('');
+  const meals = d.meals.map(m =>
+    `<div class="meal-card">
+      <div class="meal-time">${m.t}</div>
+      <div class="meal-name">${m.n}</div>
+      <div class="meal-kcal">${m.k} kcal</div>
+      <div class="meal-desc">${m.d}</div>
+    </div>`
+  ).join('');
+  return `<div class="day-tabs">${tabs}</div>${meals}<div class="spacer"></div>`;
+}
+
+function vPesee() {
+  return `<div class="card">
+    <div class="card-label">Pesée · ${weekLabel(weekKey())}</div>
+    <label class="lbl">Poids ce matin (kg)</label>
+    <input type="number" step="0.1" min="40" max="250" placeholder="ex : 92.5" value="${esc(form.poids)}" oninput="form.poids=this.value">
+    <label class="lbl">Moral</label>
+    <div class="slider-row">
+      <input type="range" min="1" max="5" step="1" value="${form.moral}" oninput="form.moral=+this.value;updateDots()">
+      <div id="dots-moral">${dots(form.moral,'on')}</div>
+    </div>
+    <label class="lbl">Tenue du plan</label>
+    <div class="slider-row">
+      <input type="range" min="1" max="5" step="1" value="${form.plan}" oninput="form.plan=+this.value;updateDots()">
+      <div id="dots-plan">${dots(form.plan,'deep')}</div>
+    </div>
+    <label class="lbl">Activité</label>
+    <div class="pas-row">
+      <button class="pas-btn${form.pas==='low'?' low':''}" onclick="setPas('low')">< 5 000</button>
+      <button class="pas-btn${form.pas==='mid'?' mid':''}" onclick="setPas('mid')">5–10k</button>
+      <button class="pas-btn${form.pas==='high'?' high':''}" onclick="setPas('high')">> 10 000</button>
+    </div>
+    <label class="lbl">Note libre</label>
+    <textarea rows="3" placeholder="Bonne semaine, faim ok..." oninput="form.note=this.value">${esc(form.note)}</textarea>
+    <button class="btn btn-green" onclick="submitForm()">Enregistrer la pesée</button>
+  </div><div class="spacer"></div>`;
+}
+
+function vHistorique() {
+  if (!entries.length) return '<div class="empty">Aucune pesée enregistrée.<br>Va dans Pesée pour commencer.</div>';
+  const e0 = entries[0], prev = entries[1];
+  const pct = Math.max(0, Math.min(100, Math.round((DEPART - e0.poids) / (DEPART - OBJECTIF) * 100)));
+  const delta = prev ? e0.poids - prev.poids : null;
+  const avg = entries.length < 2 ? 0 : (() => {
+    const o = entries[entries.length-1], n = entries[0];
+    const d = (new Date(n.key) - new Date(o.key)) / 86400000;
+    return d > 0 ? +((o.poids - n.poids) / d * 7).toFixed(2) : 0;
+  })();
+
+  const deltaHtml = delta === null
+    ? '<div class="poids-delta neutral">Première mesure</div>'
+    : delta < 0 ? '<div class="poids-delta good">−' + Math.abs(delta).toFixed(1) + ' kg cette semaine</div>'
+    : delta > 0 ? '<div class="poids-delta bad">+' + delta.toFixed(1) + ' kg cette semaine</div>'
+    : '<div class="poids-delta neutral">Stable</div>';
+
+  const summary = `<div class="card">
+    <div class="card-label">Progression</div>
+    <div class="ring-wrap">
+      <div>${ring(pct)}</div>
+      <div>
+        <div class="poids-big">${e0.poids.toFixed(1)} <span class="poids-unit">kg</span></div>
+        ${deltaHtml}
+      </div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-val">${daysLeft()}</div><div class="stat-label">jours restants</div></div>
+    <div class="stat-card"><div class="stat-val">${avg > 0 ? avg : '—'}</div><div class="stat-label">kg / semaine</div></div>
+  </div>`;
+
+  const rows = entries.map((e,i) => {
+    const p = entries[i+1];
+    const d = p ? p.poids - e.poids : null;
+    const chip = d === null
+      ? '<span class="chip chip-gray">départ</span>'
+      : d > 0 ? '<span class="chip chip-green">−' + d.toFixed(1) + ' kg</span>'
+      : '<span class="chip chip-red">+' + Math.abs(d).toFixed(1) + ' kg</span>';
+    return `<div class="hist-item">
+      <div class="hist-top">
+        <div><div class="hist-date">${weekLabel(e.key)}</div><div class="hist-poids">${e.poids.toFixed(1)} kg</div></div>
+        ${chip}
+      </div>
+      <div class="hist-meta">
+        ${dots(e.moral,'on')} ${dots(e.plan,'deep')}
+        <span style="font-size:11px;font-family:DM Mono,monospace;color:${pasClr(e.pas)}">${pasLbl(e.pas)}</span>
+      </div>
+      ${e.note ? '<div class="hist-note">"' + esc(e.note) + '"</div>' : ''}
+    </div>`;
+  }).join('');
+
+  return summary + '<div class="card" style="margin-top:14px"><div class="card-label">Historique des pesées</div>' + rows + '</div><div class="spacer"></div>';
+}
+
+// ═══ RENDER ═══
+const TITLES = {
+  journal: 'Journal du jour',
+  coach: 'Coach IA',
+  repas: 'Plan repas',
+  pesee: 'Pesée hebdo',
+  historique: 'Mon bilan'
+};
+
+function render() {
+  $('pg-title').textContent = TITLES[view] || 'Santé';
+  $('pg-sub').textContent = view === 'historique'
+    ? '94 → 84 kg · ' + daysLeft() + ' jours'
+    : '94 → 84 kg · 27 juillet 2026';
+
+  const V = { journal: vJournal, coach: vCoach, repas: vRepas, pesee: vPesee, historique: vHistorique };
+  $('main').innerHTML = V[view]();
+}
+
+// ═══ NAVIGATION ═══
+function goTo(v) {
+  view = v; journalAi = '';
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  $('nav-' + v)?.classList.add('active');
+  render();
+  if (v === 'coach') scrollChatBottom();
+}
+
+function setDay(i) { dayIdx = i; render(); }
+function setPas(v) { form.pas = v; render(); }
+function updateDots() {
+  const m = $('dots-moral'), p = $('dots-plan');
+  if (m) m.innerHTML = dots(form.moral,'on');
+  if (p) p.innerHTML = dots(form.plan,'deep');
+}
+
+// ═══ HANDLERS ═══
+function handleJournalAdd() {
+  const el = $('journal-input');
+  if (!el || !el.value.trim()) return;
+  const text = el.value.trim();
+  addJournalEntry(text);
+  el.value = '';
+  // Demander à l'IA d'identifier les calories si possible
+  enrichWithAI(text);
+}
+
+async function enrichWithAI(text) {
+  // Met à jour l'affichage du journal immédiatement
+  render();
+  // Demande à Claude d'estimer les macros
+  try {
+    const reply = await askClaude([{ role: 'user', content:
+      `Estime les macros pour : "${text}". Réponds UNIQUEMENT en JSON sans markdown : {"kcal":0,"prot":0,"gluc":0,"lip":0}. Valeurs pour la portion décrite.`
+    }]);
+    const clean = reply.replace(/```json|```/g,'').trim();
+    const macros = JSON.parse(clean);
+    const k = todayKey();
+    if (journal[k] && journal[k].length > 0) {
+      const last = journal[k][journal[k].length - 1];
+      last.kcal = macros.kcal || 0;
+      last.prot = macros.prot || 0;
+      last.gluc = macros.gluc || 0;
+      last.lip  = macros.lip  || 0;
+      await saveJournal();
+    }
+  } catch(e) {}
   render();
 }
 
-async function analyseJournalIA(){
-  const totals = journalTotals(); const items = getJournalItems();
-  if(!items.length){ alert('Ajoute au moins un aliment dans le journal.'); return; }
-  journalAi = 'Analyse en cours…'; render();
-  const liste = items.map(i => `- ${i.nom}: ${i.kcal} kcal, ${i.prot}g prot, ${i.gluc}g gluc, ${i.lip}g lip`).join('\n');
-  const prompt = `Tu es un coach nutrition pragmatique. Réponds en français, utile, concret, sans moraliser, en 10 lignes maximum.\n\nObjectifs:\n- calories: ${KCAL_OBJECTIF}\n- protéines: ${PROT_OBJECTIF} g\n\nTotaux du jour:\n- calories: ${totals.kcal}\n- protéines: ${totals.prot} g\n- glucides: ${totals.gluc} g\n- lipides: ${totals.lip} g\n\nAliments:\n${liste}\n\nDonne:\n1. qualité globale de la journée,\n2. point fort,\n3. point à corriger,\n4. un ajustement concret pour ce soir ou demain.`;
-  try{ journalAi = await callClaude(prompt); }catch(e){ journalAi = 'Erreur IA : ' + e.message; }
-  render();
+function handleChat() {
+  const el = $('chat-input');
+  if (!el) return;
+  const text = el.value.trim();
+  if (!text) return;
+  el.value = '';
+  el.style.height = 'auto';
+  sendChat(text);
 }
 
-function submitForm(){
-  const poids = normalizePoids(formState.poids);
-  if(poids === null || poids < 40 || poids > 250){ alert('Entre un poids valide, par exemple 92.5'); return; }
-  const key = getWeekKey();
-  entries = [{ key, poids, moral: formState.moral, plan: formState.plan, pas: formState.pas, note: formState.note.trim() }, ...entries.filter(e => e.key !== key)].sort((a,b)=>b.key.localeCompare(a.key));
-  saveLatestEntry(); formState = { poids:'', moral:3, plan:3, pas:'mid', note:'' }; saisieAi = ''; goTo('home');
+// ═══ EXPOSE ═══
+window.goTo = goTo;
+window.setDay = setDay;
+window.setPas = setPas;
+window.submitForm = submitForm;
+window.removeFood = removeFood;
+window.analyseJournal = analyseJournal;
+window.handleJournalAdd = handleJournalAdd;
+window.handleChat = handleChat;
+window.updateDots = updateDots;
+Object.defineProperty(window, 'form', { get(){ return form; }, set(v){ form = v; } });
+
+// Enter dans le chat
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !e.shiftKey && document.activeElement?.id === 'chat-input') {
+    e.preventDefault();
+    handleChat();
+  }
+});
+
+// Auto-resize textarea chat
+document.addEventListener('input', e => {
+  if (e.target?.id === 'chat-input') {
+    e.target.style.height = 'auto';
+    e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px';
+  }
+});
+
+// ═══ BOOT ═══
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
+
+$('main').innerHTML = '<div class="empty" style="padding-top:60px"><div style="font-size:40px">⏳</div><br>Connexion...</div>';
+
+try {
+  await signInAnonymously(auth);
+  fb = true;
+  $('fb-status').textContent = 'Firebase';
+  $('fb-status').classList.remove('offline');
+} catch(e) {
+  fb = false;
 }
 
-function viewHome(){
-  const delta = deltaWeight();
-  const deltaHtml = delta === null ? '<div class="delta neutral">Première mesure</div>' : delta < 0 ? '<div class="delta good">'+Math.abs(delta).toFixed(1)+' kg depuis la dernière pesée</div>' : delta > 0 ? '<div class="delta bad">+'+delta.toFixed(1)+' kg depuis la dernière pesée</div>' : '<div class="delta neutral">Stable depuis la dernière pesée</div>';
-  return `<div class="card"><div class="card-title">Poids actuel</div><div class="ring-wrap"><div>${ringSvg()}</div><div><div class="big-num">${currentWeight()} <span class="unit">kg</span></div>${deltaHtml}</div></div></div><div class="grid2"><div class="mini-card"><div class="mini-val">${entries.length}</div><div class="mini-label">Pesées enregistrées</div></div><div class="mini-card"><div class="mini-val">${avgPerWeek()}</div><div class="mini-label">kg / semaine</div></div></div><div class="card"><div class="card-title">Statut</div><div class="subtle">${firebaseReady && dbReady ? 'Connexion Firebase active.' : 'Mode local actif ou Firestore indisponible.'}</div></div><div class="status-box">Objectif : 84 kg · Échéance : 27 juillet 2026 · ${daysLeft()} jours restants.</div><div class="ai-actions"><button class="btn-primary teal" onclick="analyseHomeIA()">Bilan IA de la semaine</button></div>${homeAi ? `<div class="ai-box"><div class="ai-head">Analyse IA</div><div class="ai-body ${homeAi === 'Analyse en cours…' ? 'ai-loading' : ''}">${escapeHtml(homeAi)}</div></div>` : ''}`;
-}
-
-function viewSaisie(){
-  return `<div class="card"><div class="card-title">Pesée · ${getWeekLabel(getWeekKey())}</div><label class="field-label">Poids ce matin (kg)</label><input type="number" step="0.1" min="40" max="250" placeholder="ex : 92.5" value="${formState.poids}" oninput="formState.poids=this.value"><label class="field-label">Moral cette semaine</label><div class="slider-row"><input type="range" min="1" max="5" step="1" value="${formState.moral}" oninput="formState.moral=+this.value;render()">${dots(formState.moral,5,'on')}</div><label class="field-label">Tenue du plan</label><div class="slider-row"><input type="range" min="1" max="5" step="1" value="${formState.plan}" oninput="formState.plan=+this.value;render()">${dots(formState.plan,5,'on-deep')}</div><label class="field-label">Activité</label><div class="pas-row"><button class="pas-btn ${formState.pas==='low'?'active-low':''}" onclick="setPas('low')">&lt; 5 000</button><button class="pas-btn ${formState.pas==='mid'?'active-mid':''}" onclick="setPas('mid')">5–10k</button><button class="pas-btn ${formState.pas==='high'?'active-high':''}" onclick="setPas('high')">&gt; 10 000</button></div><label class="field-label">Note libre</label><textarea rows="3" placeholder="Bonne semaine, faim ok…" oninput="formState.note=this.value">${escapeHtml(formState.note)}</textarea><button class="btn-primary" onclick="submitForm()">Enregistrer la pesée</button><button class="btn-secondary" onclick="analyseSaisieIA()">Analyser cette saisie avec l’IA</button><button class="btn-secondary" onclick="goTo('home')">Annuler</button></div>${saisieAi ? `<div class="ai-box"><div class="ai-head">Retour IA sur la saisie</div><div class="ai-body ${saisieAi === 'Analyse en cours…' ? 'ai-loading' : ''}">${escapeHtml(saisieAi)}</div></div>` : ''}`;
-}
-
-function viewHistorique(){
-  if(entries.length === 0) return `<div class="empty">Aucune pesée enregistrée.<br>Commence lundi matin à jeun, dans les mêmes conditions chaque semaine.</div>`;
-  return `<div class="card"><div class="card-title">Toutes les pesées (${entries.length})</div>${entries.map((e,i)=>{ const prev = entries[i+1]; const diff = prev ? (prev.poids - e.poids) : null; let pill = `<span class="pill gray">départ</span>`; if(diff !== null){ const good = diff > 0; pill = `<span class="pill ${good?'green':'red'}">${good?'−':'+'}${Math.abs(diff).toFixed(1)} kg</span>`; } return `<div class="hist-row"><div class="hist-header"><div><div class="hist-date">${getWeekLabel(e.key)}</div><div class="hist-poids">${e.poids.toFixed(1)} kg</div></div>${pill}</div><div class="hist-meta">${dots(e.moral,5,'on')}${dots(e.plan,5,'on-deep')}<span style="font-size:12px;font-weight:700;color:${pasColor(e.pas)}">${pasLabel(e.pas)}</span></div>${e.note ? `<div class="hist-note">\"${escapeHtml(e.note)}\"</div>` : ''}</div>`; }).join('')}</div>`;
-}
-
-function viewRepas(){
-  const d = DAYS[currentDay];
-  return `<div class="card"><div class="card-title">Jours types</div><div class="day-tabs">${DAYS.map((day,i)=>`<button class="day-tab ${i===currentDay?'active':''}" onclick="setDay(${i})">${day.nom}</button>`).join('')}</div></div>${d.meals.map(m=>`<div class="meal-card"><div class="meal-time">${m.time} · ${m.kcal} kcal</div><div class="meal-name">${m.name}</div><div class="meal-detail">${m.desc}</div></div>`).join('')}`;
-}
-
-function renderWeekHistory(){
-  const rows = Array.from({length:7}, (_,i)=>{ const key = getDayKey(i); const items = getJournalItemsByDay(key); const totals = dayTotals(key); const names = items.map(x => x.nom).join(', '); return `<div class="week-row"><div class="week-top"><div class="week-day">${i===0 ? "Aujourd’hui" : getDayLabel(key)}</div><div class="week-kcal">${totals.kcal} kcal · ${items.length} aliment${items.length>1?'s':''}</div></div><div class="week-macros">Prot ${totals.prot}g · Gluc ${totals.gluc}g · Lip ${totals.lip}g</div><div class="week-foods">${items.length ? escapeHtml(names) : 'Aucune saisie'}</div></div>`; }).join('');
-  return `<div class="week-card">${rows}</div>`;
-}
-
-function viewJournal(){
-  const totals = journalTotals(); const items = getJournalItems(); const filtered = ALIMENTS.filter(a => !foodSearch || a.nom.toLowerCase().includes(foodSearch.toLowerCase())).slice(0,12);
-  return `<div class="bilan-bar"><div class="bilan-cell"><div class="bilan-val">${totals.kcal}</div><div class="bilan-label">kcal</div></div><div class="bilan-cell"><div class="bilan-val">${totals.prot}g</div><div class="bilan-label">prot.</div></div><div class="bilan-cell"><div class="bilan-val">${totals.gluc}g</div><div class="bilan-label">gluc.</div></div><div class="bilan-cell"><div class="bilan-val">${totals.lip}g</div><div class="bilan-label">lip.</div></div></div><div class="status-box ${totals.kcal > KCAL_OBJECTIF ? 'warn-box' : ''}">Objectif journalier : ${KCAL_OBJECTIF} kcal · ${PROT_OBJECTIF} g protéines.</div><div class="search-wrap"><input type="text" placeholder="Chercher un aliment..." value="${escapeHtml(foodSearch)}" oninput="foodSearch=this.value;render()"></div><div class="aliments-list">${filtered.map(a=>`<div class="aliment-row"><div><div class="aliment-name">${a.nom}</div><div class="aliment-macros">${a.kcal} kcal · ${a.prot}g prot · ${a.gluc}g gluc · ${a.lip}g lip</div></div><button class="aliment-add" onclick="addFood(${ALIMENTS.findIndex(x => x.nom === a.nom)})">Ajouter</button></div>`).join('')}</div><div class="journal-list">${items.length ? items.map(item=>`<div class="journal-item"><div><div class="journal-item-name">${item.nom}</div><div class="journal-item-detail">${item.kcal} kcal · ${item.prot}g prot · ${item.gluc}g gluc · ${item.lip}g lip</div></div><button class="journal-delete" onclick="removeFood(${item.id})">×</button></div>`).join('') : `<div class="empty">Aucun aliment ajouté aujourd’hui.</div>`}</div><div class="ai-actions"><button class="btn-primary terra" onclick="analyseJournalIA()">Analyser mon journal avec l’IA</button></div>${journalAi ? `<div class="ai-box"><div class="ai-head">Bilan IA du journal</div><div class="ai-body ${journalAi === 'Analyse en cours…' ? 'ai-loading' : ''}">${escapeHtml(journalAi)}</div></div>` : ''}<div class="card"><div class="card-title">Historique repas · 7 jours</div></div>${renderWeekHistory()}`;
-}
-
-function render(){
-  const titles = { home:'Mon suivi santé', saisie:'Pesée hebdomadaire', historique:'Historique', repas:'Plan repas méditerranéen', journal:'Journal alimentaire' };
-  const subs = { home:`Objectif 84 kg · 27 juillet 2026 · ${daysLeft()} jours`, saisie:'Lundi matin à jeun', historique:`${entries.length} semaine${entries.length>1?'s':''} enregistrée${entries.length>1?'s':''}`, repas:'Cadre simple et stable', journal:'Suivi rapide de la journée' };
-  pageTitle.textContent = titles[currentView]; pageSub.textContent = subs[currentView];
-  const map = { home:viewHome, saisie:viewSaisie, historique:viewHistorique, repas:viewRepas, journal:viewJournal };
-  main.innerHTML = map[currentView]();
-}
-
-async function goTo(view){ currentView = view; document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active')); const btn = document.getElementById('nav-' + view); if(btn) btn.classList.add('active'); render(); }
-function setDay(i){ currentDay = i; render(); }
-function setPas(v){ formState.pas = v; render(); }
-
-window.goTo = goTo; window.setDay = setDay; window.setPas = setPas; window.submitForm = submitForm; window.addFood = addFood; window.removeFood = removeFood; window.render = render; window.analyseSaisieIA = analyseSaisieIA; window.analyseHomeIA = analyseHomeIA; window.analyseJournalIA = analyseJournalIA;
-Object.defineProperty(window, 'formState', { get(){ return formState; }, set(v){ formState = v; } });
-
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(err => { console.warn('SW registration skipped', err); }); }
-
-async function boot(){
-  showLoader('Connexion à la base…');
-  loadJournalHistory();
-  entries = safeLocalGet('sante_backup', []);
-  try{ await signInAnonymously(auth); firebaseReady = true; }catch(e){ console.error('Auth error', e); firebaseReady = false; }
-  await loadEntries();
-  render();
-}
-
-boot();
+await loadEntries();
+await loadJournal();
+render();
 </script>
 </body>
 </html>
