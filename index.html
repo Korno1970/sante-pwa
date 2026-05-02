@@ -27,25 +27,20 @@
   html, body { height: 100%; background: var(--bg); font-family: 'Georgia', Georgia, serif; color: var(--deep); }
   #app { max-width: 480px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
 
-  /* HEADER */
   .header { background: var(--deep); color: #fff; padding: 20px 20px 16px; padding-top: calc(20px + env(safe-area-inset-top, 0px)); }
   .header h1 { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; }
   .header p { font-size: 12px; opacity: 0.6; margin-top: 3px; font-family: sans-serif; }
 
-  /* SCROLL ZONE */
   .scroll-zone { flex: 1; overflow-y: auto; padding-bottom: calc(72px + var(--safe-bottom)); }
 
-  /* NAV */
   nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: var(--surface); border-top: 1px solid var(--border); display: flex; justify-content: space-around; padding: 10px 0; padding-bottom: calc(10px + var(--safe-bottom)); z-index: 100; }
   nav button { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 10px; font-family: sans-serif; color: var(--muted); padding: 4px 16px; }
   nav button.active { color: var(--teal); font-weight: 700; }
   nav button span.ico { font-size: 22px; line-height: 1; }
 
-  /* CARDS */
   .card { background: var(--surface); border-radius: 16px; margin: 16px 16px 0; padding: 18px 20px; border: 1px solid var(--border); }
   .card-title { font-size: 11px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 12px; }
 
-  /* PROGRESS RING */
   .ring-wrap { display: flex; align-items: center; gap: 20px; }
   .big-num { font-size: 36px; font-weight: 700; line-height: 1; }
   .unit { font-size: 14px; color: var(--muted); font-family: sans-serif; font-weight: 400; }
@@ -54,13 +49,11 @@
   .delta.bad { color: var(--terra); }
   .delta.neutral { color: var(--muted); font-weight: 400; }
 
-  /* GRID STATS */
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 16px 0; }
   .mini-card { background: var(--surface); border-radius: 14px; padding: 14px 16px; border: 1px solid var(--border); }
   .mini-val { font-size: 24px; font-weight: 700; }
   .mini-label { font-size: 11px; font-family: sans-serif; color: var(--muted); margin-top: 3px; }
 
-  /* FORM */
   label.field-label { display: block; font-size: 11px; font-family: sans-serif; color: var(--muted); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 6px; }
   input[type=number], textarea { width: 100%; padding: 11px 14px; font-size: 16px; border: 1.5px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--deep); font-family: sans-serif; outline: none; margin-bottom: 16px; }
   input[type=range] { width: 100%; accent-color: var(--teal); }
@@ -70,21 +63,18 @@
   .dot.on { background: var(--teal); }
   .dot.on-deep { background: var(--deep); }
 
-  /* PAS BUTTONS */
   .pas-row { display: flex; gap: 8px; margin-bottom: 16px; }
   .pas-btn { flex: 1; padding: 10px 4px; font-size: 12px; font-family: sans-serif; border-radius: 8px; border: 1.5px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-weight: 400; transition: all 0.15s; }
   .pas-btn.active-low { border-color: #C4622D; background: #C4622D18; color: #C4622D; font-weight: 700; }
   .pas-btn.active-mid { border-color: #D4A72C; background: #D4A72C18; color: #D4A72C; font-weight: 700; }
   .pas-btn.active-high { border-color: #2A7F6F; background: #2A7F6F18; color: #2A7F6F; font-weight: 700; }
 
-  /* BUTTONS */
   .btn-primary { width: 100%; padding: 14px; font-size: 16px; background: var(--deep); color: #fff; border: none; border-radius: 12px; cursor: pointer; font-family: sans-serif; font-weight: 600; transition: background 0.2s; margin-top: 4px; }
   .btn-primary:active { opacity: 0.85; }
   .btn-primary.terra { background: var(--terra); }
   .btn-primary.saved { background: var(--teal); }
   .btn-secondary { width: 100%; padding: 12px; font-size: 15px; background: transparent; color: var(--muted); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; font-family: sans-serif; margin-top: 8px; }
 
-  /* HISTORIQUE */
   .hist-row { padding: 14px 0; border-bottom: 1px solid var(--border); }
   .hist-row:last-child { border-bottom: none; }
   .hist-header { display: flex; justify-content: space-between; align-items: flex-start; }
@@ -97,37 +87,25 @@
   .hist-meta { display: flex; gap: 14px; margin-top: 8px; align-items: center; font-family: sans-serif; }
   .hist-note { font-size: 12px; color: var(--muted); font-style: italic; margin-top: 6px; font-family: sans-serif; }
 
-  /* PLAN REPAS */
   .day-tabs { display: flex; gap: 6px; flex-wrap: nowrap; overflow-x: auto; padding: 0 16px; margin-top: 16px; scrollbar-width: none; }
   .day-tabs::-webkit-scrollbar { display: none; }
   .day-tab { flex: 0 0 auto; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 13px; font-family: sans-serif; cursor: pointer; white-space: nowrap; }
   .day-tab.active { background: var(--deep); color: #fff; border-color: var(--deep); font-weight: 600; }
   .meal-card { background: var(--surface); border-radius: 14px; margin: 10px 16px 0; border: 1px solid var(--border); overflow: hidden; }
-  .meal-header { padding: 10px 16px 0; }
+  .meal-header { padding: 10px 16px 0; display:flex; justify-content:space-between; gap:12px; align-items:center; }
   .meal-time { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-family: sans-serif; }
-  .meal-name { font-size: 16px; font-weight: 700; color: var(--deep); margin: 3px 0 6px; }
-  .meal-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
+  .meal-kcal { font-size: 12px; color: var(--muted); font-family: sans-serif; font-weight: 700; }
+  .meal-name { font-size: 16px; font-weight: 700; color: var(--deep); margin: 3px 16px 6px; }
+  .meal-desc { font-size: 13px; color: var(--muted); font-family: sans-serif; line-height: 1.55; padding: 0 16px 8px; }
+  .badge-row { display:flex; flex-wrap:wrap; gap:6px; padding: 0 16px 14px; }
   .badge { font-size: 11px; padding: 2px 9px; border-radius: 12px; font-family: sans-serif; font-weight: 600; }
-  .badge-p { background: #E1F5EE; color: #085041; }
-  .badge-l { background: #EAF3DE; color: #27500A; }
-  .badge-f { background: #FAEEDA; color: #633806; }
-  .badge-g { background: #EEEDFE; color: #3C3489; }
-  .badge-s { background: #E6F1FB; color: #0C447C; }
-  .meal-detail { font-size: 13px; color: var(--muted); font-family: sans-serif; line-height: 1.55; padding: 0 16px 14px; }
-  .macros-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--border); }
-  .macro-cell { text-align: center; padding: 10px 8px; border-right: 1px solid var(--border); }
-  .macro-cell:last-child { border-right: none; }
-  .macro-val { font-size: 16px; font-weight: 700; color: var(--deep); }
-  .macro-label { font-size: 10px; color: var(--muted); font-family: sans-serif; margin-top: 1px; }
-  .tip-box { margin: 10px 16px 0; background: var(--teal-light); border-radius: 12px; padding: 12px 14px; font-size: 12px; color: var(--teal); font-family: sans-serif; line-height: 1.5; border-left: 3px solid var(--teal); }
-  .principes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 16px 0; }
-  .principe { background: var(--surface); border-radius: 12px; padding: 12px 14px; border: 1px solid var(--border); font-size: 12px; color: var(--muted); font-family: sans-serif; line-height: 1.45; }
-  .principe strong { display: block; color: var(--deep); font-size: 13px; margin-bottom: 3px; }
+  .badge.green { background: #E1F5EE; color: #085041; }
+  .badge.deep { background: #E6EEF2; color: #1A3A4A; }
+  .badge.sand { background: #F2EBDD; color: #7A5C20; }
+  .badge.terra { background: #FAE6DE; color: #A64B1E; }
 
-  /* EMPTY */
   .empty { text-align: center; padding: 32px 20px; font-family: sans-serif; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
-  /* JOURNAL */
   .bilan-bar { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; margin: 12px 16px 0; }
   .bilan-cell { background: var(--surface); border-radius: 12px; padding: 10px 8px; text-align: center; border: 1px solid var(--border); }
   .bilan-val { font-size: 18px; font-weight: 700; color: var(--deep); line-height: 1; }
@@ -168,11 +146,11 @@
   .date-nav-btn { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 18px; cursor: pointer; color: var(--deep); }
   .date-nav-label { font-size: 14px; font-family: sans-serif; font-weight: 600; color: var(--deep); }
 
-  /* INSTALLED BANNER */
   .install-banner { margin: 12px 16px 0; background: var(--deep); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
   .install-banner p { font-size: 13px; color: rgba(255,255,255,0.8); font-family: sans-serif; line-height: 1.4; }
   .install-banner button { flex: 0 0 auto; background: var(--terra); color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-family: sans-serif; font-weight: 600; cursor: pointer; }
   .install-banner .close { background: transparent; color: rgba(255,255,255,0.5); border: none; font-size: 18px; cursor: pointer; padding: 0; }
+
   .ai-btn{width:100%;padding:13px;font-size:15px;font-family:sans-serif;font-weight:600;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
   .ai-btn-analyse{background:linear-gradient(135deg,#1A3A4A,#2A7F6F);color:#fff;margin-top:10px}
   .ai-btn-bilan{background:linear-gradient(135deg,#3C3489,#6B5FD6);color:#fff;margin-top:10px}
@@ -198,7 +176,6 @@
   .cam-analyse-btn{background:linear-gradient(135deg,#1A3A4A,#2A7F6F);color:#fff}
   .cam-retake-btn{background:var(--sand);color:var(--deep)}
   .cam-result{margin-top:8px;background:var(--teal-light);border-radius:10px;padding:10px 12px;font-size:13px;font-family:sans-serif;color:var(--teal);line-height:1.5;display:none}
-
 </style>
 </head>
 <body>
@@ -240,8 +217,8 @@ const DEPART = 94;
 const OBJECTIF = 84;
 const KCAL_OBJECTIF = 1500;
 const PROT_OBJECTIF = 90;
-  const CLAUDE_API_KEY = 'VOTRE_CLE_API_ICI';
-  const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
+const CLAUDE_ENDPOINT = '/api/claude';
 
 let firebaseReady = false;
 let entries = [];
@@ -254,7 +231,7 @@ let journal = {};
 let journalDate = new Date().toISOString().slice(0, 10);
 let journalSearch = '';
 let journalPas = 0;
-  let journalMoment = 'Matin';
+let journalMoment = 'Matin';
 let pendingAliment = null;
 let pendingQty = '100';
 let deferredPrompt = null;
@@ -338,26 +315,21 @@ const ALIMENTS = [
   { nom:'Amandes (30g)', kcal:174, prot:6, gluc:5, lip:15, cat:'Oléagineux' },
   { nom:'Noix (30g)', kcal:196, prot:4, gluc:2, lip:20, cat:'Oléagineux' },
   { nom:'Huile d\'olive (1 càs)', kcal:90, prot:0, gluc:0, lip:10, cat:'Matières grasses' },
-
-  // Volaille & viande (complément)
   { nom:'Canard magret (100g)', kcal:190, prot:22, gluc:0, lip:11, cat:'Viande' },
   { nom:'Canard confit cuisse (100g)', kcal:330, prot:19, gluc:0, lip:28, cat:'Viande' },
   { nom:'Veau escalope (100g)', kcal:105, prot:22, gluc:0, lip:2, cat:'Viande' },
   { nom:'Porc filet mignon (100g)', kcal:143, prot:22, gluc:0, lip:6, cat:'Viande' },
   { nom:'Jambon cru (30g)', kcal:75, prot:7, gluc:0, lip:5, cat:'Viande' },
   { nom:'Boeuf bavette (100g)', kcal:157, prot:22, gluc:0, lip:7, cat:'Viande' },
-  // Poissons & fruits de mer
   { nom:'Anchois a l huile (30g)', kcal:62, prot:9, gluc:0, lip:3, cat:'Poisson' },
   { nom:'Crevettes cuites (100g)', kcal:99, prot:21, gluc:0, lip:1, cat:'Poisson' },
   { nom:'Moules cuites (100g)', kcal:86, prot:12, gluc:4, lip:2, cat:'Poisson' },
   { nom:'Dorade (100g)', kcal:96, prot:20, gluc:0, lip:2, cat:'Poisson' },
   { nom:'Truite (100g)', kcal:149, prot:20, gluc:0, lip:7, cat:'Poisson' },
   { nom:'Lieu noir (100g)', kcal:90, prot:19, gluc:0, lip:1, cat:'Poisson' },
-  // Oeufs
   { nom:'Oeuf dur (1)', kcal:78, prot:6, gluc:0, lip:5, cat:'Oeufs' },
   { nom:'Oeufs durs (2)', kcal:156, prot:12, gluc:1, lip:11, cat:'Oeufs' },
   { nom:'Oeufs a la coque (2)', kcal:156, prot:12, gluc:1, lip:11, cat:'Oeufs' },
-  // Laitages
   { nom:'Yaourt nature (125g)', kcal:74, prot:4, gluc:6, lip:4, cat:'Laitage' },
   { nom:'Yaourt grec 0% (125g)', kcal:75, prot:10, gluc:5, lip:0, cat:'Laitage' },
   { nom:'Mozzarella (50g)', kcal:124, prot:8, gluc:1, lip:10, cat:'Laitage' },
@@ -365,20 +337,17 @@ const ALIMENTS = [
   { nom:'Camembert (30g)', kcal:87, prot:5, gluc:0, lip:7, cat:'Laitage' },
   { nom:'Emmental (30g)', kcal:113, prot:8, gluc:0, lip:9, cat:'Laitage' },
   { nom:'Ricotta (50g)', kcal:72, prot:3, gluc:1, lip:6, cat:'Laitage' },
-  // Légumineuses
   { nom:'Haricots rouges cuits (100g)', kcal:127, prot:9, gluc:22, lip:1, cat:'Légumineuses' },
   { nom:'Haricots blancs cuits (100g)', kcal:139, prot:10, gluc:25, lip:1, cat:'Légumineuses' },
   { nom:'Edamame (100g)', kcal:122, prot:11, gluc:10, lip:5, cat:'Légumineuses' },
   { nom:'Feves cuites (100g)', kcal:110, prot:8, gluc:20, lip:1, cat:'Légumineuses' },
   { nom:'Pois casses cuits (100g)', kcal:118, prot:8, gluc:21, lip:0, cat:'Légumineuses' },
-  // Féculents
   { nom:'Boulgour cuit (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
   { nom:'Pates completes cuites (100g)', kcal:124, prot:5, gluc:25, lip:1, cat:'Féculents' },
   { nom:'Pates blanches cuites (100g)', kcal:131, prot:5, gluc:27, lip:1, cat:'Féculents' },
   { nom:'Pain de seigle (30g)', kcal:63, prot:2, gluc:12, lip:0, cat:'Féculents' },
   { nom:'Pain complet (30g)', kcal:68, prot:3, gluc:13, lip:1, cat:'Féculents' },
   { nom:'Semoule cuite (100g)', kcal:112, prot:4, gluc:23, lip:0, cat:'Féculents' },
-  // Légumes
   { nom:'Epinards (100g)', kcal:23, prot:3, gluc:1, lip:0, cat:'Légumes' },
   { nom:'Poivron rouge (100g)', kcal:31, prot:1, gluc:6, lip:0, cat:'Légumes' },
   { nom:'Champignons (100g)', kcal:22, prot:3, gluc:3, lip:0, cat:'Légumes' },
@@ -399,7 +368,6 @@ const ALIMENTS = [
   { nom:'Artichaut cuit (100g)', kcal:53, prot:3, gluc:10, lip:0, cat:'Légumes' },
   { nom:'Chou rouge (100g)', kcal:31, prot:2, gluc:7, lip:0, cat:'Légumes' },
   { nom:'Navet (100g)', kcal:28, prot:1, gluc:6, lip:0, cat:'Légumes' },
-  // Fruits
   { nom:'Orange (150g)', kcal:72, prot:1, gluc:18, lip:0, cat:'Fruits' },
   { nom:'Poire (150g)', kcal:85, prot:1, gluc:22, lip:0, cat:'Fruits' },
   { nom:'Kiwi (80g)', kcal:43, prot:1, gluc:10, lip:0, cat:'Fruits' },
@@ -413,37 +381,31 @@ const ALIMENTS = [
   { nom:'Framboises (100g)', kcal:52, prot:1, gluc:12, lip:1, cat:'Fruits' },
   { nom:'Cerise (100g)', kcal:63, prot:1, gluc:16, lip:0, cat:'Fruits' },
   { nom:'Abricot (100g)', kcal:48, prot:1, gluc:11, lip:0, cat:'Fruits' },
-  // Oléagineux
   { nom:'Graines de chia (10g)', kcal:49, prot:2, gluc:4, lip:3, cat:'Oléagineux' },
   { nom:'Graines de courge (20g)', kcal:112, prot:6, gluc:3, lip:9, cat:'Oléagineux' },
   { nom:'Noix de cajou (30g)', kcal:164, prot:5, gluc:9, lip:13, cat:'Oléagineux' },
   { nom:'Noisettes (30g)', kcal:188, prot:4, gluc:5, lip:18, cat:'Oléagineux' },
   { nom:'Cacahuetes (30g)', kcal:171, prot:8, gluc:5, lip:15, cat:'Oléagineux' },
-  // Matières grasses
   { nom:'Olives noires (30g)', kcal:45, prot:0, gluc:1, lip:5, cat:'Matières grasses' },
   { nom:'Olives vertes (30g)', kcal:36, prot:0, gluc:0, lip:4, cat:'Matières grasses' },
   { nom:'Tahini sesame (15g)', kcal:86, prot:3, gluc:3, lip:8, cat:'Matières grasses' },
   { nom:'Huile de colza (1 cas)', kcal:90, prot:0, gluc:0, lip:10, cat:'Matières grasses' },
-  // Condiments
   { nom:'Moutarde (15g)', kcal:13, prot:1, gluc:1, lip:1, cat:'Condiments' },
   { nom:'Sauce soja (15ml)', kcal:9, prot:1, gluc:1, lip:0, cat:'Condiments' },
   { nom:'Houmous (30g)', kcal:66, prot:2, gluc:5, lip:4, cat:'Condiments' },
   { nom:'Harissa (5g)', kcal:12, prot:0, gluc:2, lip:1, cat:'Condiments' },
   { nom:'Concentre de tomates (20g)', kcal:18, prot:1, gluc:4, lip:0, cat:'Condiments' },
-  // Soupes
   { nom:'Soupe legumes maison (250ml)', kcal:60, prot:2, gluc:10, lip:1, cat:'Soupes' },
   { nom:'Soupe lentilles (250ml)', kcal:150, prot:9, gluc:22, lip:2, cat:'Soupes' },
   { nom:'Veloute butternut (250ml)', kcal:110, prot:2, gluc:18, lip:3, cat:'Soupes' },
   { nom:'Gaspacho tomates (250ml)', kcal:75, prot:2, gluc:12, lip:3, cat:'Soupes' },
   { nom:'Veloute courgette (250ml)', kcal:80, prot:2, gluc:10, lip:3, cat:'Soupes' },
-  // Boissons
   { nom:'Lait demi-ecreme (200ml)', kcal:92, prot:6, gluc:10, lip:4, cat:'Boissons' },
   { nom:'Jus orange presse (200ml)', kcal:90, prot:2, gluc:20, lip:0, cat:'Boissons' },
   { nom:'Vin rouge (150ml)', kcal:127, prot:0, gluc:4, lip:0, cat:'Boissons' },
   { nom:'Vin blanc sec (150ml)', kcal:120, prot:0, gluc:3, lip:0, cat:'Boissons' },
   { nom:'Biere (330ml)', kcal:139, prot:1, gluc:13, lip:0, cat:'Boissons' },
   { nom:'Cafe sans sucre', kcal:2, prot:0, gluc:0, lip:0, cat:'Boissons' },
-  // Festin
   { nom:'Pizza (1 part 100g)', kcal:266, prot:11, gluc:33, lip:10, cat:'Festin' },
   { nom:'Pates bolognaise (300g)', kcal:450, prot:25, gluc:55, lip:12, cat:'Festin' },
   { nom:'Chocolat noir 70% (20g)', kcal:114, prot:2, gluc:10, lip:8, cat:'Festin' },
@@ -453,7 +415,6 @@ const ALIMENTS = [
   { nom:'Burger (200g)', kcal:490, prot:28, gluc:40, lip:22, cat:'Festin' }
 ];
 
-const app = document.getElementById('app');
 const pageTitle = document.getElementById('page-title');
 const pageSub = document.getElementById('page-sub');
 const main = document.getElementById('main');
@@ -542,8 +503,8 @@ async function saveEntries() {
 async function loadJournal(dateKey) {
   if (!firebaseReady) {
     journal[dateKey] = safeLocalGet('journal_' + dateKey, []);
-    journal[dateKey+'_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
-    if (dateKey === journalDate) journalPas = journal[dateKey+'_pas'];
+    journal[dateKey + '_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
+    if (dateKey === journalDate) journalPas = journal[dateKey + '_pas'];
     return;
   }
   try {
@@ -551,21 +512,21 @@ async function loadJournal(dateKey) {
     const snap = await getDoc(ref);
     journal[dateKey] = snap.exists() ? (snap.data().items || []) : [];
     const pas = snap.exists() ? (snap.data().pas || 0) : 0;
-    journal[dateKey+'_pas'] = pas;
+    journal[dateKey + '_pas'] = pas;
     if (dateKey === journalDate) journalPas = pas;
     safeLocalSet('journal_' + dateKey, journal[dateKey]);
     safeLocalSet('journal_pas_' + dateKey, pas);
   } catch (e) {
     console.error('Journal load error', e);
     journal[dateKey] = safeLocalGet('journal_' + dateKey, []);
-    journal[dateKey+'_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
-    if (dateKey === journalDate) journalPas = journal[dateKey+'_pas'];
+    journal[dateKey + '_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
+    if (dateKey === journalDate) journalPas = journal[dateKey + '_pas'];
   }
 }
 
 async function saveJournalDay(dateKey) {
   const items = journal[dateKey] || [];
-  const pas = dateKey === journalDate ? journalPas : (journal[dateKey+'_pas'] || 0);
+  const pas = dateKey === journalDate ? journalPas : (journal[dateKey + '_pas'] || 0);
   safeLocalSet('journal_' + dateKey, items);
   safeLocalSet('journal_pas_' + dateKey, pas);
   if (!firebaseReady) return;
@@ -697,9 +658,9 @@ function viewHome() {
       ${firebaseReady ? 'Synchronisé avec Firebase.' : 'Mode local actif.'}
     </div>
     ${window._showInstall ? `<button class="btn-secondary" style="margin-top:12px" onclick="installPWA()">Installer l’app</button>` : ''}
-  
     <div style="margin:10px 0 0"><button class="ai-btn ai-btn-bilan" onclick="bilanHebdo()">📊 Bilan IA de la semaine</button></div>
-    <div class="ai-response" id="ai-response-bilan" style="display:none"><div id="ai-bilan"></div></div></div>`;
+    <div class="ai-response" id="ai-response-bilan" style="display:none"><div id="ai-bilan"></div></div>
+  </div>`;
 }
 
 function viewSaisie() {
@@ -827,8 +788,7 @@ async function shiftJournalDate(delta) {
     showLoader('Chargement du journal…');
     await loadJournal(journalDate);
   } else {
-    // Restaurer les pas du jour navigué
-    journalPas = journal[journalDate+'_pas'] || 0;
+    journalPas = journal[journalDate + '_pas'] || 0;
   }
   render();
 }
@@ -838,7 +798,7 @@ async function addAlimentToJournal() {
   if (!pendingAliment || isNaN(qty) || qty <= 0) return;
   if (!journal[journalDate]) journal[journalDate] = [];
   journal[journalDate].push({
-    id: Date.now(),
+    id: Date.now() + Math.random(),
     nom: pendingAliment.nom,
     kcal: pendingAliment.kcal,
     prot: pendingAliment.prot,
@@ -914,7 +874,7 @@ function viewJournal() {
       <div style="margin-bottom:10px">
         <label class="field-label">Moment du repas</label>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${moments.map(m => `<button id="mbtn-${m}" style="padding:6px 12px;border-radius:20px;font-size:12px;font-family:sans-serif;border:1.5px solid ${journalMoment===m?'var(--teal)':'var(--border)'};background:${journalMoment===m?'var(--teal-light)':'transparent'};color:${journalMoment===m?'var(--teal)':'var(--muted)'};cursor:pointer;font-weight:${journalMoment===m?700:400}" onclick="setMoment('${m}')">${momentIcons[m]} ${m}</button>`).join('')}
+          ${moments.map(m => `<button style="padding:6px 12px;border-radius:20px;font-size:12px;font-family:sans-serif;border:1.5px solid ${journalMoment===m?'var(--teal)':'var(--border)'};background:${journalMoment===m?'var(--teal-light)':'transparent'};color:${journalMoment===m?'var(--teal)':'var(--muted)'};cursor:pointer;font-weight:${journalMoment===m?700:400}" onclick="setMoment('${m}')">${momentIcons[m]} ${m}</button>`).join('')}
         </div>
       </div>
       <div class="qty-row">
@@ -940,6 +900,7 @@ function viewJournal() {
       <div class="bilan-cell"><div class="bilan-val">${bilan.gluc}g</div><div class="bilan-label">glucides</div></div>
       <div class="bilan-cell"><div class="bilan-val">${bilan.lip}g</div><div class="bilan-label">lipides</div></div>
     </div>
+
     <div class="bilan-bar" style="margin-top:8px">
       <div class="bilan-cell" style="grid-column:span 2">
         <div style="display:flex;align-items:center;gap:10px">
@@ -989,6 +950,7 @@ function viewJournal() {
 
     <div style="margin:10px 16px 0"><button class="ai-btn ai-btn-analyse" onclick="analyseJour()">🤖 Analyse ma journée</button></div>
     <div class="ai-response" id="ai-response-analyse" style="display:none"><div id="ai-analyse"></div></div>
+
     <input type="file" id="cam-file-input" accept="image/*" capture="environment" style="display:none" onchange="onCamFileSelected(this)">
     <div class="cam-wrap">
       <div class="cam-btn-row">
@@ -1003,7 +965,11 @@ function viewJournal() {
         <div class="cam-result" id="cam-result"></div>
       </div>
     </div>
-    <div class="ai-saisie-wrap"><textarea class="ai-saisie-input" id="ai-saisie-input" rows="3" placeholder="Décris ce que tu as mangé..."></textarea><button class="ai-saisie-submit" id="ai-saisie-btn" onclick="saisieNaturelle()">✨ Ajouter au journal</button></div>
+
+    <div class="ai-saisie-wrap">
+      <textarea class="ai-saisie-input" id="ai-saisie-input" rows="3" placeholder="Décris ce que tu as mangé..."></textarea>
+      <button class="ai-saisie-submit" id="ai-saisie-btn" onclick="saisieNaturelle()">✨ Ajouter au journal</button>
+    </div>
     <div style="height:16px"></div>
     ${modalHtml}
   `;
@@ -1045,10 +1011,6 @@ function render() {
   const views = { home: viewHome, saisie: viewSaisie, historique: viewHistorique, repas: viewRepas, journal: viewJournal };
   main.innerHTML = views[currentView]();
   main.scrollTop = 0;
-  if (currentView === 'journal') {
-    const inp = document.getElementById('journal-search');
-    if (inp) inp.focus();
-  }
 }
 
 window.addEventListener('beforeinstallprompt', e => {
@@ -1069,348 +1031,313 @@ function installPWA() {
 
 function updatePas(val) {
   journalPas = parseInt(val) || 0;
-  journal[journalDate+'_pas'] = journalPas;
+  journal[journalDate + '_pas'] = journalPas;
   saveJournalDay(journalDate);
-  // Mise à jour ciblée sans re-render (évite la fermeture du clavier mobile)
   const bilan = getJournalBilan(journalDate);
   const kcalBrulees = Math.round(journalPas * 0.04);
   const budget = KCAL_OBJECTIF + kcalBrulees;
   const restant = budget - bilan.kcal;
   const el = document.getElementById('pas-bilan');
-  if (el) {
-    el.innerHTML = '+' + kcalBrulees + ' kcal brûlées · Budget total : ' + budget + ' kcal';
-  }
+  if (el) el.innerHTML = '+' + kcalBrulees + ' kcal brûlées · Budget total : ' + budget + ' kcal';
   const elRestant = document.getElementById('pas-restant');
   if (elRestant) {
     elRestant.textContent = Math.abs(restant);
     elRestant.className = 'bilan-val ' + (restant >= 0 ? 'ok' : 'over');
   }
   const elLabel = document.getElementById('pas-restant-label');
-  if (elLabel) {
-    elLabel.textContent = restant >= 0 ? 'kcal restantes' : 'kcal dépassées';
+  if (elLabel) elLabel.textContent = restant >= 0 ? 'kcal restantes' : 'kcal dépassées';
+}
+
+let aiCache = {};
+
+async function callClaude(system, user, maxTokens = 600) {
+  const res = await fetch(CLAUDE_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: maxTokens,
+      system,
+      messages: [{ role: 'user', content: user }]
+    })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || ('HTTP ' + res.status));
+  }
+  return data?.content?.[0]?.text || '';
+}
+
+async function callClaudeVision(system, text, base64Data, mediaType = 'image/jpeg', maxTokens = 600) {
+  const res = await fetch(CLAUDE_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: CLAUDE_MODEL,
+      max_tokens: maxTokens,
+      system,
+      messages: [{
+        role: 'user',
+        content: [
+          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
+          { type: 'text', text }
+        ]
+      }]
+    })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || ('HTTP ' + res.status));
+  }
+  return data?.content?.[0]?.text || '';
+}
+
+function profileCtx() {
+  return 'Profil: Sylvain, 55 ans, 174cm, 94kg depart, objectif 84kg au 27 juillet 2026. '
+    + 'Regime mediterraneen 1500 kcal/j, 90g proteines/j minimum. Sous Kardegic. '
+    + 'Festin vendredi soir. Objectif 7500 pas/jour.';
+}
+
+function journalCtx(dateKey) {
+  const items = getJournalItems(dateKey);
+  const b = getJournalBilan(dateKey);
+  const pas = journal[dateKey + '_pas'] || 0;
+  const budget = KCAL_OBJECTIF + Math.round(pas * 0.04);
+  if (items.length === 0) return 'Journee ' + dateLabel(dateKey) + ': aucun aliment enregistre. Budget: ' + budget + ' kcal, ' + pas + ' pas.';
+  const repas = items.map(function(i) {
+    return i.moment + ': ' + i.nom + ' (' + Math.round(i.kcal * i.qty / 100) + ' kcal, ' + Math.round(i.prot * i.qty / 100) + 'g prot)';
+  }).join(' / ');
+  return 'Journee ' + dateLabel(dateKey) + ': ' + repas + '. Bilan: ' + b.kcal + '/' + budget + ' kcal, ' + b.prot + 'g prot/' + PROT_OBJECTIF + 'g objectif, ' + pas + ' pas.';
+}
+
+function setAiEl(id, content) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = content;
+}
+
+function aiLoading(id, msg) {
+  setAiEl(id, '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>' + msg + '</span></div>');
+}
+
+async function analyseJour() {
+  const k = 'analyse_' + journalDate;
+  const el = document.getElementById('ai-response-analyse');
+  if (el) el.style.display = 'block';
+  if (aiCache[k]) { setAiEl('ai-analyse', aiCache[k]); return; }
+  aiLoading('ai-analyse', 'Claude analyse ta journee...');
+  try {
+    const system = profileCtx() + ' Tu es coach nutritionnel direct et bienveillant. Reponds en francais en 4-6 phrases, pas de liste, pas de mise en garde medicale.';
+    const user = journalCtx(journalDate) + ' Analyse: ce qui est bien, ce qui manque, une suggestion concrete pour demain.';
+    const txt = await callClaude(system, user);
+    const content = '<div class="ai-response-header"><span>🤖</span><span class="ai-response-title">Analyse Claude</span></div><div class="ai-response-body">' + txt + '</div>';
+    aiCache[k] = content;
+    setAiEl('ai-analyse', content);
+  } catch(e) {
+    setAiEl('ai-analyse', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible à /api/claude. Vérifie la fonction Vercel et la variable ANTHROPIC_API_KEY.</div>');
   }
 }
 
-
-  // === LEVIERS IA ===
-  let aiCache = {};
-
-  async function callClaude(system, user) {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 600,
-        system: system,
-        messages: [{ role: 'user', content: user }]
-      })
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const d = await res.json();
-    return d.content[0].text;
-  }
-
-  function profileCtx() {
-    return 'Profil: Sylvain, 55 ans, 174cm, 94kg depart, objectif 84kg au 27 juillet 2026. '
-      + 'Regime mediterraneen 1500 kcal/j, 90g proteines/j minimum. Sous Kardegic. '
-      + 'Festin vendredi soir. Objectif 7500 pas/jour.';
-  }
-
-  function journalCtx(dateKey) {
-    const items = getJournalItems(dateKey);
-    const b = getJournalBilan(dateKey);
-    const pas = journal[dateKey + '_pas'] || 0;
-    const budget = KCAL_OBJECTIF + Math.round(pas * 0.04);
-    if (items.length === 0) return 'Journee ' + dateLabel(dateKey) + ': aucun aliment enregistre. Budget: ' + budget + ' kcal, ' + pas + ' pas.';
-    const repas = items.map(function(i) {
-      return i.moment + ': ' + i.nom + ' (' + Math.round(i.kcal * i.qty / 100) + ' kcal, ' + Math.round(i.prot * i.qty / 100) + 'g prot)';
-    }).join(' / ');
-    return 'Journee ' + dateLabel(dateKey) + ': ' + repas + '. Bilan: ' + b.kcal + '/' + budget + ' kcal, ' + b.prot + 'g prot/' + PROT_OBJECTIF + 'g objectif, ' + pas + ' pas.';
-  }
-
-  function setAiEl(id, content) {
-    var el = document.getElementById(id);
-    if (el) el.innerHTML = content;
-  }
-
-  function aiLoading(id, msg) {
-    setAiEl(id, '<div class="ai-loading"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span>' + msg + '</span></div>');
-  }
-
-  // LEVIER 1 — Analyse du jour
-  async function analyseJour() {
-    var k = 'analyse_' + journalDate;
-    var el = document.getElementById('ai-response-analyse');
-    if (el) el.style.display = 'block';
-    if (aiCache[k]) { setAiEl('ai-analyse', aiCache[k]); return; }
-    aiLoading('ai-analyse', 'Claude analyse ta journee...');
-    try {
-      var system = profileCtx() + ' Tu es coach nutritionnel direct et bienveillant. Reponds en francais en 4-6 phrases, pas de liste, pas de mise en garde medicale.';
-      var user = journalCtx(journalDate) + ' Analyse: ce qui est bien, ce qui manque, une suggestion concrete pour demain.';
-      var txt = await callClaude(system, user);
-      var content = '<div class="ai-response-header"><span>🤖</span><span class="ai-response-title">Analyse Claude</span></div><div class="ai-response-body">' + txt + '</div>';
-      aiCache[k] = content;
-      setAiEl('ai-analyse', content);
-    } catch(e) {
-      setAiEl('ai-analyse', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible. Verifie ta cle API.</div>');
+async function saisieNaturelle() {
+  const input = document.getElementById('ai-saisie-input');
+  const btn = document.getElementById('ai-saisie-btn');
+  if (!input || !input.value.trim()) return;
+  const texte = input.value.trim();
+  if (btn) btn.textContent = 'Analyse...';
+  try {
+    const heure = new Date().getHours();
+    const moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
+    const system = 'Tu es assistant nutritionnel. Extrais les aliments et estime les quantites. '
+      + 'Reponds UNIQUEMENT en JSON valide sans markdown ni backticks: '
+      + '{"items":[{"nom":"...","qty":100,"kcal":0,"prot":0,"gluc":0,"lip":0,"moment":"' + moment + '"}]}. '
+      + 'Utilise des valeurs nutritionnelles realistes pour 100g.';
+    const resp = await callClaude(system, texte);
+    let clean = resp.trim();
+    if (clean.indexOf('{') > 0) clean = clean.slice(clean.indexOf('{'));
+    if (clean.lastIndexOf('}') < clean.length - 1) clean = clean.slice(0, clean.lastIndexOf('}') + 1);
+    const parsed = JSON.parse(clean);
+    if (parsed.items && parsed.items.length > 0) {
+      if (!journal[journalDate]) journal[journalDate] = [];
+      parsed.items.forEach(function(item) {
+        journal[journalDate].push({
+          id: Date.now() + Math.random(),
+          nom: item.nom,
+          kcal: item.kcal || 0,
+          prot: item.prot || 0,
+          gluc: item.gluc || 0,
+          lip: item.lip || 0,
+          qty: item.qty || 100,
+          moment: item.moment || moment
+        });
+      });
+      await saveJournalDay(journalDate);
+      input.value = '';
+      if (btn) btn.textContent = 'Ajouté !';
+      setTimeout(function() { if (btn) btn.textContent = 'Ajouter au journal'; }, 1500);
+      const scrollY = main.scrollTop;
+      main.innerHTML = viewJournal();
+      main.scrollTop = scrollY;
+    } else {
+      if (btn) btn.textContent = 'Non reconnu - reessaie';
+      setTimeout(function() { if (btn) btn.textContent = 'Ajouter au journal'; }, 2000);
+    }
+  } catch(e) {
+    if (btn) {
+      btn.textContent = 'Erreur';
+      setTimeout(function(){ btn.textContent = 'Ajouter au journal'; }, 2000);
     }
   }
+}
 
-  // LEVIER 3 — Saisie naturelle
-  async function saisieNaturelle() {
-    var input = document.getElementById('ai-saisie-input');
-    var btn = document.getElementById('ai-saisie-btn');
-    if (!input || !input.value.trim()) return;
-    var texte = input.value.trim();
-    if (btn) btn.textContent = 'Analyse...';
-    try {
-      var heure = new Date().getHours();
-      var moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
-      var system = 'Tu es assistant nutritionnel. Extrais les aliments et estime les quantites. '
-        + 'Reponds UNIQUEMENT en JSON valide sans markdown ni backticks: '
-        + '{"items":[{"nom":"...","qty":100,"kcal":0,"prot":0,"gluc":0,"lip":0,"moment":"' + moment + '"}]}. '
-        + 'Utilise des valeurs nutritionnelles realistes pour 100g.';
-      var resp = await callClaude(system, texte);
-      var clean = resp.trim();
-      if (clean.indexOf('{') > 0) clean = clean.slice(clean.indexOf('{'));
-      if (clean.lastIndexOf('}') < clean.length - 1) clean = clean.slice(0, clean.lastIndexOf('}') + 1);
-      var parsed = JSON.parse(clean);
-      if (parsed.items && parsed.items.length > 0) {
-        if (!journal[journalDate]) journal[journalDate] = [];
-        parsed.items.forEach(function(item) {
-          journal[journalDate].push({
-            id: Date.now() + Math.random(),
-            nom: item.nom,
-            kcal: item.kcal || 0,
-            prot: item.prot || 0,
-            gluc: item.gluc || 0,
-            lip: item.lip || 0,
-            qty: item.qty || 100,
-            moment: item.moment || moment
-          });
+async function bilanHebdo() {
+  const k = 'bilan_' + getWeekKey();
+  const el = document.getElementById('ai-response-bilan');
+  if (el) el.style.display = 'block';
+  if (aiCache[k]) { setAiEl('ai-bilan', aiCache[k]); return; }
+  aiLoading('ai-bilan', 'Claude analyse ta semaine...');
+  try {
+    const days = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dk = d.toISOString().slice(0, 10);
+      if (!journal[dk]) await loadJournal(dk);
+      const b = getJournalBilan(dk);
+      const pas = journal[dk + '_pas'] || 0;
+      if (b.kcal > 0 || pas > 0) days.push(dateLabel(dk) + ': ' + b.kcal + ' kcal, ' + b.prot + 'g prot, ' + pas + ' pas');
+    }
+    const pesee = entries[0] ? 'Derniere pesee: ' + entries[0].poids + ' kg' : 'Pas de pesee';
+    const system = profileCtx() + ' Coach nutritionnel. Bilan semaine en 5-7 phrases directes. Un seul ajustement prioritaire. Pas de liste, pas de mise en garde medicale. En francais.';
+    const user = pesee + '. Semaine: ' + (days.length > 0 ? days.join(', ') : 'Pas de donnees') + '. Fais le bilan et donne une recommandation concrete pour la semaine prochaine.';
+    const resp = await callClaude(system, user);
+    const content = '<div class="ai-response-header"><span>📊</span><span class="ai-response-title">Bilan hebdomadaire</span></div><div class="ai-response-body">' + resp + '</div>';
+    aiCache[k] = content;
+    setAiEl('ai-bilan', content);
+  } catch(e) {
+    setAiEl('ai-bilan', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible à /api/claude. Vérifie la fonction Vercel et la variable ANTHROPIC_API_KEY.</div>');
+  }
+}
+
+let camImageB64 = null;
+let camImageMime = 'image/jpeg';
+
+function openCamera() {
+  document.getElementById('cam-file-input').click();
+}
+
+function onCamFileSelected(input) {
+  const file = input.files[0];
+  if (!file) return;
+  camImageMime = file.type || 'image/jpeg';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    camImageB64 = dataUrl.split(',')[1];
+    const img = document.getElementById('cam-preview-img');
+    const wrap = document.getElementById('cam-preview-wrap');
+    const result = document.getElementById('cam-result');
+    if (img) img.src = dataUrl;
+    if (wrap) wrap.style.display = 'block';
+    if (result) result.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function retakePhoto() {
+  camImageB64 = null;
+  const wrap = document.getElementById('cam-preview-wrap');
+  const result = document.getElementById('cam-result');
+  if (wrap) wrap.style.display = 'none';
+  if (result) result.style.display = 'none';
+  document.getElementById('cam-file-input').value = '';
+}
+
+async function analysePhoto() {
+  if (!camImageB64) return;
+  const btn = document.getElementById('cam-analyse-btn');
+  const result = document.getElementById('cam-result');
+  if (btn) btn.textContent = 'Analyse...';
+  if (result) { result.style.display = 'block'; result.textContent = 'Claude analyse la photo...'; }
+
+  try {
+    const heure = new Date().getHours();
+    const moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
+    const system = 'Tu es un assistant nutritionnel expert. On te montre une photo d un plat ou d aliments. '
+      + 'Identifie les aliments visibles, estime les quantites en grammes de facon realiste. '
+      + 'Reponds UNIQUEMENT en JSON valide sans markdown ni backticks: '
+      + '{"description":"description courte du plat","items":[{"nom":"...","qty":100,"kcal":0,"prot":0,"gluc":0,"lip":0,"moment":"' + moment + '"}]}. '
+      + 'Valeurs nutritionnelles pour 100g. Maximum 6 items. Si tu ne vois pas d aliments, reponds {"description":"Image non reconnue","items":[]}.';
+
+    const txtRaw = await callClaudeVision(
+      system,
+      'Identifie les aliments dans cette photo et donne-moi les valeurs nutritionnelles.',
+      camImageB64,
+      camImageMime,
+      600
+    );
+
+    let txt = txtRaw.trim();
+    if (txt.indexOf('{') > 0) txt = txt.slice(txt.indexOf('{'));
+    if (txt.lastIndexOf('}') < txt.length - 1) txt = txt.slice(0, txt.lastIndexOf('}') + 1);
+    const parsed = JSON.parse(txt);
+
+    if (result) {
+      result.style.display = 'block';
+      result.style.background = 'var(--teal-light)';
+      result.style.color = 'var(--teal)';
+      result.textContent = parsed.description || 'Analyse terminée';
+    }
+
+    if (parsed.items && parsed.items.length > 0) {
+      if (!journal[journalDate]) journal[journalDate] = [];
+      parsed.items.forEach(function(item) {
+        journal[journalDate].push({
+          id: Date.now() + Math.random(),
+          nom: item.nom,
+          kcal: item.kcal || 0,
+          prot: item.prot || 0,
+          gluc: item.gluc || 0,
+          lip: item.lip || 0,
+          qty: item.qty || 100,
+          moment: item.moment || moment
         });
-        await saveJournalDay(journalDate);
-        input.value = '';
-        if (btn) btn.textContent = 'Ajoute !';
-        setTimeout(function() { if (btn) btn.textContent = 'Ajouter au journal'; }, 1500);
-        var main = document.getElementById('main');
-        var scrollY = main.scrollTop;
+      });
+      await saveJournalDay(journalDate);
+      if (btn) btn.textContent = 'Ajouté !';
+      setTimeout(function() {
+        retakePhoto();
+        const scrollY = main.scrollTop;
         main.innerHTML = viewJournal();
         main.scrollTop = scrollY;
-      } else {
-        if (btn) btn.textContent = 'Non reconnu - reessaie';
-        setTimeout(function() { if (btn) btn.textContent = 'Ajouter au journal'; }, 2000);
-      }
-    } catch(e) {
-      if (btn) { btn.textContent = 'Erreur'; setTimeout(function(){ btn.textContent = 'Ajouter au journal'; }, 2000); }
-    }
-  }
-
-  // LEVIER 4 — Bilan hebdo
-  async function bilanHebdo() {
-    var k = 'bilan_' + getWeekKey();
-    var el = document.getElementById('ai-response-bilan');
-    if (el) el.style.display = 'block';
-    if (aiCache[k]) { setAiEl('ai-bilan', aiCache[k]); return; }
-    aiLoading('ai-bilan', 'Claude analyse ta semaine...');
-    try {
-      var days = [];
-      for (var i = 6; i >= 0; i--) {
-        var d = new Date(); d.setDate(d.getDate() - i);
-        var dk = d.toISOString().slice(0, 10);
-        if (!journal[dk]) await loadJournal(dk);
-        var b = getJournalBilan(dk);
-        var pas = journal[dk + '_pas'] || 0;
-        if (b.kcal > 0 || pas > 0) days.push(dateLabel(dk) + ': ' + b.kcal + ' kcal, ' + b.prot + 'g prot, ' + pas + ' pas');
-      }
-      var pesee = entries[0] ? 'Derniere pesee: ' + entries[0].poids + ' kg' : 'Pas de pesee';
-      var system = profileCtx() + ' Coach nutritionnel. Bilan semaine en 5-7 phrases directes. Un seul ajustement prioritaire. Pas de liste, pas de mise en garde medicale. En francais.';
-      var user = pesee + '. Semaine: ' + (days.length > 0 ? days.join(', ') : 'Pas de donnees') + '. Fais le bilan et donne une recommandation concrete pour la semaine prochaine.';
-      var resp = await callClaude(system, user);
-      var content = '<div class="ai-response-header"><span>📊</span><span class="ai-response-title">Bilan hebdomadaire</span></div><div class="ai-response-body">' + resp + '</div>';
-      aiCache[k] = content;
-      setAiEl('ai-bilan', content);
-    } catch(e) {
-      setAiEl('ai-bilan', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible. Verifie ta cle API.</div>');
-    }
-  }
-
-
-
-  
-  // === LEVIER PHOTO — Reconnaissance visuelle ===
-  let camImageB64 = null;
-  let camImageMime = 'image/jpeg';
-
-  function openCamera() {
-    document.getElementById('cam-file-input').click();
-  }
-
-  function onCamFileSelected(input) {
-    var file = input.files[0];
-    if (!file) return;
-    camImageMime = file.type || 'image/jpeg';
-    var reader = new FileReader();
-    reader.onload = function(e) {
-      var dataUrl = e.target.result;
-      camImageB64 = dataUrl.split(',')[1];
-      var img = document.getElementById('cam-preview-img');
-      var wrap = document.getElementById('cam-preview-wrap');
-      var result = document.getElementById('cam-result');
-      if (img) img.src = dataUrl;
-      if (wrap) wrap.style.display = 'block';
-      if (result) result.style.display = 'none';
-    };
-    reader.readAsDataURL(file);
-  }
-
-  function retakePhoto() {
-    camImageB64 = null;
-    var wrap = document.getElementById('cam-preview-wrap');
-    var result = document.getElementById('cam-result');
-    if (wrap) wrap.style.display = 'none';
-    if (result) result.style.display = 'none';
-    document.getElementById('cam-file-input').value = '';
-  }
-
-  async function analysePhoto() {
-    if (!camImageB64) return;
-    var btn = document.getElementById('cam-analyse-btn');
-    var result = document.getElementById('cam-result');
-    if (btn) btn.textContent = 'Analyse...';
-    if (result) { result.style.display = 'block'; result.textContent = 'Claude analyse la photo...'; }
-
-    try {
-      var heure = new Date().getHours();
-      var moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
-      var system = 'Tu es un assistant nutritionnel expert. On te montre une photo d un plat ou d aliments. '
-        + 'Identifie les aliments visibles, estime les quantites en grammes de facon realiste. '
-        + 'Reponds UNIQUEMENT en JSON valide sans markdown ni backticks: '
-        + '{"description":"description courte du plat","items":[{"nom":"...","qty":100,"kcal":0,"prot":0,"gluc":0,"lip":0,"moment":"' + moment + '"}]}. '
-        + 'Valeurs nutritionnelles pour 100g. Maximum 6 items. Si tu ne vois pas d aliments, reponds {"description":"Image non reconnue","items":[]}.';
-
-      var res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': CLAUDE_API_KEY,
-          'anthropic-version': '2023-06-01',
-          'anthropic-dangerous-direct-browser-access': 'true'
-        },
-        body: JSON.stringify({
-          model: CLAUDE_MODEL,
-          max_tokens: 600,
-          system: system,
-          messages: [{
-            role: 'user',
-            content: [
-              { type: 'image', source: { type: 'base64', media_type: camImageMime, data: camImageB64 } },
-              { type: 'text', text: 'Identifie les aliments dans cette photo et donne-moi les valeurs nutritionnelles.' }
-            ]
-          }]
-        })
-      });
-
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      var d = await res.json();
-      var txt = d.content[0].text.trim();
-      if (txt.indexOf('{') > 0) txt = txt.slice(txt.indexOf('{'));
-      if (txt.lastIndexOf('}') < txt.length - 1) txt = txt.slice(0, txt.lastIndexOf('}') + 1);
-      var parsed = JSON.parse(txt);
-
-      if (result) {
-        result.style.display = 'block';
-        result.style.background = 'var(--teal-light)';
-        result.style.color = 'var(--teal)';
-        result.textContent = parsed.description || 'Analyse terminée';
-      }
-
-      if (parsed.items && parsed.items.length > 0) {
-        if (!journal[journalDate]) journal[journalDate] = [];
-        parsed.items.forEach(function(item) {
-          journal[journalDate].push({
-            id: Date.now() + Math.random(),
-            nom: item.nom,
-            kcal: item.kcal || 0,
-            prot: item.prot || 0,
-            gluc: item.gluc || 0,
-            lip: item.lip || 0,
-            qty: item.qty || 100,
-            moment: item.moment || moment
-          });
-        });
-        await saveJournalDay(journalDate);
-        if (btn) btn.textContent = 'Ajoute !';
-        setTimeout(function() {
-          retakePhoto();
-          var main = document.getElementById('main');
-          var scrollY = main.scrollTop;
-          main.innerHTML = viewJournal();
-          main.scrollTop = scrollY;
-        }, 1800);
-      } else {
-        if (result) result.textContent = 'Aucun aliment reconnu. Essaie une photo plus nette.';
-        if (btn) btn.textContent = 'Analyser';
-      }
-    } catch(e) {
-      if (result) { result.style.background = 'var(--terra-light)'; result.style.color = 'var(--terra)'; result.textContent = 'Erreur: ' + e.message; }
+      }, 1800);
+    } else {
+      if (result) result.textContent = 'Aucun aliment reconnu. Essaie une photo plus nette.';
       if (btn) btn.textContent = 'Analyser';
     }
+  } catch(e) {
+    if (result) {
+      result.style.background = 'var(--terra-light)';
+      result.style.color = 'var(--terra)';
+      result.textContent = 'Erreur: ' + e.message;
+    }
+    if (btn) btn.textContent = 'Analyser';
   }
+}
 
-
-  window.goTo = goTo;
+window.goTo = goTo;
 window.setDay = setDay;
 window.setPas = setPas;
 window.submitForm = submitForm;
 window.renderDots = renderDots;
 window.shiftJournalDate = shiftJournalDate;
 window.updatePas = updatePas;
-  window.analyseJour = analyseJour;
-  window.saisieNaturelle = saisieNaturelle;
-  window.bilanHebdo = bilanHebdo;
-  window.openCamera = openCamera;
-  window.onCamFileSelected = onCamFileSelected;
-  window.retakePhoto = retakePhoto;
-  window.analysePhoto = analysePhoto;
+window.analyseJour = analyseJour;
+window.saisieNaturelle = saisieNaturelle;
+window.bilanHebdo = bilanHebdo;
+window.openCamera = openCamera;
+window.onCamFileSelected = onCamFileSelected;
+window.retakePhoto = retakePhoto;
+window.analysePhoto = analysePhoto;
 window.openQtyModal = openQtyModal;
 window.addAlimentToJournal = addAlimentToJournal;
 window.removeJournalItem = removeJournalItem;
-window.setMoment = setMoment;
-window.renderQtyPreview = renderQtyPreview;
-window.renderAlimentsList = renderAlimentsList;
-window.installPWA = installPWA;
-window.render = render;
-Object.defineProperty(window, 'formState', { get: () => formState, set: v => { formState = v; } });
-Object.defineProperty(window, 'journalSearch', { get: () => journalSearch, set: v => { journalSearch = v; } });
-Object.defineProperty(window, 'pendingQty', { get: () => pendingQty, set: v => { pendingQty = v; } });
-Object.defineProperty(window, 'pendingAliment', { get: () => pendingAliment, set: v => { pendingAliment = v; } });
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW registration skipped:', err));
-}
-
-showLoader('Connexion à la base de données…');
-signInAnonymously(auth)
-  .then(async () => {
-    firebaseReady = true;
-    await loadEntries();
-    if (!journal[journalDate]) await loadJournal(journalDate);
-    render();
-  })
-  .catch(async e => {
-    console.error('Auth error', e);
-    firebaseReady = false;
-    await loadEntries();
-    if (!journal[journalDate]) await loadJournal(journalDate);
-    render();
-  });
-</script>
-</body>
-</html>
+window.setMoment
