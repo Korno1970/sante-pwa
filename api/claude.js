@@ -3,16 +3,26 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') return res.status(200).end();
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
 
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
+
+  if (!apiKey) {
+    return res.status(500).json({ error: 'API key not configured' });
+  }
 
   try {
     const rawBody = await new Promise((resolve, reject) => {
       let data = '';
-      req.on('data', chunk => { data += chunk; });
+      req.on('data', chunk => {
+        data += chunk;
+      });
       req.on('end', () => resolve(data));
       req.on('error', reject);
     });
@@ -22,7 +32,7 @@ module.exports = async function handler(req, res) {
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
+        'anthropic-version': '2023-06-01'
       },
       body: rawBody
     });
@@ -30,6 +40,8 @@ module.exports = async function handler(req, res) {
     const data = await response.json();
     return res.status(response.status).json(data);
   } catch (e) {
-    return res.status(500).json({ error: e.message });
+    return res.status(500).json({
+      error: e.message || 'Internal server error'
+    });
   }
 };
