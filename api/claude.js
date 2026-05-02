@@ -1,5 +1,5 @@
 export const config = {
-  api: { bodyParser: true }
+  api: { bodyParser: false }
 };
 
 export default async function handler(req, res) {
@@ -14,6 +14,14 @@ export default async function handler(req, res) {
   if (!apiKey) return res.status(500).json({ error: 'API key not configured' });
 
   try {
+    // Lire le body brut manuellement
+    const rawBody = await new Promise((resolve, reject) => {
+      let data = '';
+      req.on('data', chunk => { data += chunk; });
+      req.on('end', () => resolve(data));
+      req.on('error', reject);
+    });
+
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
@@ -21,7 +29,7 @@ export default async function handler(req, res) {
         'x-api-key': apiKey,
         'anthropic-version': '2023-06-01',
       },
-      body: JSON.stringify(req.body)
+      body: rawBody
     });
 
     const data = await response.json();
