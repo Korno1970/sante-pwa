@@ -186,246 +186,297 @@ input[type=range] { width: 100%; accent-color: var(--green); margin-bottom: 0; }
 
 /* IA */
 .ai-box { margin: 10px 14px 0; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-.ai-head { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 10px; font-family: 'DM Mono', monospace; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-.ai-head::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--green); display: inline-block; }
-.ai-body { padding: 14px; font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; font-family: 'DM Mono', monospace; font-weight: 300; }
-.ai-loading { color: var(--muted); }
+.ai-head { padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 10px; font-family: 'DM Mono', monospace; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; }
+.ai-body { padding: 14px; font-size: 13px; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+.ai-body.ai-loading { color: var(--muted); font-style: italic; }
 
 /* CHAT */
-.chat-wrap { display: flex; flex-direction: column; gap: 0; padding: 0 14px; }
-.chat-msg { margin-bottom: 10px; }
-.chat-msg.user .bubble {
-  background: var(--green-dim); color: var(--green);
-  border-radius: 14px 14px 4px 14px; padding: 10px 13px;
-  font-size: 13px; font-family: 'DM Mono', monospace; font-weight: 400;
-  line-height: 1.5; margin-left: 30px;
+.chat-wrap { padding: 0 14px 90px; }
+.chat-msg { margin-bottom: 10px; display: flex; }
+.chat-msg.user { justify-content: flex-end; }
+.chat-msg.ai { justify-content: flex-start; }
+.bubble {
+  max-width: 85%; padding: 12px 14px;
+  border-radius: 14px; font-size: 13px; line-height: 1.6;
+  white-space: pre-wrap; word-break: break-word;
 }
-.chat-msg.ai .bubble {
-  background: var(--surface2); color: var(--text);
-  border-radius: 4px 14px 14px 14px; padding: 10px 13px;
-  font-size: 13px; font-family: 'DM Mono', monospace; font-weight: 300;
-  line-height: 1.6; margin-right: 30px; white-space: pre-wrap;
-}
-.chat-msg.ai.loading .bubble { color: var(--muted); }
+.chat-msg.user .bubble { background: var(--green); color: #0f1117; font-weight: 600; }
+.chat-msg.ai .bubble { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
+.chat-msg.ai.loading .bubble { color: var(--muted); font-style: italic; }
 .chat-input-wrap {
-  position: sticky; bottom: 0;
-  background: var(--bg); border-top: 1px solid var(--border);
-  padding: 10px 14px; display: flex; gap: 8px; align-items: flex-end;
+  position: sticky; bottom: 0; padding: 10px 14px calc(10px + var(--safe-bottom));
+  background: linear-gradient(to top, var(--bg) 70%, rgba(15,17,23,0));
+  display: flex; gap: 8px; align-items: flex-end;
 }
 .chat-input {
-  flex: 1; padding: 10px 13px; font-size: 14px;
-  border: 1px solid var(--border); border-radius: 12px;
-  background: var(--surface); color: var(--text);
-  font-family: 'DM Mono', monospace; outline: none;
-  resize: none; max-height: 100px; line-height: 1.4;
-  margin-bottom: 0;
+  flex: 1; min-height: 46px; max-height: 120px;
+  border-radius: 12px; border: 1px solid var(--border);
+  background: var(--surface2); color: var(--text);
+  padding: 12px 14px; font-size: 14px; font-family: 'Syne', sans-serif;
+  resize: none; outline: none;
 }
-.chat-input:focus { border-color: rgba(74,222,128,0.4); }
 .chat-send {
-  width: 40px; height: 40px; border-radius: 10px;
-  background: var(--green); color: #0f1117;
-  border: none; cursor: pointer; font-size: 16px;
-  display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; font-weight: 700;
+  width: 46px; height: 46px; border-radius: 12px; border: none;
+  background: var(--green); color: #0f1117; font-size: 18px; font-weight: 800;
+  cursor: pointer; flex-shrink: 0;
 }
 
-.empty { text-align: center; padding: 40px 20px; font-family: 'DM Mono', monospace; color: var(--muted); font-size: 13px; line-height: 1.6; }
+/* EMPTY */
+.empty {
+  margin: 16px 14px 0; padding: 28px 20px;
+  text-align: center; color: var(--muted); font-size: 13px; line-height: 1.7;
+  border: 1px dashed var(--border); border-radius: 14px;
+}
+
+/* SVG RING */
+svg { display: block; }
+.ring-txt { font-family: 'DM Mono', monospace; font-size: 12px; fill: var(--muted); }
+
+/* DESKTOP */
+@media (min-width: 700px) {
+  #app { border-left: 1px solid var(--border); border-right: 1px solid var(--border); }
+}
 </style>
 </head>
 <body>
-<div id="app">
-  <div class="header">
-    <div class="header-left">
-      <h1 id="pg-title">Suivi Santé</h1>
-      <p id="pg-sub">94 → 84 kg · 27 juillet 2026</p>
-    </div>
-    <div class="header-badge offline" id="fb-status">local</div>
-  </div>
-  <div class="scroll" id="main"></div>
-  <nav id="nav">
-    <button class="active" onclick="goTo('journal')" id="nav-journal">
-      <span class="ico">📋</span>Journal
-    </button>
-    <button onclick="goTo('coach')" id="nav-coach">
-      <span class="ico">🤖</span>Coach IA
-    </button>
-    <button onclick="goTo('repas')" id="nav-repas">
-      <span class="ico">🍽</span>Repas
-    </button>
-    <button onclick="goTo('pesee')" id="nav-pesee">
-      <span class="ico">⚖️</span>Pesée
-    </button>
-    <button onclick="goTo('historique')" id="nav-historique">
-      <span class="ico">📈</span>Bilan
-    </button>
-  </nav>
-</div>
+<div id="app"></div>
 
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { initializeFirestore, doc, getDoc, setDoc, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+<script>
+// ═══ CONFIG ═══
+const DEPART = 94;
+const OBJECTIF = 84;
+const DEADLINE = '2026-07-27';
+const KCAL_OBJ = 1550;
+const PROT_OBJ = 90;
 
-// ═══ FIREBASE ═══
-const fbApp = initializeApp({
-  apiKey: "AIzaSyBMtwIOSSSTIkNLh5nIDXmEH4WD-5jdGIM",
-  authDomain: "pwa---sante.firebaseapp.com",
-  projectId: "pwa---sante",
-  storageBucket: "pwa---sante.firebasestorage.app",
-  messagingSenderId: "99523195154",
-  appId: "1:99523195154:web:760668e987669a5e1303cb"
-});
-const db = initializeFirestore(fbApp, { experimentalForceLongPolling: true, useFetchStreams: false });
-const auth = getAuth(fbApp);
+// ═══ STORAGE / DATA ═══
+let state = {
+  tab: 'historique',
+  dayIdx: new Date().getDay() === 0 ? 6 : new Date().getDay() - 1,
+  entries: load('sante_entries', []),
+  foods: load('sante_foods', []),
+  form: { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' },
+  chatHistory: [],
+  chatLoading: false,
+  journalAi: ''
+};
 
-// ═══ CONSTANTES ═══
-const UID = 'sylvain';
-const DEPART = 94, OBJECTIF = 84;
-const KCAL_OBJ = 1500, PROT_OBJ = 90;
-
-// ═══ ÉTAT ═══
-let fb = false;
-let entries = [];
-let view = 'journal';
-let dayIdx = 0;
-let journal = {};
-let chatHistory = [];
-let form = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
-let journalAi = '';
-let chatLoading = false;
-
-// ═══ PLAN REPAS ═══
 const DAYS = [
-  { nom: 'Lundi–Jeudi', meals: [
-    { t: 'Matin',  n: 'Skyr + flocons + fruits rouges', k: 320, d: 'Protéiné, rassasiant, fibres.' },
-    { t: 'Midi',   n: 'Poulet / poisson + quinoa + légumes', k: 520, d: 'Base méditerranéenne solide.' },
-    { t: 'Soir',   n: 'Saumon + haricots verts + patate douce', k: 520, d: 'Oméga-3, légumes, féculents modérés.' }
+  { nom: 'Lundi', meals: [
+    { t:'Petit-déjeuner', n:'Skyr, fruits rouges, graines de chia', k:320, d:'Riche en protéines, fibres et faible index glycémique.' },
+    { t:'Déjeuner', n:'Poulet grillé, quinoa, brocoli', k:520, d:'Repas complet, protéines maigres et glucides modérés.' },
+    { t:'Dîner', n:'Omelette légumes, salade, yaourt grec', k:430, d:'Léger mais rassasiant, parfait pour le soir.' }
+  ]},
+  { nom: 'Mardi', meals: [
+    { t:'Petit-déjeuner', n:'Œufs brouillés, pain complet, kiwi', k:350, d:'Bon apport en protéines et micronutriments.' },
+    { t:'Déjeuner', n:'Saumon, haricots verts, patate douce', k:560, d:'Oméga-3, fibres et énergie stable.' },
+    { t:'Dîner', n:'Soupe maison, jambon blanc, fromage blanc', k:390, d:'Simple, digeste et protéiné.' }
+  ]},
+  { nom: 'Mercredi', meals: [
+    { t:'Petit-déjeuner', n:'Fromage blanc, flocons d’avoine, pomme', k:330, d:'Petit-déjeuner rassasiant et équilibré.' },
+    { t:'Déjeuner', n:'Dinde, riz complet, courgettes', k:510, d:'Base propre pour tenir l’après-midi.' },
+    { t:'Dîner', n:'Cabillaud, ratatouille, lentilles', k:450, d:'Protéines + fibres pour la satiété.' }
+  ]},
+  { nom: 'Jeudi', meals: [
+    { t:'Petit-déjeuner', n:'Skyr, banane, amandes', k:340, d:'Simple, rapide, efficace.' },
+    { t:'Déjeuner', n:'Steak haché 5%, pois chiches, crudités', k:540, d:'Bonne densité protéique, glucides modérés.' },
+    { t:'Dîner', n:'Salade thon-œuf-tomate, soupe', k:400, d:'Léger et suffisant pour le soir.' }
   ]},
   { nom: 'Vendredi', meals: [
-    { t: 'Matin', n: 'Omelette + fruit', k: 300, d: 'Léger pour garder de la marge.' },
-    { t: 'Midi',  n: 'Salade protéinée complète', k: 450, d: 'Volumineux sans excès.' },
-    { t: 'Soir',  n: 'Festin libre assumé', k: 900, d: 'Sans culpabilité. Reprendre le plan samedi.' }
+    { t:'Petit-déjeuner', n:'Yaourt grec, poire, noix', k:320, d:'Bonne base avant une journée plus libre.' },
+    { t:'Déjeuner', n:'Poulet, légumes grillés, semoule', k:500, d:'On garde la ligne avant le repas festif.' },
+    { t:'Dîner', n:'Repas festif maîtrisé', k:700, d:'Profite, mais ralentis, choisis, savoure, sans te resservir.' }
   ]},
-  { nom: 'Week-end', meals: [
-    { t: 'Matin', n: 'Yaourt grec + noix + pomme', k: 340, d: 'Simple et stable.' },
-    { t: 'Midi',  n: 'Poisson + riz complet + crudités', k: 530, d: 'Assiette complète méditerranéenne.' },
-    { t: 'Soir',  n: 'Soupe + oeufs + tartine seigle', k: 400, d: 'Léger et satisfaisant.' }
+  { nom: 'Samedi', meals: [
+    { t:'Petit-déjeuner', n:'Omelette, fruit, café', k:300, d:'Après vendredi, on repart proprement.' },
+    { t:'Déjeuner', n:'Poisson, légumes, riz', k:500, d:'Repas de rééquilibrage.' },
+    { t:'Dîner', n:'Soupe, blanc de poulet, yaourt', k:380, d:'Sobre, digeste, utile.' }
+  ]},
+  { nom: 'Dimanche', meals: [
+    { t:'Petit-déjeuner', n:'Skyr, fruits, graines', k:310, d:'Routine simple et efficace.' },
+    { t:'Déjeuner', n:'Rôti maigre, légumes, pommes vapeur', k:560, d:'Repas familial sans excès.' },
+    { t:'Dîner', n:'Salade complète, fromage blanc', k:390, d:'On finit léger avant lundi.' }
   ]}
 ];
 
-// ═══ UTILS ═══
-const $ = id => document.getElementById(id);
-const esc = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-function lsGet(k, fb) { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : fb; } catch(e) { return fb; } }
-function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} }
+// ═══ HELPERS ═══
+function $(sel){ return document.querySelector(sel); }
+function esc(s){ return String(s ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function load(k, def){ try { return JSON.parse(localStorage.getItem(k)) ?? def; } catch { return def; } }
+function save(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+function fmt1(n){ return (+n).toFixed(1).replace('.', ','); }
+function todayISO(){ return new Date().toISOString().slice(0,10); }
 
-function todayKey() {
-  const d = new Date(); d.setHours(12,0,0,0);
-  return d.toISOString().slice(0,10);
+function weekKey(d = new Date()) {
+  const x = new Date(d);
+  const day = x.getDay() || 7;
+  x.setHours(0,0,0,0);
+  x.setDate(x.getDate() + 4 - day);
+  const yearStart = new Date(x.getFullYear(), 0, 1);
+  const weekNo = Math.ceil((((x - yearStart) / 86400000) + 1) / 7);
+  return `${x.getFullYear()}-W${String(weekNo).padStart(2,'0')}`;
 }
-function weekKey() {
-  const d = new Date(); d.setHours(12,0,0,0);
-  const diff = d.getDay() === 0 ? -6 : 1 - d.getDay();
-  d.setDate(d.getDate() + diff);
-  return d.toISOString().slice(0,10);
+function weekLabel(k){
+  const [y,w] = k.split('-W');
+  return `Semaine ${w} · ${y}`;
 }
-function weekLabel(k) {
-  return new Date(k + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-}
-function daysLeft() {
-  return Math.max(0, Math.ceil((new Date('2026-07-27T12:00:00') - new Date()) / 86400000));
-}
-function pasLbl(v) { return v==='low'?'< 5 000 pas':v==='mid'?'5–10k pas':'> 10 000 pas'; }
-function pasClr(v) { return v==='low'?'var(--red)':v==='mid'?'var(--amber)':'var(--green)'; }
+function saveEntry(entry){ save('sante_entries', state.entries); }
+function saveFoods(){ save('sante_foods', state.foods); }
 
-function dots(n, cls) {
-  return '<div class="dots">' + Array.from({length:5},(_,i)=>'<span class="dot'+(i<n?' '+(cls||'on'):'')+'"></span>').join('') + '</div>';
-}
+function lastEntry(){ return state.entries[0] || null; }
+function prevEntry(){ return state.entries[1] || null; }
 
-function ring(pct) {
-  const r=48, c=2*Math.PI*r, dash=c*pct/100;
-  return `<svg width="110" height="110" viewBox="0 0 110 110">
-    <circle cx="55" cy="55" r="${r}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="9"/>
-    <circle cx="55" cy="55" r="${r}" fill="none" stroke="#4ade80" stroke-width="9"
-      stroke-linecap="round" stroke-dasharray="${dash} ${c-dash}" transform="rotate(-90 55 55)"/>
-    <text x="55" y="51" text-anchor="middle" font-size="22" font-family="Syne,sans-serif" font-weight="800" fill="#e8eaf0">${pct}</text>
-    <text x="55" y="68" text-anchor="middle" font-size="10" font-family="DM Mono,monospace" fill="#6b7280">%</text>
+function totalLost() {
+  const e = lastEntry();
+  return e ? +(DEPART - e.poids).toFixed(1) : 0;
+}
+function weeksLeft() {
+  const today = new Date();
+  const end = new Date(DEADLINE + 'T00:00:00');
+  return Math.max(0, Math.ceil((end - today) / 604800000));
+}
+function neededPerWeek() {
+  const e = lastEntry();
+  if (!e) return +(((DEPART - OBJECTIF) / Math.max(1, weeksLeft()))).toFixed(2);
+  const restant = e.poids - OBJECTIF;
+  return +((restant / Math.max(1, weeksLeft()))).toFixed(2);
+}
+function avgPerWeek() {
+  if (state.entries.length < 2) return 0;
+  const oldest = state.entries[state.entries.length - 1];
+  const newest = state.entries[0];
+  const days = Math.max(1, (new Date(newest.key) - new Date(oldest.key)) / 86400000);
+  return +(((oldest.poids - newest.poids) / days) * 7).toFixed(2);
+}
+function adherenceScore(e) {
+  return Math.round((((e.plan || 0) + (e.moral || 0)) / 10) * 100);
+}
+function trendDelta() {
+  const e0 = lastEntry(), e1 = prevEntry();
+  return (!e0 || !e1) ? null : +(e0.poids - e1.poids).toFixed(1);
+}
+function progressPct() {
+  const e = lastEntry();
+  if (!e) return 0;
+  return Math.max(0, Math.min(100, Math.round(((DEPART - e.poids) / (DEPART - OBJECTIF)) * 100)));
+}
+function ringSvg(pct) {
+  const r = 44, c = 2 * Math.PI * r, val = c * (1 - pct / 100);
+  return `
+  <svg width="110" height="110" viewBox="0 0 110 110" aria-hidden="true">
+    <circle cx="55" cy="55" r="${r}" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="10"/>
+    <circle cx="55" cy="55" r="${r}" fill="none" stroke="#4ade80" stroke-width="10"
+      stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${val}"
+      transform="rotate(-90 55 55)"/>
+    <text x="55" y="51" text-anchor="middle" style="font-family:Syne,sans-serif;font-size:22px;font-weight:800;fill:#e8eaf0">${pct}%</text>
+    <text x="55" y="69" text-anchor="middle" class="ring-txt">objectif</text>
   </svg>`;
 }
 
-// ═══ FIREBASE DATA ═══
-async function loadEntries() {
-  if (!fb) { entries = lsGet('pesees', []); return; }
-  try {
-    const snap = await getDocs(query(collection(db,'users',UID,'pesees'), orderBy('key','desc')));
-    entries = snap.docs.map(d => d.data());
-    lsSet('pesees', entries);
-  } catch(e) { entries = lsGet('pesees', []); }
-}
+// ═══ NUTRITION PARSING ═══
+function estimateFood(text) {
+  const t = text.toLowerCase();
 
-async function saveEntry(e) {
-  lsSet('pesees', entries);
-  if (!fb) return;
-  try { await setDoc(doc(db,'users',UID,'pesees',e.key), e); } catch(_) {}
-}
+  const refs = [
+    { keys:['skyr'], n:'Skyr', k:100, p:17, g:4, l:0 },
+    { keys:['yaourt grec','greek yogurt'], n:'Yaourt grec', k:130, p:12, g:4, l:6 },
+    { keys:['fromage blanc'], n:'Fromage blanc', k:90, p:8, g:4, l:3 },
+    { keys:['oeuf','œuf','omelette'], n:'Œufs / omelette', k:180, p:14, g:2, l:12 },
+    { keys:['poulet','dinde'], n:'Poulet / dinde', k:220, p:35, g:0, l:8 },
+    { keys:['saumon'], n:'Saumon', k:280, p:25, g:0, l:18 },
+    { keys:['thon'], n:'Thon', k:170, p:28, g:0, l:5 },
+    { keys:['cabillaud','poisson'], n:'Poisson', k:190, p:28, g:0, l:7 },
+    { keys:['riz'], n:'Riz', k:210, p:4, g:44, l:1 },
+    { keys:['quinoa'], n:'Quinoa', k:220, p:8, g:38, l:4 },
+    { keys:['pâtes','pates'], n:'Pâtes', k:250, p:8, g:48, l:3 },
+    { keys:['pain'], n:'Pain', k:160, p:5, g:30, l:2 },
+    { keys:['lentilles','pois chiches'], n:'Légumineuses', k:210, p:11, g:30, l:4 },
+    { keys:['banane'], n:'Banane', k:105, p:1, g:24, l:0 },
+    { keys:['pomme','poire','kiwi','fruit','fruits rouges'], n:'Fruit', k:80, p:1, g:18, l:0 },
+    { keys:['amandes','noix','graines'], n:'Oléagineux / graines', k:170, p:5, g:5, l:14 },
+    { keys:['brocoli','courgettes','ratatouille','légumes','salade','crudités','épinards'], n:'Légumes', k:60, p:3, g:10, l:1 },
+    { keys:['soupe'], n:'Soupe', k:120, p:4, g:15, l:4 },
+    { keys:['pizza'], n:'Pizza', k:800, p:30, g:90, l:35 },
+    { keys:['burger'], n:'Burger', k:750, p:28, g:55, l:45 },
+    { keys:['frite','frites'], n:'Frites', k:450, p:5, g:50, l:24 },
+    { keys:['gâteau','gateau','dessert'], n:'Dessert', k:300, p:4, g:38, l:14 },
+    { keys:['vin','alcool','bière','biere'], n:'Alcool', k:180, p:0, g:5, l:0 }
+  ];
 
-async function loadJournal() {
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(); d.setHours(12,0,0,0); d.setDate(d.getDate()-i);
-    const k = d.toISOString().slice(0,10);
-    journal[k] = lsGet('j_'+k, []);
-    if (!fb) continue;
-    try {
-      const snap = await getDoc(doc(db,'users',UID,'journal',k));
-      if (snap.exists()) {
-        const items = snap.data().items || [];
-        if (items.length > 0) { journal[k] = items; lsSet('j_'+k, items); }
-      }
-    } catch(e) {}
+  let found = refs.filter(r => r.keys.some(k => t.includes(k)));
+  if (!found.length) {
+    return { name:text.trim(), kcal:350, prot:18, gluc:25, lip:14 };
   }
+  const kcal = found.reduce((s,x)=>s+x.k,0);
+  const prot = found.reduce((s,x)=>s+x.p,0);
+  const gluc = found.reduce((s,x)=>s+x.g,0);
+  const lip  = found.reduce((s,x)=>s+x.l,0);
+  return { name:text.trim(), kcal, prot, gluc, lip };
 }
 
-async function saveJournal() {
-  const k = todayKey();
-  lsSet('j_'+k, journal[k]||[]);
-  if (!fb) return;
-  try {
-    await setDoc(doc(db,'users',UID,'journal',k), {
-      items: (journal[k]||[]).map(x => ({
-        id: x.id, nom: x.nom||'', kcal: x.kcal||0,
-        prot: x.prot||0, gluc: x.gluc||0, lip: x.lip||0,
-        qty: x.qty||100, moment: x.moment||''
-      })),
-      updatedAt: Date.now()
-    });
-  } catch(e) {}
+function todayItems() {
+  const d = todayISO();
+  return state.foods.filter(x => x.date === d);
 }
-
-// ═══ JOURNAL ═══
-function todayItems() { return journal[todayKey()] || []; }
 function totals() {
-  return todayItems().reduce((a,x) => ({
-    k: a.k+(x.kcal||x.k||0),
-    p: a.p+(x.prot||x.p||0),
-    g: a.g+(x.gluc||x.g||0),
-    l: a.l+(x.lip||x.l||0)
-  }), {k:0,p:0,g:0,l:0});
-}
-function getName(x) { return x.nom||x.n||x.name||''; }
-function getKcal(x) { return x.kcal||x.k||0; }
-function getProt(x) { return x.prot||x.p||0; }
-
-function addJournalEntry(text) {
-  const k = todayKey();
-  if (!journal[k]) journal[k] = [];
-  journal[k].push({ id: Date.now(), nom: text.trim(), kcal: 0, prot: 0, gluc: 0, lip: 0, qty: 0, moment: '' });
-  saveJournal();
+  const items = todayItems();
+  return items.reduce((a,x) => ({
+    k: a.k + x.kcal,
+    p: a.p + x.prot,
+    g: a.g + x.gluc,
+    l: a.l + x.lip
+  }), { k:0, p:0, g:0, l:0 });
 }
 
+// ═══ ACTIONS ═══
+function goTo(tab){ state.tab = tab; render(); }
+function setDay(i){ state.dayIdx = i; render(); }
+function setPoids(v){ state.form.poids = v; }
+function setPas(v){ state.form.pas = v; render(); }
+function setNote(v){ state.form.note = v; }
+function updateDots() {
+  const a = document.getElementById('dots-moral');
+  const b = document.getElementById('dots-plan');
+  if (a) a.innerHTML = dots(state.form.moral,'on');
+  if (b) b.innerHTML = dots(state.form.plan,'deep');
+}
+function dots(n, cls='on'){
+  return `<div class="dots">${Array.from({length:5}, (_,i)=>`<div class="dot ${i<n?cls:''}"></div>`).join('')}</div>`;
+}
+
+function addFood(text) {
+  const e = estimateFood(text);
+  state.foods.unshift({
+    id: Date.now(),
+    date: todayISO(),
+    name: e.name,
+    kcal: e.kcal,
+    prot: e.prot,
+    gluc: e.gluc,
+    lip: e.lip
+  });
+  saveFoods();
+  render();
+}
 function removeFood(id) {
-  const k = todayKey();
-  journal[k] = (journal[k]||[]).filter(x => x.id !== id);
-  saveJournal().then(() => render());
+  state.foods = state.foods.filter(x => x.id !== id);
+  saveFoods();
+  render();
+}
+function handleJournalAdd() {
+  const ta = document.getElementById('journal-input');
+  const txt = ta.value.trim();
+  if (!txt) return;
+  addFood(txt);
+  ta.value = '';
+}
+
+async function handleChat() {
+  const ta = document.getElementById('chat-input');
+  const txt = ta.value.trim();
+  if (!txt) return;
+  ta.value = '';
+  await sendChat(txt);
 }
 
 // ═══ IA CLAUDE ═══
@@ -447,62 +498,86 @@ async function askClaude(msgs) {
 
 async function analyseJournal() {
   const items = todayItems();
-  if (!items.length) { alert('Ajoute d\'abord des repas dans le journal.'); return; }
-  journalAi = 'Analyse en cours...';
+  if (!items.length) { alert('Ajoute d’abord des repas dans le journal.'); return; }
+  state.journalAi = 'Analyse en cours...';
   render();
   const t = totals();
-  const liste = items.map(x => getName(x) + (getKcal(x) ? ' (' + getKcal(x) + ' kcal)' : '')).join(', ');
+  const liste = items.map(x => x.name + (x.kcal ? ' (' + x.kcal + ' kcal)' : '')).join(', ');
   try {
-    journalAi = await askClaude([{ role: 'user', content:
+    state.journalAi = await askClaude([{ role: 'user', content:
       `Analyse mon journal du jour.\nAliments : ${liste}\nTotaux : ${t.k} kcal, ${t.p}g prot, ${t.g}g gluc, ${t.l}g lip.\nObjectifs : ${KCAL_OBJ} kcal, ${PROT_OBJ}g prot.\nDonne : qualité globale, point fort, point à corriger, un ajustement concret.`
     }]);
-  } catch(err) { journalAi = 'Erreur : ' + err.message; }
+  } catch(err) { state.journalAi = 'Erreur : ' + err.message; }
   render();
 }
 
 async function sendChat(text) {
-  if (!text.trim() || chatLoading) return;
-  chatHistory.push({ role: 'user', content: text.trim() });
-  chatLoading = true;
+  if (!text.trim() || state.chatLoading) return;
+  state.chatHistory.push({ role: 'user', content: text.trim() });
+  state.chatLoading = true;
   render();
   scrollChatBottom();
   const t = totals();
   const items = todayItems();
   const context = items.length
-    ? `\n[Contexte : journal du jour = ${items.map(x=>getName(x)).join(', ')} — ${t.k} kcal, ${t.p}g prot]`
+    ? `\n[Contexte : journal du jour = ${items.map(x=>x.name).join(', ')} — ${t.k} kcal, ${t.p}g prot]`
     : '';
-  const msgs = chatHistory.map((m,i) => i === 0 && items.length
+  const msgs = state.chatHistory.map((m,i) => i === 0 && items.length
     ? { role: m.role, content: m.content + context }
     : m
   );
   try {
     const reply = await askClaude(msgs);
-    chatHistory.push({ role: 'assistant', content: reply });
+    state.chatHistory.push({ role: 'assistant', content: reply });
   } catch(err) {
-    chatHistory.push({ role: 'assistant', content: 'Erreur : ' + err.message });
+    state.chatHistory.push({ role: 'assistant', content: 'Erreur : ' + err.message });
   }
-  chatLoading = false;
+  state.chatLoading = false;
   render();
   scrollChatBottom();
 }
 
 function scrollChatBottom() {
-  setTimeout(() => { $('main').scrollTop = $('main').scrollHeight; }, 50);
+  setTimeout(() => {
+    const main = document.querySelector('.scroll');
+    if (main) main.scrollTop = main.scrollHeight;
+  }, 50);
 }
 
 // ═══ PESÉE ═══
+function normalizeWeightInput(value) {
+  return String(value ?? '').trim().replace(/\s+/g, '').replace(',', '.');
+}
+
+function parseWeightKg(value) {
+  const normalized = normalizeWeightInput(value);
+  if (!normalized || !/^\d+(?:\.\d+)?$/.test(normalized)) return NaN;
+  return Number(normalized);
+}
+
+function formatWeightForInput(value) {
+  const weight = parseWeightKg(value);
+  return Number.isFinite(weight) ? weight.toFixed(1).replace('.', ',') : String(value ?? '').trim();
+}
+
 function submitForm() {
   const inputEl = document.getElementById('input-poids');
-  const rawVal = inputEl ? inputEl.value : form.poids;
-  const p = parseFloat(String(rawVal).replace(',','.'));
-  if (!p || p < 40 || p > 250) { alert('Entre un poids valide, ex: 92.5'); return; }
+  const rawVal = inputEl ? inputEl.value : state.form.poids;
+  const p = parseWeightKg(rawVal);
+
+  if (!Number.isFinite(p) || p < 40 || p > 250) {
+    alert('Saisis un poids valide en kilos, par exemple 84,2 ou 84.2.');
+    return;
+  }
+
   const k = weekKey();
-  entries = [
-    { key: k, poids: p, moral: form.moral, plan: form.plan, pas: form.pas, note: form.note.trim() },
-    ...entries.filter(e => e.key !== k)
+  state.entries = [
+    { key: k, poids: p, moral: state.form.moral, plan: state.form.plan, pas: state.form.pas, note: state.form.note.trim() },
+    ...state.entries.filter(e => e.key !== k)
   ].sort((a,b) => b.key.localeCompare(a.key));
-  saveEntry(entries[0]);
-  form = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
+
+  saveEntry(state.entries[0]);
+  state.form = { poids: '', moral: 3, plan: 3, pas: 'mid', note: '' };
   goTo('historique');
 }
 
@@ -521,14 +596,14 @@ function vJournal() {
   </div>`;
 
   const alertMsg = t.k === 0
-    ? '<div class="alert green">Objectif : ' + KCAL_OBJ + ' kcal · ' + PROT_OBJ + 'g protéines</div>'
+    ? '<div class="alert green">Objectif : ' + KCAL_OBJ + ' kcal · ' + PROT_OBJ + 'g de protéines</div>'
     : t.k > KCAL_OBJ
-    ? '<div class="alert red">+' + (t.k - KCAL_OBJ) + ' kcal au-dessus de l\'objectif</div>'
+    ? '<div class="alert red">+' + (t.k - KCAL_OBJ) + ' kcal au-dessus de l’objectif</div>'
     : '<div class="alert green">' + (KCAL_OBJ - t.k) + ' kcal restantes</div>';
 
   const saisie = `<div class="card" style="margin-top:14px">
     <div class="card-label">Saisie du repas</div>
-    <textarea id="journal-input" rows="3" placeholder="Décris ce que tu as mangé... ex: bol de quinoa avec saumon grillé et épinards" style="margin-bottom:8px"></textarea>
+    <textarea id="journal-input" rows="3" placeholder="Décris ce que tu as mangé… Ex. : bol de quinoa avec saumon grillé et épinards" style="margin-bottom:8px"></textarea>
     <button class="btn btn-green" onclick="handleJournalAdd()">Ajouter au journal</button>
   </div>`;
 
@@ -536,36 +611,36 @@ function vJournal() {
     ? '<div style="margin:10px 14px 0">' + items.map(x =>
         `<div class="log-item">
           <div>
-            <div class="log-name">${esc(getName(x))}</div>
-            <div class="log-detail">${getKcal(x)?getKcal(x)+' kcal · ':''} ${getProt(x)?getProt(x)+'g prot':''}</div>
+            <div class="log-name">${esc(x.name)}</div>
+            <div class="log-detail">${x.kcal ? x.kcal + ' kcal · ' : ''}${x.prot ? x.prot + 'g de prot' : ''}</div>
           </div>
           <button class="log-del" onclick="removeFood(${x.id})">×</button>
         </div>`
       ).join('') + '</div>'
-    : '<div class="empty">Aucun repas enregistré aujourd\'hui.<br>Décris ce que tu as mangé ci-dessus.</div>';
+    : '<div class="empty">Aucun repas enregistré aujourd’hui.<br>Décris ce que tu as mangé ci-dessus.</div>';
 
-  const aiSection = journalAi
-    ? `<div class="ai-box"><div class="ai-head">Analyse du jour</div><div class="ai-body${journalAi==='Analyse en cours...'?' ai-loading':''}">${esc(journalAi)}</div></div>`
+  const aiSection = state.journalAi
+    ? `<div class="ai-box"><div class="ai-head">Analyse du jour</div><div class="ai-body${state.journalAi==='Analyse en cours...'?' ai-loading':''}">${esc(state.journalAi)}</div></div>`
     : '';
 
   const aiBtn = items.length
-    ? '<div style="margin:10px 14px 0"><button class="btn btn-blue" onclick="analyseJournal()">Analyser ma journée avec l\'IA</button></div>'
+    ? '<div style="margin:10px 14px 0"><button class="btn btn-blue" onclick="analyseJournal()">Analyser ma journée avec l’IA</button></div>'
     : '';
 
   return bilanBar + alertMsg + saisie + logHtml + aiBtn + aiSection + '<div class="spacer"></div>';
 }
 
 function vCoach() {
-  const msgs = chatHistory.map((m,i) => {
-    const isLast = i === chatHistory.length - 1;
-    const loading = isLast && chatLoading && m.role === 'user';
+  const msgs = state.chatHistory.map((m,i) => {
+    const isLast = i === state.chatHistory.length - 1;
+    const loading = isLast && state.chatLoading && m.role === 'user';
     const cls = m.role === 'user' ? 'user' : ('ai' + (loading ? ' loading' : ''));
     return `<div class="chat-msg ${cls}"><div class="bubble">${esc(m.content)}${loading ? '<br><br>...' : ''}</div></div>`;
   }).join('');
 
-  const empty = !chatHistory.length
+  const empty = !state.chatHistory.length
     ? `<div class="empty" style="padding-top:30px">
-        Pose-moi une question sur ton régime,<br>tes repas, tes progrès...<br><br>
+        Pose-moi une question sur ton régime,<br>tes repas, tes progrès…<br><br>
         <span style="font-size:24px">🤖</span>
       </div>`
     : '';
@@ -573,16 +648,16 @@ function vCoach() {
   return `<div style="padding-top:14px">
     <div class="chat-wrap">${empty}${msgs}</div>
     <div class="chat-input-wrap" id="chat-input-wrap">
-      <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ta question..."></textarea>
+      <textarea class="chat-input" id="chat-input" rows="1" placeholder="Ta question…"></textarea>
       <button class="chat-send" onclick="handleChat()">↑</button>
     </div>
   </div>`;
 }
 
 function vRepas() {
-  const d = DAYS[dayIdx];
+  const d = DAYS[state.dayIdx];
   const tabs = DAYS.map((x,i) =>
-    `<button class="day-tab${i===dayIdx?' active':''}" onclick="setDay(${i})">${x.nom}</button>`
+    `<button class="day-tab${i===state.dayIdx?' active':''}" onclick="setDay(${i})">${x.nom}</button>`
   ).join('');
   const meals = d.meals.map(m =>
     `<div class="meal-card">
@@ -598,217 +673,197 @@ function vRepas() {
 function vPesee() {
   return `<div class="card">
     <div class="card-label">Pesée · ${weekLabel(weekKey())}</div>
-    <label class="lbl">Poids ce matin (kg)</label>
-    <input type="number" id="input-poids" step="0.1" min="40" max="250" placeholder="ex : 92.5" inputmode="decimal" value="${esc(form.poids)}" oninput="setPoids(this.value)">
+    <label class="lbl">Poids de la pesée (kg)</label>
+    <input type="text" id="input-poids" inputmode="decimal" autocomplete="off" placeholder="Ex. : 84,2 ou 84.2" value="${esc(state.form.poids)}" oninput="setPoids(this.value)">
     <label class="lbl">Moral</label>
     <div class="slider-row">
-      <input type="range" min="1" max="5" step="1" value="${form.moral}" oninput="form.moral=+this.value;updateDots()">
-      <div id="dots-moral">${dots(form.moral,'on')}</div>
+      <input type="range" min="1" max="5" step="1" value="${state.form.moral}" oninput="state.form.moral=+this.value;updateDots()">
+      <div id="dots-moral">${dots(state.form.moral,'on')}</div>
     </div>
     <label class="lbl">Tenue du plan</label>
     <div class="slider-row">
-      <input type="range" min="1" max="5" step="1" value="${form.plan}" oninput="form.plan=+this.value;updateDots()">
-      <div id="dots-plan">${dots(form.plan,'deep')}</div>
+      <input type="range" min="1" max="5" step="1" value="${state.form.plan}" oninput="state.form.plan=+this.value;updateDots()">
+      <div id="dots-plan">${dots(state.form.plan,'deep')}</div>
     </div>
     <label class="lbl">Activité</label>
     <div class="pas-row">
-      <button class="pas-btn${form.pas==='low'?' low':''}" onclick="setPas('low')">< 5 000</button>
-      <button class="pas-btn${form.pas==='mid'?' mid':''}" onclick="setPas('mid')">5–10k</button>
-      <button class="pas-btn${form.pas==='high'?' high':''}" onclick="setPas('high')">> 10 000</button>
+      <button class="pas-btn${state.form.pas==='low'?' low':''}" onclick="setPas('low')">< 5 000</button>
+      <button class="pas-btn${state.form.pas==='mid'?' mid':''}" onclick="setPas('mid')">5–10k</button>
+      <button class="pas-btn${state.form.pas==='high'?' high':''}" onclick="setPas('high')">> 10 000</button>
     </div>
     <label class="lbl">Note libre</label>
-    <textarea rows="3" placeholder="Bonne semaine, faim ok..." oninput="setNote(this.value)">${esc(form.note)}</textarea>
+    <textarea rows="3" placeholder="Bonne semaine, faim OK…" oninput="setNote(this.value)">${esc(state.form.note)}</textarea>
     <button class="btn btn-green" onclick="submitForm()">Enregistrer la pesée</button>
   </div><div class="spacer"></div>`;
 }
 
 function vHistorique() {
-  if (!entries.length) return '<div class="empty">Aucune pesée enregistrée.<br>Va dans Pesée pour commencer.</div>';
-  const e0 = entries[0], prev = entries[1];
+  if (!state.entries.length) return '<div class="empty">Aucune pesée enregistrée.<br>Va dans l’onglet Pesée pour commencer.</div>';
+
+  const e0 = state.entries[0], prev = state.entries[1];
   const pct = Math.max(0, Math.min(100, Math.round((DEPART - e0.poids) / (DEPART - OBJECTIF) * 100)));
   const delta = prev ? e0.poids - prev.poids : null;
-  const avg = entries.length < 2 ? 0 : (() => {
-    const o = entries[entries.length-1], n = entries[0];
+  const avg = state.entries.length < 2 ? 0 : (() => {
+    const o = state.entries[state.entries.length-1], n = state.entries[0];
     const d = (new Date(n.key) - new Date(o.key)) / 86400000;
     return d > 0 ? +((o.poids - n.poids) / d * 7).toFixed(2) : 0;
   })();
 
-  const deltaHtml = delta === null
-    ? '<div class="poids-delta neutral">Première mesure</div>'
-    : delta < 0 ? '<div class="poids-delta good">−' + Math.abs(delta).toFixed(1) + ' kg cette semaine</div>'
-    : delta > 0 ? '<div class="poids-delta bad">+' + delta.toFixed(1) + ' kg cette semaine</div>'
-    : '<div class="poids-delta neutral">Stable</div>';
+  const deltaHtml =
+    delta === null
+      ? `<div class="poids-delta neutral">Première pesée enregistrée</div>`
+      : delta < 0
+      ? `<div class="poids-delta good">${fmt1(Math.abs(delta))} kg depuis la dernière pesée</div>`
+      : delta > 0
+      ? `<div class="poids-delta bad">+${fmt1(delta)} kg depuis la dernière pesée</div>`
+      : `<div class="poids-delta neutral">Stable depuis la dernière pesée</div>`;
 
-  const summary = `<div class="card">
-    <div class="card-label">Progression</div>
+  const top = `<div class="card">
+    <div class="card-label">Vue d’ensemble</div>
     <div class="ring-wrap">
-      <div>${ring(pct)}</div>
+      ${ringSvg(pct)}
       <div>
-        <div class="poids-big">${e0.poids.toFixed(1)} <span class="poids-unit">kg</span></div>
+        <div class="poids-big">${fmt1(e0.poids)} <span class="poids-unit">kg</span></div>
         ${deltaHtml}
       </div>
     </div>
-  </div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-val">${daysLeft()}</div><div class="stat-label">jours restants</div></div>
-    <div class="stat-card"><div class="stat-val">${avg > 0 ? avg : '—'}</div><div class="stat-label">kg / semaine</div></div>
   </div>`;
 
-  const rows = entries.map((e,i) => {
-    const p = entries[i+1];
-    const d = p ? p.poids - e.poids : null;
-    const chip = d === null
-      ? '<span class="chip chip-gray">départ</span>'
-      : d > 0 ? '<span class="chip chip-green">−' + d.toFixed(1) + ' kg</span>'
-      : '<span class="chip chip-red">+' + Math.abs(d).toFixed(1) + ' kg</span>';
+  const stats = `<div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-val">${fmt1(DEPART - e0.poids)}</div>
+      <div class="stat-label">kg perdus</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${fmt1(e0.poids - OBJECTIF)}</div>
+      <div class="stat-label">kg restants</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${fmt1(avg)}</div>
+      <div class="stat-label">kg / semaine</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val">${weeksLeft()}</div>
+      <div class="stat-label">semaines restantes</div>
+    </div>
+  </div>`;
+
+  const summary = top + stats;
+
+  const rows = state.entries.map(e => {
+    const score = adherenceScore(e);
+    const pasLabel = e.pas === 'high' ? '> 10 000 pas' : e.pas === 'mid' ? '5 000–10 000 pas' : '< 5 000 pas';
+    const chip = score >= 70
+      ? '<span class="chip chip-green">bonne semaine</span>'
+      : score < 40
+      ? '<span class="chip chip-red">à relancer</span>'
+      : '<span class="chip chip-gray">moyenne</span>';
+
     return `<div class="hist-item">
       <div class="hist-top">
-        <div><div class="hist-date">${weekLabel(e.key)}</div><div class="hist-poids">${e.poids.toFixed(1)} kg</div></div>
+        <div>
+          <div class="hist-date">${weekLabel(e.key)}</div>
+          <div class="hist-poids">${fmt1(e.poids)} kg</div>
+        </div>
         ${chip}
       </div>
       <div class="hist-meta">
-        ${dots(e.moral,'on')} ${dots(e.plan,'deep')}
-        <span style="font-size:11px;font-family:DM Mono,monospace;color:${pasClr(e.pas)}">${pasLbl(e.pas)}</span>
+        <span class="chip chip-gray">moral ${e.moral}/5</span>
+        <span class="chip chip-gray">plan ${e.plan}/5</span>
+        <span class="chip chip-gray">${pasLabel}</span>
       </div>
-      ${e.note ? '<div class="hist-note">"' + esc(e.note) + '"</div>' : ''}
+      ${e.note ? `<div class="hist-note">${esc(e.note)}</div>` : ''}
     </div>`;
   }).join('');
 
   return summary + '<div class="card" style="margin-top:14px"><div class="card-label">Historique des pesées</div>' + rows + '</div><div class="spacer"></div>';
 }
 
-// ═══ RENDER ═══
-const TITLES = {
-  journal: 'Journal du jour',
-  coach: 'Coach IA',
-  repas: 'Plan repas',
-  pesee: 'Pesée hebdo',
-  historique: 'Mon bilan'
-};
+// ═══ LAYOUT ═══
+function headerTitle() {
+  if (state.entries.length) {
+    const current = state.entries[0].poids;
+    return `
+      <div class="header-left">
+        <h1>Suivi Santé</h1>
+        <p>${DEPART} → ${fmt1(current)} kg · ${new Date(DEADLINE).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })}</p>
+      </div>
+      <div class="header-badge">local</div>
+    `;
+  }
+  return `
+    <div class="header-left">
+      <h1>Suivi Santé</h1>
+      <p>${DEPART} → ${OBJECTIF} kg · ${new Date(DEADLINE).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })}</p>
+    </div>
+    <div class="header-badge offline">local</div>
+  `;
+}
+
+function navHtml() {
+  const items = [
+    ['journal','Journal','📘'],
+    ['coach','Coach IA','🤖'],
+    ['repas','Repas','🍽️'],
+    ['pesee','Pesée','⚖️'],
+    ['historique','Bilan','📈']
+  ];
+  return `<nav>${items.map(([id,lab,ico]) =>
+    `<button class="${state.tab===id?'active':''}" onclick="goTo('${id}')">
+      <div class="ico">${ico}</div><div>${lab}</div>
+    </button>`
+  ).join('')}</nav>`;
+}
+
+function mainView() {
+  switch(state.tab) {
+    case 'journal': return vJournal();
+    case 'coach': return vCoach();
+    case 'repas': return vRepas();
+    case 'pesee': return vPesee();
+    default: return vHistorique();
+  }
+}
+
+function bindAfterRender() {
+  const chat = document.getElementById('chat-input');
+  if (chat) {
+    chat.addEventListener('keydown', async e => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        await handleChat();
+      }
+    });
+    chat.addEventListener('input', () => {
+      chat.style.height = 'auto';
+      chat.style.height = Math.min(chat.scrollHeight, 120) + 'px';
+    });
+  }
+
+  const poidsInput = document.getElementById('input-poids');
+  if (poidsInput) {
+    poidsInput.addEventListener('blur', () => {
+      const formatted = formatWeightForInput(poidsInput.value);
+      if (formatted) {
+        poidsInput.value = formatted;
+        state.form.poids = formatted;
+      }
+    });
+  }
+}
 
 function render() {
-  $('pg-title').textContent = TITLES[view] || 'Santé';
-  $('pg-sub').textContent = view === 'historique'
-    ? '94 → 84 kg · ' + daysLeft() + ' jours'
-    : '94 → 84 kg · 27 juillet 2026';
-
-  const V = { journal: vJournal, coach: vCoach, repas: vRepas, pesee: vPesee, historique: vHistorique };
-  $('main').innerHTML = V[view]();
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <header class="header">${headerTitle()}</header>
+    <main class="scroll">${mainView()}</main>
+    ${navHtml()}
+  `;
+  bindAfterRender();
+  updateDots();
 }
 
-// ═══ NAVIGATION ═══
-function goTo(v) {
-  view = v; journalAi = '';
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  $('nav-' + v)?.classList.add('active');
-  render();
-  if (v === 'coach') scrollChatBottom();
-}
-
-function setDay(i) { dayIdx = i; render(); }
-function setPas(v) { form.pas = v; render(); }
-function updateDots() {
-  const m = $('dots-moral'), p = $('dots-plan');
-  if (m) m.innerHTML = dots(form.moral,'on');
-  if (p) p.innerHTML = dots(form.plan,'deep');
-}
-
-// ═══ HANDLERS ═══
-function handleJournalAdd() {
-  const el = $('journal-input');
-  if (!el || !el.value.trim()) return;
-  const text = el.value.trim();
-  addJournalEntry(text);
-  el.value = '';
-  // Demander à l'IA d'identifier les calories si possible
-  enrichWithAI(text);
-}
-
-async function enrichWithAI(text) {
-  // Met à jour l'affichage du journal immédiatement
-  render();
-  // Demande à Claude d'estimer les macros
-  try {
-    const reply = await askClaude([{ role: 'user', content:
-      `Estime les macros pour : "${text}". Réponds UNIQUEMENT en JSON sans markdown : {"kcal":0,"prot":0,"gluc":0,"lip":0}. Valeurs pour la portion décrite.`
-    }]);
-    const clean = reply.replace(/```json|```/g,'').trim();
-    const macros = JSON.parse(clean);
-    const k = todayKey();
-    if (journal[k] && journal[k].length > 0) {
-      const last = journal[k][journal[k].length - 1];
-      last.kcal = macros.kcal || 0;
-      last.prot = macros.prot || 0;
-      last.gluc = macros.gluc || 0;
-      last.lip  = macros.lip  || 0;
-      await saveJournal();
-    }
-  } catch(e) {}
-  render();
-}
-
-function handleChat() {
-  const el = $('chat-input');
-  if (!el) return;
-  const text = el.value.trim();
-  if (!text) return;
-  el.value = '';
-  el.style.height = 'auto';
-  sendChat(text);
-}
-
-// ═══ EXPOSE ═══
-function setPoids(v){ form.poids = v; }
-function setNote(v){ form.note = v; }
-function setMoral(v){ form.moral = +v; updateDots(); }
-function setPlan(v){ form.plan = +v; updateDots(); }
-window.goTo = goTo;
-window.setDay = setDay;
-window.setPas = setPas;
-window.submitForm = submitForm;
-window.removeFood = removeFood;
-window.analyseJournal = analyseJournal;
-window.handleJournalAdd = handleJournalAdd;
-window.handleChat = handleChat;
-window.updateDots = updateDots;
-window.setPoids = setPoids;
-window.setNote = setNote;
-window.setMoral = setMoral;
-window.setPlan = setPlan;
-Object.defineProperty(window, 'form', { get(){ return form; }, set(v){ form = v; } });
-
-// Enter dans le chat
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && !e.shiftKey && document.activeElement?.id === 'chat-input') {
-    e.preventDefault();
-    handleChat();
-  }
-});
-
-// Auto-resize textarea chat
-document.addEventListener('input', e => {
-  if (e.target?.id === 'chat-input') {
-    e.target.style.height = 'auto';
-    e.target.style.height = Math.min(e.target.scrollHeight, 100) + 'px';
-  }
-});
-
-// ═══ BOOT ═══
-if ('serviceWorker' in navigator) navigator.serviceWorker.register('./sw.js').catch(()=>{});
-
-$('main').innerHTML = '<div class="empty" style="padding-top:60px"><div style="font-size:40px">⏳</div><br>Connexion...</div>';
-
-try {
-  await signInAnonymously(auth);
-  fb = true;
-  $('fb-status').textContent = 'Firebase';
-  $('fb-status').classList.remove('offline');
-} catch(e) {
-  fb = false;
-}
-
-await loadEntries();
-await loadJournal();
+// ═══ INIT ═══
 render();
 </script>
 </body>
