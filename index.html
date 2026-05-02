@@ -493,6 +493,12 @@ function scrollChatBottom() {
 // ═══ PESÉE ═══
 function submitForm(directVal) {
   const inputEl = document.getElementById('input-poids');
+  const v1 = directVal;
+  const v2 = inputEl ? inputEl.value : 'NO_EL';
+  const v3 = form.poids;
+  alert('DEBUG: directVal=' + v1 + ' | DOM=' + v2 + ' | form=' + v3);
+
+  const inputEl = document.getElementById('input-poids');
   const rawVal = directVal || (inputEl ? inputEl.value : '') || form.poids;
   const p = parseFloat(String(rawVal).replace(',','.'));
   if (!p || p < 40 || p > 250) { alert('Entre un poids valide, ex: 92.5'); return; }
