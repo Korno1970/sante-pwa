@@ -394,6 +394,17 @@ function totals() {
   return todayItems().map(norm).reduce((a, x) => ({ k: a.k+x.k, p: a.p+x.p, g: a.g+x.g, l: a.l+x.l }), { k:0, p:0, g:0, l:0 });
 }
 
+function updateFoodList() {
+  const el = document.getElementById('food-list-results');
+  if (!el) return;
+  const filtered = ALIMENTS.filter(a => !foodQ || a.n.toLowerCase().includes(foodQ.toLowerCase())).slice(0, 15);
+  el.innerHTML = filtered.map(a => {
+    const idx = ALIMENTS.indexOf(a);
+    return '<div class="food-row"><div><div class="food-name">' + a.n + '</div><div class="food-macros">' + a.k + ' kcal · ' + a.p + 'g prot · ' + a.g + 'g gluc · ' + a.l + 'g lip</div></div>'
+      + '<button class="food-add" onclick="addFood(' + idx + ')">+</button></div>';
+  }).join('');
+}
+
 function addFood(i) {
   const f = ALIMENTS[i];
   const k = todayKey();
@@ -589,9 +600,9 @@ function vJournal() {
     + 'Objectif : ' + KCAL_OBJ + ' kcal · ' + PROT_OBJ + 'g proteines.'
     + '</div>';
 
-  const search = '<div class="search-wrap"><input type="text" placeholder="Chercher un aliment..." value="' + esc(foodQ) + '" oninput="foodQ=this.value;render()"></div>';
+  const search = '<div class="search-wrap"><input type="text" placeholder="Chercher un aliment..." value="' + esc(foodQ) + '" oninput="foodQ=this.value;updateFoodList()"></div>';
 
-  const foodRows = '<div class="food-list">' + filtered.map((a, i) => {
+  const foodRows = '<div class="food-list" id="food-list-results">' + filtered.map((a, i) => {
     const idx = ALIMENTS.indexOf(a);
     return '<div class="food-row"><div><div class="food-name">' + a.n + '</div><div class="food-macros">' + a.k + ' kcal · ' + a.p + 'g prot · ' + a.g + 'g gluc · ' + a.l + 'g lip</div></div>'
       + '<button class="food-add" onclick="addFood(' + idx + ')">+</button></div>';
@@ -661,6 +672,7 @@ window.addFood = addFood;
 window.removeFood = removeFood;
 window.render = render;
 window.iaHome = iaHome;
+window.updateFoodList = updateFoodList;
 window.iaSaisie = iaSaisie;
 window.iaJournal = iaJournal;
 Object.defineProperty(window, 'form', { get(){ return form; }, set(v){ form = v; } });
