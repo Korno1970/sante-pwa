@@ -92,17 +92,26 @@
   .day-tab { flex: 0 0 auto; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 13px; font-family: sans-serif; cursor: pointer; white-space: nowrap; }
   .day-tab.active { background: var(--deep); color: #fff; border-color: var(--deep); font-weight: 600; }
   .meal-card { background: var(--surface); border-radius: 14px; margin: 10px 16px 0; border: 1px solid var(--border); overflow: hidden; }
-  .meal-header { padding: 10px 16px 0; display:flex; justify-content:space-between; gap:12px; align-items:center; }
+  .meal-header { padding: 10px 16px 0; }
   .meal-time { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-family: sans-serif; }
-  .meal-kcal { font-size: 12px; color: var(--muted); font-family: sans-serif; font-weight: 700; }
-  .meal-name { font-size: 16px; font-weight: 700; color: var(--deep); margin: 3px 16px 6px; }
-  .meal-desc { font-size: 13px; color: var(--muted); font-family: sans-serif; line-height: 1.55; padding: 0 16px 8px; }
-  .badge-row { display:flex; flex-wrap:wrap; gap:6px; padding: 0 16px 14px; }
+  .meal-name { font-size: 16px; font-weight: 700; color: var(--deep); margin: 3px 0 6px; }
+  .meal-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
   .badge { font-size: 11px; padding: 2px 9px; border-radius: 12px; font-family: sans-serif; font-weight: 600; }
-  .badge.green { background: #E1F5EE; color: #085041; }
-  .badge.deep { background: #E6EEF2; color: #1A3A4A; }
-  .badge.sand { background: #F2EBDD; color: #7A5C20; }
-  .badge.terra { background: #FAE6DE; color: #A64B1E; }
+  .badge-p { background: #E1F5EE; color: #085041; }
+  .badge-l { background: #EAF3DE; color: #27500A; }
+  .badge-f { background: #FAEEDA; color: #633806; }
+  .badge-g { background: #EEEDFE; color: #3C3489; }
+  .badge-s { background: #E6F1FB; color: #0C447C; }
+  .meal-detail { font-size: 13px; color: var(--muted); font-family: sans-serif; line-height: 1.55; padding: 0 16px 14px; }
+  .macros-bar { display: grid; grid-template-columns: 1fr 1fr 1fr; border-top: 1px solid var(--border); }
+  .macro-cell { text-align: center; padding: 10px 8px; border-right: 1px solid var(--border); }
+  .macro-cell:last-child { border-right: none; }
+  .macro-val { font-size: 16px; font-weight: 700; color: var(--deep); }
+  .macro-label { font-size: 10px; color: var(--muted); font-family: sans-serif; margin-top: 1px; }
+  .tip-box { margin: 10px 16px 0; background: var(--teal-light); border-radius: 12px; padding: 12px 14px; font-size: 12px; color: var(--teal); font-family: sans-serif; line-height: 1.5; border-left: 3px solid var(--teal); }
+  .principes { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 16px 0; }
+  .principe { background: var(--surface); border-radius: 12px; padding: 12px 14px; border: 1px solid var(--border); font-size: 12px; color: var(--muted); font-family: sans-serif; line-height: 1.45; }
+  .principe strong { display: block; color: var(--deep); font-size: 13px; margin-bottom: 3px; }
 
   .empty { text-align: center; padding: 32px 20px; font-family: sans-serif; color: var(--muted); font-size: 14px; line-height: 1.6; }
 
@@ -150,7 +159,6 @@
   .install-banner p { font-size: 13px; color: rgba(255,255,255,0.8); font-family: sans-serif; line-height: 1.4; }
   .install-banner button { flex: 0 0 auto; background: var(--terra); color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-family: sans-serif; font-weight: 600; cursor: pointer; }
   .install-banner .close { background: transparent; color: rgba(255,255,255,0.5); border: none; font-size: 18px; cursor: pointer; padding: 0; }
-
   .ai-btn{width:100%;padding:13px;font-size:15px;font-family:sans-serif;font-weight:600;border:none;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
   .ai-btn-analyse{background:linear-gradient(135deg,#1A3A4A,#2A7F6F);color:#fff;margin-top:10px}
   .ai-btn-bilan{background:linear-gradient(135deg,#3C3489,#6B5FD6);color:#fff;margin-top:10px}
@@ -217,8 +225,8 @@ const DEPART = 94;
 const OBJECTIF = 84;
 const KCAL_OBJECTIF = 1500;
 const PROT_OBJECTIF = 90;
+const CLAUDE_API_KEY = 'VOTRE_CLE_API_ICI';
 const CLAUDE_MODEL = 'claude-sonnet-4-20250514';
-const CLAUDE_ENDPOINT = '/api/claude';
 
 let firebaseReady = false;
 let entries = [];
@@ -315,6 +323,7 @@ const ALIMENTS = [
   { nom:'Amandes (30g)', kcal:174, prot:6, gluc:5, lip:15, cat:'Oléagineux' },
   { nom:'Noix (30g)', kcal:196, prot:4, gluc:2, lip:20, cat:'Oléagineux' },
   { nom:'Huile d\'olive (1 càs)', kcal:90, prot:0, gluc:0, lip:10, cat:'Matières grasses' },
+
   { nom:'Canard magret (100g)', kcal:190, prot:22, gluc:0, lip:11, cat:'Viande' },
   { nom:'Canard confit cuisse (100g)', kcal:330, prot:19, gluc:0, lip:28, cat:'Viande' },
   { nom:'Veau escalope (100g)', kcal:105, prot:22, gluc:0, lip:2, cat:'Viande' },
@@ -415,6 +424,7 @@ const ALIMENTS = [
   { nom:'Burger (200g)', kcal:490, prot:28, gluc:40, lip:22, cat:'Festin' }
 ];
 
+const app = document.getElementById('app');
 const pageTitle = document.getElementById('page-title');
 const pageSub = document.getElementById('page-sub');
 const main = document.getElementById('main');
@@ -503,8 +513,8 @@ async function saveEntries() {
 async function loadJournal(dateKey) {
   if (!firebaseReady) {
     journal[dateKey] = safeLocalGet('journal_' + dateKey, []);
-    journal[dateKey + '_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
-    if (dateKey === journalDate) journalPas = journal[dateKey + '_pas'];
+    journal[dateKey+'_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
+    if (dateKey === journalDate) journalPas = journal[dateKey+'_pas'];
     return;
   }
   try {
@@ -512,21 +522,21 @@ async function loadJournal(dateKey) {
     const snap = await getDoc(ref);
     journal[dateKey] = snap.exists() ? (snap.data().items || []) : [];
     const pas = snap.exists() ? (snap.data().pas || 0) : 0;
-    journal[dateKey + '_pas'] = pas;
+    journal[dateKey+'_pas'] = pas;
     if (dateKey === journalDate) journalPas = pas;
     safeLocalSet('journal_' + dateKey, journal[dateKey]);
     safeLocalSet('journal_pas_' + dateKey, pas);
   } catch (e) {
     console.error('Journal load error', e);
     journal[dateKey] = safeLocalGet('journal_' + dateKey, []);
-    journal[dateKey + '_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
-    if (dateKey === journalDate) journalPas = journal[dateKey + '_pas'];
+    journal[dateKey+'_pas'] = safeLocalGet('journal_pas_' + dateKey, 0);
+    if (dateKey === journalDate) journalPas = journal[dateKey+'_pas'];
   }
 }
 
 async function saveJournalDay(dateKey) {
   const items = journal[dateKey] || [];
-  const pas = dateKey === journalDate ? journalPas : (journal[dateKey + '_pas'] || 0);
+  const pas = dateKey === journalDate ? journalPas : (journal[dateKey+'_pas'] || 0);
   safeLocalSet('journal_' + dateKey, items);
   safeLocalSet('journal_pas_' + dateKey, pas);
   if (!firebaseReady) return;
@@ -658,9 +668,9 @@ function viewHome() {
       ${firebaseReady ? 'Synchronisé avec Firebase.' : 'Mode local actif.'}
     </div>
     ${window._showInstall ? `<button class="btn-secondary" style="margin-top:12px" onclick="installPWA()">Installer l’app</button>` : ''}
+  
     <div style="margin:10px 0 0"><button class="ai-btn ai-btn-bilan" onclick="bilanHebdo()">📊 Bilan IA de la semaine</button></div>
-    <div class="ai-response" id="ai-response-bilan" style="display:none"><div id="ai-bilan"></div></div>
-  </div>`;
+    <div class="ai-response" id="ai-response-bilan" style="display:none"><div id="ai-bilan"></div></div></div>`;
 }
 
 function viewSaisie() {
@@ -788,7 +798,7 @@ async function shiftJournalDate(delta) {
     showLoader('Chargement du journal…');
     await loadJournal(journalDate);
   } else {
-    journalPas = journal[journalDate + '_pas'] || 0;
+    journalPas = journal[journalDate+'_pas'] || 0;
   }
   render();
 }
@@ -798,7 +808,7 @@ async function addAlimentToJournal() {
   if (!pendingAliment || isNaN(qty) || qty <= 0) return;
   if (!journal[journalDate]) journal[journalDate] = [];
   journal[journalDate].push({
-    id: Date.now() + Math.random(),
+    id: Date.now(),
     nom: pendingAliment.nom,
     kcal: pendingAliment.kcal,
     prot: pendingAliment.prot,
@@ -874,7 +884,7 @@ function viewJournal() {
       <div style="margin-bottom:10px">
         <label class="field-label">Moment du repas</label>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${moments.map(m => `<button style="padding:6px 12px;border-radius:20px;font-size:12px;font-family:sans-serif;border:1.5px solid ${journalMoment===m?'var(--teal)':'var(--border)'};background:${journalMoment===m?'var(--teal-light)':'transparent'};color:${journalMoment===m?'var(--teal)':'var(--muted)'};cursor:pointer;font-weight:${journalMoment===m?700:400}" onclick="setMoment('${m}')">${momentIcons[m]} ${m}</button>`).join('')}
+          ${moments.map(m => `<button id="mbtn-${m}" style="padding:6px 12px;border-radius:20px;font-size:12px;font-family:sans-serif;border:1.5px solid ${journalMoment===m?'var(--teal)':'var(--border)'};background:${journalMoment===m?'var(--teal-light)':'transparent'};color:${journalMoment===m?'var(--teal)':'var(--muted)'};cursor:pointer;font-weight:${journalMoment===m?700:400}" onclick="setMoment('${m}')">${momentIcons[m]} ${m}</button>`).join('')}
         </div>
       </div>
       <div class="qty-row">
@@ -900,7 +910,6 @@ function viewJournal() {
       <div class="bilan-cell"><div class="bilan-val">${bilan.gluc}g</div><div class="bilan-label">glucides</div></div>
       <div class="bilan-cell"><div class="bilan-val">${bilan.lip}g</div><div class="bilan-label">lipides</div></div>
     </div>
-
     <div class="bilan-bar" style="margin-top:8px">
       <div class="bilan-cell" style="grid-column:span 2">
         <div style="display:flex;align-items:center;gap:10px">
@@ -950,7 +959,6 @@ function viewJournal() {
 
     <div style="margin:10px 16px 0"><button class="ai-btn ai-btn-analyse" onclick="analyseJour()">🤖 Analyse ma journée</button></div>
     <div class="ai-response" id="ai-response-analyse" style="display:none"><div id="ai-analyse"></div></div>
-
     <input type="file" id="cam-file-input" accept="image/*" capture="environment" style="display:none" onchange="onCamFileSelected(this)">
     <div class="cam-wrap">
       <div class="cam-btn-row">
@@ -965,11 +973,7 @@ function viewJournal() {
         <div class="cam-result" id="cam-result"></div>
       </div>
     </div>
-
-    <div class="ai-saisie-wrap">
-      <textarea class="ai-saisie-input" id="ai-saisie-input" rows="3" placeholder="Décris ce que tu as mangé..."></textarea>
-      <button class="ai-saisie-submit" id="ai-saisie-btn" onclick="saisieNaturelle()">✨ Ajouter au journal</button>
-    </div>
+    <div class="ai-saisie-wrap"><textarea class="ai-saisie-input" id="ai-saisie-input" rows="3" placeholder="Décris ce que tu as mangé..."></textarea><button class="ai-saisie-submit" id="ai-saisie-btn" onclick="saisieNaturelle()">✨ Ajouter au journal</button></div>
     <div style="height:16px"></div>
     ${modalHtml}
   `;
@@ -1011,6 +1015,10 @@ function render() {
   const views = { home: viewHome, saisie: viewSaisie, historique: viewHistorique, repas: viewRepas, journal: viewJournal };
   main.innerHTML = views[currentView]();
   main.scrollTop = 0;
+  if (currentView === 'journal') {
+    const inp = document.getElementById('journal-search');
+    if (inp) inp.focus();
+  }
 }
 
 window.addEventListener('beforeinstallprompt', e => {
@@ -1031,65 +1039,48 @@ function installPWA() {
 
 function updatePas(val) {
   journalPas = parseInt(val) || 0;
-  journal[journalDate + '_pas'] = journalPas;
+  journal[journalDate+'_pas'] = journalPas;
   saveJournalDay(journalDate);
   const bilan = getJournalBilan(journalDate);
   const kcalBrulees = Math.round(journalPas * 0.04);
   const budget = KCAL_OBJECTIF + kcalBrulees;
   const restant = budget - bilan.kcal;
   const el = document.getElementById('pas-bilan');
-  if (el) el.innerHTML = '+' + kcalBrulees + ' kcal brûlées · Budget total : ' + budget + ' kcal';
+  if (el) {
+    el.innerHTML = '+' + kcalBrulees + ' kcal brûlées · Budget total : ' + budget + ' kcal';
+  }
   const elRestant = document.getElementById('pas-restant');
   if (elRestant) {
     elRestant.textContent = Math.abs(restant);
     elRestant.className = 'bilan-val ' + (restant >= 0 ? 'ok' : 'over');
   }
   const elLabel = document.getElementById('pas-restant-label');
-  if (elLabel) elLabel.textContent = restant >= 0 ? 'kcal restantes' : 'kcal dépassées';
+  if (elLabel) {
+    elLabel.textContent = restant >= 0 ? 'kcal restantes' : 'kcal dépassées';
+  }
 }
 
 let aiCache = {};
 
-async function callClaude(system, user, maxTokens = 600) {
-  const res = await fetch(CLAUDE_ENDPOINT, {
+async function callClaude(system, user) {
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': CLAUDE_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
-      max_tokens: maxTokens,
-      system,
+      max_tokens: 600,
+      system: system,
       messages: [{ role: 'user', content: user }]
     })
   });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data.error || ('HTTP ' + res.status));
-  }
-  return data?.content?.[0]?.text || '';
-}
-
-async function callClaudeVision(system, text, base64Data, mediaType = 'image/jpeg', maxTokens = 600) {
-  const res = await fetch(CLAUDE_ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: maxTokens,
-      system,
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'image', source: { type: 'base64', media_type: mediaType, data: base64Data } },
-          { type: 'text', text }
-        ]
-      }]
-    })
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    throw new Error(data.error || ('HTTP ' + res.status));
-  }
-  return data?.content?.[0]?.text || '';
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const d = await res.json();
+  return d.content[0].text;
 }
 
 function profileCtx() {
@@ -1111,7 +1102,7 @@ function journalCtx(dateKey) {
 }
 
 function setAiEl(id, content) {
-  const el = document.getElementById(id);
+  var el = document.getElementById(id);
   if (el) el.innerHTML = content;
 }
 
@@ -1120,41 +1111,41 @@ function aiLoading(id, msg) {
 }
 
 async function analyseJour() {
-  const k = 'analyse_' + journalDate;
-  const el = document.getElementById('ai-response-analyse');
+  var k = 'analyse_' + journalDate;
+  var el = document.getElementById('ai-response-analyse');
   if (el) el.style.display = 'block';
   if (aiCache[k]) { setAiEl('ai-analyse', aiCache[k]); return; }
   aiLoading('ai-analyse', 'Claude analyse ta journee...');
   try {
-    const system = profileCtx() + ' Tu es coach nutritionnel direct et bienveillant. Reponds en francais en 4-6 phrases, pas de liste, pas de mise en garde medicale.';
-    const user = journalCtx(journalDate) + ' Analyse: ce qui est bien, ce qui manque, une suggestion concrete pour demain.';
-    const txt = await callClaude(system, user);
-    const content = '<div class="ai-response-header"><span>🤖</span><span class="ai-response-title">Analyse Claude</span></div><div class="ai-response-body">' + txt + '</div>';
+    var system = profileCtx() + ' Tu es coach nutritionnel direct et bienveillant. Reponds en francais en 4-6 phrases, pas de liste, pas de mise en garde medicale.';
+    var user = journalCtx(journalDate) + ' Analyse: ce qui est bien, ce qui manque, une suggestion concrete pour demain.';
+    var txt = await callClaude(system, user);
+    var content = '<div class="ai-response-header"><span>🤖</span><span class="ai-response-title">Analyse Claude</span></div><div class="ai-response-body">' + txt + '</div>';
     aiCache[k] = content;
     setAiEl('ai-analyse', content);
   } catch(e) {
-    setAiEl('ai-analyse', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible à /api/claude. Vérifie la fonction Vercel et la variable ANTHROPIC_API_KEY.</div>');
+    setAiEl('ai-analyse', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible. Verifie ta cle API.</div>');
   }
 }
 
 async function saisieNaturelle() {
-  const input = document.getElementById('ai-saisie-input');
-  const btn = document.getElementById('ai-saisie-btn');
+  var input = document.getElementById('ai-saisie-input');
+  var btn = document.getElementById('ai-saisie-btn');
   if (!input || !input.value.trim()) return;
-  const texte = input.value.trim();
+  var texte = input.value.trim();
   if (btn) btn.textContent = 'Analyse...';
   try {
-    const heure = new Date().getHours();
-    const moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
-    const system = 'Tu es assistant nutritionnel. Extrais les aliments et estime les quantites. '
+    var heure = new Date().getHours();
+    var moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
+    var system = 'Tu es assistant nutritionnel. Extrais les aliments et estime les quantites. '
       + 'Reponds UNIQUEMENT en JSON valide sans markdown ni backticks: '
       + '{"items":[{"nom":"...","qty":100,"kcal":0,"prot":0,"gluc":0,"lip":0,"moment":"' + moment + '"}]}. '
       + 'Utilise des valeurs nutritionnelles realistes pour 100g.';
-    const resp = await callClaude(system, texte);
-    let clean = resp.trim();
+    var resp = await callClaude(system, texte);
+    var clean = resp.trim();
     if (clean.indexOf('{') > 0) clean = clean.slice(clean.indexOf('{'));
     if (clean.lastIndexOf('}') < clean.length - 1) clean = clean.slice(0, clean.lastIndexOf('}') + 1);
-    const parsed = JSON.parse(clean);
+    var parsed = JSON.parse(clean);
     if (parsed.items && parsed.items.length > 0) {
       if (!journal[journalDate]) journal[journalDate] = [];
       parsed.items.forEach(function(item) {
@@ -1171,9 +1162,10 @@ async function saisieNaturelle() {
       });
       await saveJournalDay(journalDate);
       input.value = '';
-      if (btn) btn.textContent = 'Ajouté !';
+      if (btn) btn.textContent = 'Ajoute !';
       setTimeout(function() { if (btn) btn.textContent = 'Ajouter au journal'; }, 1500);
-      const scrollY = main.scrollTop;
+      var main = document.getElementById('main');
+      var scrollY = main.scrollTop;
       main.innerHTML = viewJournal();
       main.scrollTop = scrollY;
     } else {
@@ -1181,39 +1173,35 @@ async function saisieNaturelle() {
       setTimeout(function() { if (btn) btn.textContent = 'Ajouter au journal'; }, 2000);
     }
   } catch(e) {
-    if (btn) {
-      btn.textContent = 'Erreur';
-      setTimeout(function(){ btn.textContent = 'Ajouter au journal'; }, 2000);
-    }
+    if (btn) { btn.textContent = 'Erreur'; setTimeout(function(){ btn.textContent = 'Ajouter au journal'; }, 2000); }
   }
 }
 
 async function bilanHebdo() {
-  const k = 'bilan_' + getWeekKey();
-  const el = document.getElementById('ai-response-bilan');
+  var k = 'bilan_' + getWeekKey();
+  var el = document.getElementById('ai-response-bilan');
   if (el) el.style.display = 'block';
   if (aiCache[k]) { setAiEl('ai-bilan', aiCache[k]); return; }
   aiLoading('ai-bilan', 'Claude analyse ta semaine...');
   try {
-    const days = [];
-    for (let i = 6; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      const dk = d.toISOString().slice(0, 10);
+    var days = [];
+    for (var i = 6; i >= 0; i--) {
+      var d = new Date(); d.setDate(d.getDate() - i);
+      var dk = d.toISOString().slice(0, 10);
       if (!journal[dk]) await loadJournal(dk);
-      const b = getJournalBilan(dk);
-      const pas = journal[dk + '_pas'] || 0;
+      var b = getJournalBilan(dk);
+      var pas = journal[dk + '_pas'] || 0;
       if (b.kcal > 0 || pas > 0) days.push(dateLabel(dk) + ': ' + b.kcal + ' kcal, ' + b.prot + 'g prot, ' + pas + ' pas');
     }
-    const pesee = entries[0] ? 'Derniere pesee: ' + entries[0].poids + ' kg' : 'Pas de pesee';
-    const system = profileCtx() + ' Coach nutritionnel. Bilan semaine en 5-7 phrases directes. Un seul ajustement prioritaire. Pas de liste, pas de mise en garde medicale. En francais.';
-    const user = pesee + '. Semaine: ' + (days.length > 0 ? days.join(', ') : 'Pas de donnees') + '. Fais le bilan et donne une recommandation concrete pour la semaine prochaine.';
-    const resp = await callClaude(system, user);
-    const content = '<div class="ai-response-header"><span>📊</span><span class="ai-response-title">Bilan hebdomadaire</span></div><div class="ai-response-body">' + resp + '</div>';
+    var pesee = entries[0] ? 'Derniere pesee: ' + entries[0].poids + ' kg' : 'Pas de pesee';
+    var system = profileCtx() + ' Coach nutritionnel. Bilan semaine en 5-7 phrases directes. Un seul ajustement prioritaire. Pas de liste, pas de mise en garde medicale. En francais.';
+    var user = pesee + '. Semaine: ' + (days.length > 0 ? days.join(', ') : 'Pas de donnees') + '. Fais le bilan et donne une recommandation concrete pour la semaine prochaine.';
+    var resp = await callClaude(system, user);
+    var content = '<div class="ai-response-header"><span>📊</span><span class="ai-response-title">Bilan hebdomadaire</span></div><div class="ai-response-body">' + resp + '</div>';
     aiCache[k] = content;
     setAiEl('ai-bilan', content);
   } catch(e) {
-    setAiEl('ai-bilan', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible à /api/claude. Vérifie la fonction Vercel et la variable ANTHROPIC_API_KEY.</div>');
+    setAiEl('ai-bilan', '<div class="ai-response-header"><span>❌</span><span class="ai-response-title">Erreur</span></div><div class="ai-response-body">Connexion impossible. Verifie ta cle API.</div>');
   }
 }
 
@@ -1225,16 +1213,16 @@ function openCamera() {
 }
 
 function onCamFileSelected(input) {
-  const file = input.files[0];
+  var file = input.files[0];
   if (!file) return;
   camImageMime = file.type || 'image/jpeg';
-  const reader = new FileReader();
+  var reader = new FileReader();
   reader.onload = function(e) {
-    const dataUrl = e.target.result;
+    var dataUrl = e.target.result;
     camImageB64 = dataUrl.split(',')[1];
-    const img = document.getElementById('cam-preview-img');
-    const wrap = document.getElementById('cam-preview-wrap');
-    const result = document.getElementById('cam-result');
+    var img = document.getElementById('cam-preview-img');
+    var wrap = document.getElementById('cam-preview-wrap');
+    var result = document.getElementById('cam-result');
     if (img) img.src = dataUrl;
     if (wrap) wrap.style.display = 'block';
     if (result) result.style.display = 'none';
@@ -1244,8 +1232,8 @@ function onCamFileSelected(input) {
 
 function retakePhoto() {
   camImageB64 = null;
-  const wrap = document.getElementById('cam-preview-wrap');
-  const result = document.getElementById('cam-result');
+  var wrap = document.getElementById('cam-preview-wrap');
+  var result = document.getElementById('cam-result');
   if (wrap) wrap.style.display = 'none';
   if (result) result.style.display = 'none';
   document.getElementById('cam-file-input').value = '';
@@ -1253,32 +1241,48 @@ function retakePhoto() {
 
 async function analysePhoto() {
   if (!camImageB64) return;
-  const btn = document.getElementById('cam-analyse-btn');
-  const result = document.getElementById('cam-result');
+  var btn = document.getElementById('cam-analyse-btn');
+  var result = document.getElementById('cam-result');
   if (btn) btn.textContent = 'Analyse...';
   if (result) { result.style.display = 'block'; result.textContent = 'Claude analyse la photo...'; }
 
   try {
-    const heure = new Date().getHours();
-    const moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
-    const system = 'Tu es un assistant nutritionnel expert. On te montre une photo d un plat ou d aliments. '
+    var heure = new Date().getHours();
+    var moment = heure < 10 ? 'Matin' : heure < 14 ? 'Dejeuner' : heure < 17 ? 'Collation' : 'Diner';
+    var system = 'Tu es un assistant nutritionnel expert. On te montre une photo d un plat ou d aliments. '
       + 'Identifie les aliments visibles, estime les quantites en grammes de facon realiste. '
       + 'Reponds UNIQUEMENT en JSON valide sans markdown ni backticks: '
       + '{"description":"description courte du plat","items":[{"nom":"...","qty":100,"kcal":0,"prot":0,"gluc":0,"lip":0,"moment":"' + moment + '"}]}. '
       + 'Valeurs nutritionnelles pour 100g. Maximum 6 items. Si tu ne vois pas d aliments, reponds {"description":"Image non reconnue","items":[]}.';
 
-    const txtRaw = await callClaudeVision(
-      system,
-      'Identifie les aliments dans cette photo et donne-moi les valeurs nutritionnelles.',
-      camImageB64,
-      camImageMime,
-      600
-    );
+    var res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': CLAUDE_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: 600,
+        system: system,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: camImageMime, data: camImageB64 } },
+            { type: 'text', text: 'Identifie les aliments dans cette photo et donne-moi les valeurs nutritionnelles.' }
+          ]
+        }]
+      })
+    });
 
-    let txt = txtRaw.trim();
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    var d = await res.json();
+    var txt = d.content[0].text.trim();
     if (txt.indexOf('{') > 0) txt = txt.slice(txt.indexOf('{'));
     if (txt.lastIndexOf('}') < txt.length - 1) txt = txt.slice(0, txt.lastIndexOf('}') + 1);
-    const parsed = JSON.parse(txt);
+    var parsed = JSON.parse(txt);
 
     if (result) {
       result.style.display = 'block';
@@ -1302,10 +1306,11 @@ async function analysePhoto() {
         });
       });
       await saveJournalDay(journalDate);
-      if (btn) btn.textContent = 'Ajouté !';
+      if (btn) btn.textContent = 'Ajoute !';
       setTimeout(function() {
         retakePhoto();
-        const scrollY = main.scrollTop;
+        var main = document.getElementById('main');
+        var scrollY = main.scrollTop;
         main.innerHTML = viewJournal();
         main.scrollTop = scrollY;
       }, 1800);
@@ -1314,11 +1319,7 @@ async function analysePhoto() {
       if (btn) btn.textContent = 'Analyser';
     }
   } catch(e) {
-    if (result) {
-      result.style.background = 'var(--terra-light)';
-      result.style.color = 'var(--terra)';
-      result.textContent = 'Erreur: ' + e.message;
-    }
+    if (result) { result.style.background = 'var(--terra-light)'; result.style.color = 'var(--terra)'; result.textContent = 'Erreur: ' + e.message; }
     if (btn) btn.textContent = 'Analyser';
   }
 }
@@ -1340,4 +1341,36 @@ window.analysePhoto = analysePhoto;
 window.openQtyModal = openQtyModal;
 window.addAlimentToJournal = addAlimentToJournal;
 window.removeJournalItem = removeJournalItem;
-window.setMoment
+window.setMoment = setMoment;
+window.renderQtyPreview = renderQtyPreview;
+window.renderAlimentsList = renderAlimentsList;
+window.installPWA = installPWA;
+window.render = render;
+
+Object.defineProperty(window, 'formState', { get: () => formState, set: v => { formState = v; } });
+Object.defineProperty(window, 'journalSearch', { get: () => journalSearch, set: v => { journalSearch = v; } });
+Object.defineProperty(window, 'pendingQty', { get: () => pendingQty, set: v => { pendingQty = v; } });
+Object.defineProperty(window, 'pendingAliment', { get: () => pendingAliment, set: v => { pendingAliment = v; } });
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(err => console.warn('SW registration skipped:', err));
+}
+
+showLoader('Connexion à la base de données…');
+signInAnonymously(auth)
+  .then(async () => {
+    firebaseReady = true;
+    await loadEntries();
+    if (!journal[journalDate]) await loadJournal(journalDate);
+    render();
+  })
+  .catch(async e => {
+    console.error('Auth error', e);
+    firebaseReady = false;
+    await loadEntries();
+    if (!journal[journalDate]) await loadJournal(journalDate);
+    render();
+  });
+</script>
+</body>
+</html>
