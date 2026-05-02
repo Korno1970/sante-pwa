@@ -491,17 +491,24 @@ function scrollChatBottom() {
 }
 
 // ═══ PESÉE ═══
-function submitForm(directVal) {
-  const inputEl = document.getElementById('input-poids');
-  const v1 = directVal;
-  const v2 = inputEl ? inputEl.value : 'NO_EL';
-  const v3 = form.poids;
-  alert('DEBUG: directVal=' + v1 + ' | DOM=' + v2 + ' | form=' + v3);
+function normalizeWeightInput(value) {
+  return String(value ?? '').trim().replace(/\s+/g, '').replace(',', '.');
+}
 
+function parseWeightKg(value) {
+  const normalized = normalizeWeightInput(value);
+  if (!normalized || !/^\d+(?:\.\d+)?$/.test(normalized)) return NaN;
+  return Number(normalized);
+}
+
+function submitForm() {
   const inputEl = document.getElementById('input-poids');
-  const rawVal = directVal || (inputEl ? inputEl.value : '') || form.poids;
-  const p = parseFloat(String(rawVal).replace(',','.'));
-  if (!p || p < 40 || p > 250) { alert('Entre un poids valide, ex: 92.5'); return; }
+  const rawVal = inputEl ? inputEl.value : form.poids;
+  const p = parseWeightKg(rawVal);
+  if (!Number.isFinite(p) || p < 40 || p > 250) {
+    alert('Saisis un poids valide en kilos, par exemple 84,2 ou 84.2.');
+    return;
+  }
   const k = weekKey();
   entries = [
     { key: k, poids: p, moral: form.moral, plan: form.plan, pas: form.pas, note: form.note.trim() },
@@ -604,8 +611,8 @@ function vRepas() {
 function vPesee() {
   return `<div class="card">
     <div class="card-label">Pesée · ${weekLabel(weekKey())}</div>
-    <label class="lbl">Poids ce matin (kg)</label>
-    <input type="number" id="input-poids" step="0.1" min="40" max="250" placeholder="ex : 92.5" inputmode="decimal" value="${esc(form.poids)}" oninput="setPoids(this.value)">
+    <label class="lbl">Poids de la pesée (kg)</label>
+    <input type="text" id="input-poids" inputmode="decimal" autocomplete="off" placeholder="Ex. : 84,2 ou 84.2" value="${esc(form.poids)}" oninput="setPoids(this.value)">
     <label class="lbl">Moral</label>
     <div class="slider-row">
       <input type="range" min="1" max="5" step="1" value="${form.moral}" oninput="form.moral=+this.value;updateDots()">
@@ -624,7 +631,7 @@ function vPesee() {
     </div>
     <label class="lbl">Note libre</label>
     <textarea rows="3" placeholder="Bonne semaine, faim ok..." oninput="setNote(this.value)">${esc(form.note)}</textarea>
-    <button class="btn btn-green" onclick="submitForm(document.getElementById('input-poids')?.value||'')">Enregistrer la pesée</button>
+    <button class="btn btn-green" onclick="submitForm()">Enregistrer la pesée</button>
   </div><div class="spacer"></div>`;
 }
 
