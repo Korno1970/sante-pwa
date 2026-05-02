@@ -501,14 +501,21 @@ function parseWeightKg(value) {
   return Number(normalized);
 }
 
+function formatWeightKg(value) {
+  const n = parseWeightKg(value);
+  return Number.isFinite(n) ? n.toFixed(1).replace('.', ',') : '';
+}
+
 function submitForm() {
   const inputEl = document.getElementById('input-poids');
   const rawVal = inputEl ? inputEl.value : form.poids;
   const p = parseWeightKg(rawVal);
+
   if (!Number.isFinite(p) || p < 40 || p > 250) {
-    alert('Saisis un poids valide en kilos, par exemple 84,2 ou 84.2.');
+    alert('Saisis un poids valide en kilos, par exemple 84,2 ou 84.2');
     return;
   }
+
   const k = weekKey();
   entries = [
     { key: k, poids: p, moral: form.moral, plan: form.plan, pas: form.pas, note: form.note.trim() },
@@ -612,7 +619,7 @@ function vPesee() {
   return `<div class="card">
     <div class="card-label">Pesée · ${weekLabel(weekKey())}</div>
     <label class="lbl">Poids de la pesée (kg)</label>
-    <input type="text" id="input-poids" inputmode="decimal" autocomplete="off" placeholder="Ex. : 84,2 ou 84.2" value="${esc(form.poids)}" oninput="setPoids(this.value)">
+    <input type="text" id="input-poids"  placeholder="Ex. : 84,2 ou 84.2" inputmode="decimal" value="${esc(form.poids)}" oninput="setPoids(this.value)">
     <label class="lbl">Moral</label>
     <div class="slider-row">
       <input type="range" min="1" max="5" step="1" value="${form.moral}" oninput="form.moral=+this.value;updateDots()">
